@@ -5,7 +5,7 @@ edition = "2024"
 license = "Apache-2.0"
 readme = "README.md"
 include = ["src", "Cargo.toml", "LICENSE", "README.md"]
-description = ""
+description = "Write Cloudflare's Worker to provide Web services using the Salvo framework"
 authors = ["Anubis"]
 repository = "https://github.com/lazyanubis/salvo-worker"
 
