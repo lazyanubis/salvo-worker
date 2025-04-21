@@ -22,12 +22,12 @@ jobs:
       - name: Install cargo-deny
         run: cargo install --locked cargo-deny
       - name: Build
-        run: cargo build --verbose
+        run: cargo build --all --features "full" --verbose
       - name: Test
-        run: cargo test --verbose
+        run: cargo test --all --features "full" --verbose
       - name: Deny
         run: cargo deny check --show-stats
       - name: Clippy
-        run: cargo clippy --verbose -- -D warnings
+        run: cargo clippy --all --features "full" --verbose -- -D warnings
       - name: Audit
         run: cargo audit
