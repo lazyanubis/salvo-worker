@@ -1,33 +1,42 @@
 //! Server module
+#[allow(unused)]
 use std::io::Result as IoResult;
+#[allow(unused)]
+use std::sync::Arc;
 #[cfg(feature = "server-handle")]
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
 
 #[cfg(not(any(feature = "http1", feature = "http2", feature = "quinn")))]
 compile_error!(
     "You have enabled `server` feature, it requires at least one of the following features: http1, http2, quinn."
 );
 
+#[allow(unused)]
 #[cfg(feature = "http1")]
 use hyper::server::conn::http1;
 #[cfg(feature = "http2")]
 use hyper::server::conn::http2;
 #[cfg(feature = "server-handle")]
 use tokio::{
-    time::Duration,sync::{
-    Notify,
-    mpsc::{UnboundedReceiver, UnboundedSender}
-}};
+    sync::{
+        Notify,
+        mpsc::{UnboundedReceiver, UnboundedSender},
+    },
+    time::Duration,
+};
 #[cfg(feature = "server-handle")]
 use tokio_util::sync::CancellationToken;
 
+#[allow(unused)]
+use crate::Service;
 #[cfg(feature = "quinn")]
 use crate::conn::quinn;
+#[cfg(feature = "needless")]
 use crate::conn::{Accepted, Acceptor, Holding, HttpBuilder};
+#[cfg(feature = "needless")]
 use crate::fuse::{ArcFuseFactory, FuseFactory};
+#[allow(unused)]
 use crate::http::{HeaderValue, HttpConnection, Version};
-use crate::Service;
 
 cfg_feature! {
     #![feature ="server-handle"]
@@ -94,8 +103,11 @@ enum ServerCommand {
 ///
 /// A `Server` is created to listen on a port, parse HTTP requests, and hand them off to a [`Service`].
 pub struct Server<A> {
+    #[allow(unused)]
     acceptor: A,
+    #[cfg(feature = "needless")]
     builder: HttpBuilder,
+    #[cfg(feature = "needless")]
     fuse_factory: Option<ArcFuseFactory>,
     #[cfg(feature = "server-handle")]
     tx_cmd: UnboundedSender<ServerCommand>,
@@ -103,6 +115,7 @@ pub struct Server<A> {
     rx_cmd: UnboundedReceiver<ServerCommand>,
 }
 
+#[cfg(feature = "needless")]
 impl<A: Acceptor + Send> Server<A> {
     /// Create new `Server` with [`Acceptor`].
     ///
@@ -170,7 +183,7 @@ impl<A: Acceptor + Send> Server<A> {
             let _ = self.tx_cmd.send(ServerCommand::StopGraceful(timeout.into()));
         }
     }
-    
+
     /// Get holding information of this server.
     #[inline]
     pub fn holdings(&self) -> &[Holding] {
@@ -229,12 +242,12 @@ impl<A: Acceptor + Send> Server<A> {
 
     /// Try to serve a [`Service`].
     #[cfg(feature = "server-handle")]
-    #[allow(clippy::manual_async_fn)]//Fix: https://github.com/salvo-rs/salvo/issues/902
-    pub fn try_serve<S>(self, service: S) -> impl Future<Output=IoResult<()>> + Send
+    #[allow(clippy::manual_async_fn)] //Fix: https://github.com/salvo-rs/salvo/issues/902
+    pub fn try_serve<S>(self, service: S) -> impl Future<Output = IoResult<()>> + Send
     where
         S: Into<Service> + Send,
     {
-        async{
+        async {
             let Self {
                 mut acceptor,
                 builder,
@@ -334,7 +347,10 @@ impl<A: Acceptor + Send> Server<A> {
             }
 
             if !force_stop_token.is_cancelled() && alive_connections.load(Ordering::Acquire) > 0 {
-                tracing::info!("wait for {} connections to close.",alive_connections.load(Ordering::Acquire));
+                tracing::info!(
+                    "wait for {} connections to close.",
+                    alive_connections.load(Ordering::Acquire)
+                );
                 notify.notified().await;
             }
 
@@ -345,8 +361,8 @@ impl<A: Acceptor + Send> Server<A> {
     /// Try to serve a [`Service`].
     #[cfg(not(feature = "server-handle"))]
     pub async fn try_serve<S>(self, service: S) -> IoResult<()>
-        where
-            S: Into<Service> + Send,
+    where
+        S: Into<Service> + Send,
     {
         let Self {
             mut acceptor,
@@ -373,16 +389,27 @@ impl<A: Acceptor + Send> Server<A> {
         let builder = Arc::new(builder);
         loop {
             match acceptor.accept(fuse_factory.clone()).await {
-                Ok(Accepted { conn, local_addr, remote_addr, http_scheme, ..}) => {
-
+                Ok(Accepted {
+                    conn,
+                    local_addr,
+                    remote_addr,
+                    http_scheme,
+                    ..
+                }) => {
                     let service = service.clone();
-                    let handler = service.hyper_handler(local_addr, remote_addr, http_scheme, conn.fusewire(), alt_svc_h3.clone());
+                    let handler = service.hyper_handler(
+                        local_addr,
+                        remote_addr,
+                        http_scheme,
+                        conn.fusewire(),
+                        alt_svc_h3.clone(),
+                    );
                     let builder = builder.clone();
 
                     tokio::spawn(async move {
                         let _ = conn.serve(handler, builder, None).await;
                     });
-                },
+                }
                 Err(e) => {
                     tracing::error!(error = ?e, "accept connection failed");
                 }
@@ -496,14 +523,15 @@ mod tests {
             use crate::conn::openssl::{Keycert, OpensslConfig};
 
             let acceptor = TcpListener::new("127.0.0.1:0")
-            .openssl(OpensslConfig::new(
-                Keycert::new()
-                    .key_from_path("certs/key.pem")
-                    .unwrap()
-                    .cert_from_path("certs/cert.pem")
-                    .unwrap(),
-            )).bind()
-            .await;
+                .openssl(OpensslConfig::new(
+                    Keycert::new()
+                        .key_from_path("certs/key.pem")
+                        .unwrap()
+                        .cert_from_path("certs/cert.pem")
+                        .unwrap(),
+                ))
+                .bind()
+                .await;
             Server::new(acceptor).serve(Router::new()).await;
         };
         #[cfg(feature = "rustls")]
