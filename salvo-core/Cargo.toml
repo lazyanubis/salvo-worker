@@ -18,7 +18,7 @@ default = [
     "full",
 ]
 full = [
-    # "cookie",
+    "cookie",
     # "fix-http1-request-uri",
     # "server",
     # "server-handle",
@@ -99,6 +99,7 @@ needless = []
 [dependencies]
 salvo_macros = "0.78.0"
 
+getrandom = { version = "0.2.15", features = ["js"] }
 # getrandom = { version = "0.3.2", default-features = true, features = [
 #     "wasm_js",
 # ] }
