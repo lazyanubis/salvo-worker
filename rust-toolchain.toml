@@ -1,0 +1,7 @@
+[toolchain]
+channel = "1.86.0" # 一个命名的发布通道或一个明确的版本号 例如: stable|beta|nightly|<version>
+# targets = ["wasm32-unknown-unknown"] # 编译目标环境
+components = [
+    "rustfmt", # 格式化代码
+    "clippy",  # 代码优化
+]
