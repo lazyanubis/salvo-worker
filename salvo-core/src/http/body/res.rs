@@ -101,10 +101,7 @@ impl ResBody {
             data_tx,
             trailers_tx: Some(trailers_tx),
         };
-        let rx = ResBody::Channel(BodyReceiver {
-            data_rx,
-            trailers_rx,
-        });
+        let rx = ResBody::Channel(BodyReceiver { data_rx, trailers_rx });
 
         (tx, rx)
     }
@@ -149,9 +146,7 @@ impl Body for ResBody {
                     Poll::Ready(Some(Ok(Frame::data(bytes))))
                 }
             }
-            Self::Chunks(chunks) => {
-                Poll::Ready(chunks.pop_front().map(|bytes| Ok(Frame::data(bytes))))
-            }
+            Self::Chunks(chunks) => Poll::Ready(chunks.pop_front().map(|bytes| Ok(Frame::data(bytes)))),
             Self::Hyper(body) => match Body::poll_frame(Pin::new(body), cx) {
                 Poll::Ready(Some(Ok(frame))) => Poll::Ready(Some(Ok(frame))),
                 Poll::Ready(Some(Err(e))) => Poll::Ready(Some(Err(IoError::other(e)))),

@@ -64,10 +64,9 @@ where
         // check preconditions
         let precondition_failed = if !any_match(self.etag.as_ref(), req_headers) {
             true
-        } else if let (Some(last_modified), Some(since)) = (
-            &self.last_modified,
-            req_headers.typed_get::<IfUnmodifiedSince>(),
-        ) {
+        } else if let (Some(last_modified), Some(since)) =
+            (&self.last_modified, req_headers.typed_get::<IfUnmodifiedSince>())
+        {
             !since.precondition_passes(*last_modified)
         } else {
             false
@@ -78,10 +77,9 @@ where
             true
         } else if req_headers.contains_key(IF_NONE_MATCH) {
             false
-        } else if let (Some(last_modified), Some(since)) = (
-            &self.last_modified,
-            req_headers.typed_get::<IfModifiedSince>(),
-        ) {
+        } else if let (Some(last_modified), Some(since)) =
+            (&self.last_modified, req_headers.typed_get::<IfModifiedSince>())
+        {
             !since.is_modified(*last_modified)
         } else {
             false
@@ -105,8 +103,7 @@ where
                     length = range[0].length;
                     offset = range[0].start;
                 } else {
-                    res.headers_mut()
-                        .typed_insert(ContentRange::unsatisfied_bytes(length));
+                    res.headers_mut().typed_insert(ContentRange::unsatisfied_bytes(length));
                     res.status_code(StatusCode::RANGE_NOT_SATISFIABLE);
                     return;
                 };

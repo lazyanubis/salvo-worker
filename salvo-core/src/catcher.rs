@@ -102,10 +102,7 @@ impl Catcher {
         H: Handler,
         F: Fn(&Request, &Depot) -> bool + Send + Sync + 'static,
     {
-        self.hoops.push(Arc::new(WhenHoop {
-            inner: hoop,
-            filter,
-        }));
+        self.hoops.push(Arc::new(WhenHoop { inner: hoop, filter }));
         self
     }
 
@@ -148,17 +145,9 @@ impl DefaultGoal {
 }
 #[async_trait]
 impl Handler for DefaultGoal {
-    async fn handle(
-        &self,
-        req: &mut Request,
-        _depot: &mut Depot,
-        res: &mut Response,
-        _ctrl: &mut FlowCtrl,
-    ) {
+    async fn handle(&self, req: &mut Request, _depot: &mut Depot, res: &mut Response, _ctrl: &mut FlowCtrl) {
         let status = res.status_code.unwrap_or(StatusCode::NOT_FOUND);
-        if (status.is_server_error() || status.is_client_error())
-            && (res.body.is_none() || res.body.is_error())
-        {
+        if (status.is_server_error() || status.is_client_error()) && (res.body.is_none() || res.body.is_error()) {
             write_error_default(req, res, self.footer.as_deref());
         }
     }
@@ -210,24 +199,14 @@ fn status_error_html(
         code.as_u16(),
         name,
         brief,
-        detail
-            .map(|detail| format!("<pre>{detail}</pre>"))
-            .unwrap_or_default(),
-        cause
-            .map(|cause| format!("<pre>{cause:#?}</pre>"))
-            .unwrap_or_default(),
+        detail.map(|detail| format!("<pre>{detail}</pre>")).unwrap_or_default(),
+        cause.map(|cause| format!("<pre>{cause:#?}</pre>")).unwrap_or_default(),
         footer.unwrap_or(SALVO_LINK)
     )
 }
 
 #[inline]
-fn status_error_json(
-    code: StatusCode,
-    name: &str,
-    brief: &str,
-    detail: Option<&str>,
-    cause: Option<&str>,
-) -> String {
+fn status_error_json(code: StatusCode, name: &str, brief: &str, detail: Option<&str>, cause: Option<&str>) -> String {
     #[derive(Serialize)]
     struct Data<'a> {
         error: Error<'a>,
@@ -254,34 +233,18 @@ fn status_error_json(
     serde_json::to_string(&data).unwrap_or_default()
 }
 
-fn status_error_plain(
-    code: StatusCode,
-    name: &str,
-    brief: &str,
-    detail: Option<&str>,
-    cause: Option<&str>,
-) -> String {
+fn status_error_plain(code: StatusCode, name: &str, brief: &str, detail: Option<&str>, cause: Option<&str>) -> String {
     format!(
         "code: {}\n\nname: {}\n\nbrief: {}{}{}",
         code.as_u16(),
         name,
         brief,
-        detail
-            .map(|detail| format!("\n\ndetail: {detail}"))
-            .unwrap_or_default(),
-        cause
-            .map(|cause| format!("\n\ncause: {cause:#?}"))
-            .unwrap_or_default(),
+        detail.map(|detail| format!("\n\ndetail: {detail}")).unwrap_or_default(),
+        cause.map(|cause| format!("\n\ncause: {cause:#?}")).unwrap_or_default(),
     )
 }
 
-fn status_error_xml(
-    code: StatusCode,
-    name: &str,
-    brief: &str,
-    detail: Option<&str>,
-    cause: Option<&str>,
-) -> String {
+fn status_error_xml(code: StatusCode, name: &str, brief: &str, detail: Option<&str>, cause: Option<&str>) -> String {
     #[derive(Serialize)]
     struct Data<'a> {
         code: u16,
@@ -306,11 +269,7 @@ fn status_error_xml(
 /// Create bytes from `StatusError`.
 #[doc(hidden)]
 #[inline]
-pub fn status_error_bytes(
-    err: &StatusError,
-    prefer_format: &Mime,
-    footer: Option<&str>,
-) -> (Mime, Bytes) {
+pub fn status_error_bytes(err: &StatusError, prefer_format: &Mime, footer: Option<&str>) -> (Mime, Bytes) {
     let format = if !SUPPORTED_FORMATS.contains(&prefer_format.subtype()) {
         mime::TEXT_HTML
     } else {
@@ -328,14 +287,7 @@ pub fn status_error_bytes(
         "plain" => status_error_plain(err.code, &err.name, &err.brief, detail, cause.as_deref()),
         "json" => status_error_json(err.code, &err.name, &err.brief, detail, cause.as_deref()),
         "xml" => status_error_xml(err.code, &err.name, &err.brief, detail, cause.as_deref()),
-        _ => status_error_html(
-            err.code,
-            &err.name,
-            &err.brief,
-            detail,
-            cause.as_deref(),
-            footer,
-        ),
+        _ => status_error_html(err.code, &err.name, &err.brief, detail, cause.as_deref(), footer),
     };
     (format, Bytes::from(content))
 }
@@ -377,13 +329,7 @@ mod tests {
     }
 
     #[handler]
-    async fn handle404(
-        &self,
-        _req: &Request,
-        _depot: &Depot,
-        res: &mut Response,
-        ctrl: &mut FlowCtrl,
-    ) {
+    async fn handle404(&self, _req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
         if res.status_code.is_none() || Some(StatusCode::NOT_FOUND) == res.status_code {
             res.render("Custom 404 Error Page");
             ctrl.skip_rest();

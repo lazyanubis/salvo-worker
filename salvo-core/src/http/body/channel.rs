@@ -64,8 +64,7 @@ impl BodySender {
             Some(tx) => tx,
             None => return Err(IoError::other("failed to send railers")),
         };
-        tx.send(trailers)
-            .map_err(|_| IoError::other("failed to send railers"))
+        tx.send(trailers).map_err(|_| IoError::other("failed to send railers"))
     }
 
     /// Send error on data channel.
@@ -79,11 +78,7 @@ impl BodySender {
 }
 
 impl futures_util::AsyncWrite for BodySender {
-    fn poll_write(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        buf: &[u8],
-    ) -> Poll<IoResult<usize>> {
+    fn poll_write(mut self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &[u8]) -> Poll<IoResult<usize>> {
         match self.data_tx.poll_ready(cx) {
             Poll::Ready(Ok(())) => {
                 let data: Bytes = Bytes::from(buf.to_vec());
@@ -95,9 +90,7 @@ impl futures_util::AsyncWrite for BodySender {
                         .map_err(|e| IoError::other(format!("failed to send data: {}", e))),
                 )
             }
-            Poll::Ready(Err(e)) => {
-                Poll::Ready(Err(IoError::other(format!("failed to poll ready: {}", e))))
-            }
+            Poll::Ready(Err(e)) => Poll::Ready(Err(IoError::other(format!("failed to poll ready: {}", e)))),
             Poll::Pending => Poll::Pending,
         }
     }
@@ -116,11 +109,7 @@ impl futures_util::AsyncWrite for BodySender {
 }
 
 impl tokio::io::AsyncWrite for BodySender {
-    fn poll_write(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        buf: &[u8],
-    ) -> Poll<IoResult<usize>> {
+    fn poll_write(mut self: Pin<&mut Self>, cx: &mut Context<'_>, buf: &[u8]) -> Poll<IoResult<usize>> {
         match self.data_tx.poll_ready(cx) {
             Poll::Ready(Ok(())) => {
                 let data: Bytes = Bytes::from(buf.to_vec());
@@ -132,9 +121,7 @@ impl tokio::io::AsyncWrite for BodySender {
                         .map_err(|e| IoError::other(format!("failed to send data: {}", e))),
                 )
             }
-            Poll::Ready(Err(e)) => {
-                Poll::Ready(Err(IoError::other(format!("failed to poll ready: {}", e))))
-            }
+            Poll::Ready(Err(e)) => Poll::Ready(Err(IoError::other(format!("failed to poll ready: {}", e)))),
             Poll::Pending => Poll::Pending,
         }
     }

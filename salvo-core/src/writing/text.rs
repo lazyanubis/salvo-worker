@@ -46,40 +46,16 @@ where
 {
     fn try_set_header(self, res: &mut Response) -> C {
         let (ctype, content) = match self {
-            Self::Plain(content) => (
-                HeaderValue::from_static("text/plain; charset=utf-8"),
-                content,
-            ),
-            Self::Json(content) => (
-                HeaderValue::from_static("application/json; charset=utf-8"),
-                content,
-            ),
-            Self::Xml(content) => (
-                HeaderValue::from_static("application/xml; charset=utf-8"),
-                content,
-            ),
-            Self::Html(content) => (
-                HeaderValue::from_static("text/html; charset=utf-8"),
-                content,
-            ),
-            Self::Js(content) => (
-                HeaderValue::from_static("text/javascript; charset=utf-8"),
-                content,
-            ),
+            Self::Plain(content) => (HeaderValue::from_static("text/plain; charset=utf-8"), content),
+            Self::Json(content) => (HeaderValue::from_static("application/json; charset=utf-8"), content),
+            Self::Xml(content) => (HeaderValue::from_static("application/xml; charset=utf-8"), content),
+            Self::Html(content) => (HeaderValue::from_static("text/html; charset=utf-8"), content),
+            Self::Js(content) => (HeaderValue::from_static("text/javascript; charset=utf-8"), content),
             Self::Css(content) => (HeaderValue::from_static("text/css; charset=utf-8"), content),
             Self::Csv(content) => (HeaderValue::from_static("text/csv; charset=utf-8"), content),
-            Self::Atom(content) => (
-                HeaderValue::from_static("application/atom+xml; charset=utf-8"),
-                content,
-            ),
-            Self::Rss(content) => (
-                HeaderValue::from_static("application/rss+xml; charset=utf-8"),
-                content,
-            ),
-            Self::Rdf(content) => (
-                HeaderValue::from_static("application/rdf+xml; charset=utf-8"),
-                content,
-            ),
+            Self::Atom(content) => (HeaderValue::from_static("application/atom+xml; charset=utf-8"), content),
+            Self::Rss(content) => (HeaderValue::from_static("application/rss+xml; charset=utf-8"), content),
+            Self::Rdf(content) => (HeaderValue::from_static("application/rdf+xml; charset=utf-8"), content),
         };
         try_set_header(&mut res.headers, CONTENT_TYPE, ctype);
         content
@@ -155,14 +131,9 @@ mod tests {
 
         let router = Router::new().push(Router::with_path("test").get(test));
 
-        let mut res = TestClient::get("http://127.0.0.1:5800/test")
-            .send(router)
-            .await;
+        let mut res = TestClient::get("http://127.0.0.1:5800/test").send(router).await;
         assert_eq!(res.take_string().await.unwrap(), "hello");
-        assert_eq!(
-            res.headers().get("content-type").unwrap(),
-            "text/plain; charset=utf-8"
-        );
+        assert_eq!(res.headers().get("content-type").unwrap(), "text/plain; charset=utf-8");
     }
 
     #[tokio::test]
@@ -173,14 +144,9 @@ mod tests {
         }
 
         let router = Router::new().push(Router::with_path("test").get(test));
-        let mut res = TestClient::get("http://127.0.0.1:5800/test")
-            .send(router)
-            .await;
+        let mut res = TestClient::get("http://127.0.0.1:5800/test").send(router).await;
         assert_eq!(res.take_string().await.unwrap(), "hello");
-        assert_eq!(
-            res.headers().get("content-type").unwrap(),
-            "text/plain; charset=utf-8"
-        );
+        assert_eq!(res.headers().get("content-type").unwrap(), "text/plain; charset=utf-8");
     }
 
     #[tokio::test]
@@ -192,14 +158,9 @@ mod tests {
 
         let router = Router::new().push(Router::with_path("test").get(test));
 
-        let mut res = TestClient::get("http://127.0.0.1:5800/test")
-            .send(router)
-            .await;
+        let mut res = TestClient::get("http://127.0.0.1:5800/test").send(router).await;
         assert_eq!(res.take_string().await.unwrap(), "hello");
-        assert_eq!(
-            res.headers().get("content-type").unwrap(),
-            "text/plain; charset=utf-8"
-        );
+        assert_eq!(res.headers().get("content-type").unwrap(), "text/plain; charset=utf-8");
     }
 
     #[tokio::test]
@@ -210,9 +171,7 @@ mod tests {
         }
 
         let router = Router::new().push(Router::with_path("test").get(test));
-        let mut res = TestClient::get("http://127.0.0.1:5800/test")
-            .send(router)
-            .await;
+        let mut res = TestClient::get("http://127.0.0.1:5800/test").send(router).await;
         assert_eq!(res.take_string().await.unwrap(), r#"{"hello": "world"}"#);
         assert_eq!(
             res.headers().get("content-type").unwrap(),
@@ -228,16 +187,8 @@ mod tests {
         }
 
         let router = Router::new().push(Router::with_path("test").get(test));
-        let mut res = TestClient::get("http://127.0.0.1:5800/test")
-            .send(router)
-            .await;
-        assert_eq!(
-            res.take_string().await.unwrap(),
-            "<html><body>hello</body></html>"
-        );
-        assert_eq!(
-            res.headers().get("content-type").unwrap(),
-            "text/html; charset=utf-8"
-        );
+        let mut res = TestClient::get("http://127.0.0.1:5800/test").send(router).await;
+        assert_eq!(res.take_string().await.unwrap(), "<html><body>hello</body></html>");
+        assert_eq!(res.headers().get("content-type").unwrap(), "text/html; charset=utf-8");
     }
 }

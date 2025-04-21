@@ -68,9 +68,7 @@ impl RenameRule {
             }
             ScreamingSnakeCase => SnakeCase.apply_to_variant(variant).to_ascii_uppercase(),
             KebabCase => SnakeCase.apply_to_variant(variant).replace('_', "-"),
-            ScreamingKebabCase => ScreamingSnakeCase
-                .apply_to_variant(variant)
-                .replace('_', "-"),
+            ScreamingKebabCase => ScreamingSnakeCase.apply_to_variant(variant).replace('_', "-"),
         }
     }
 
@@ -113,8 +111,7 @@ mod tests {
     fn test_rename_variants() {
         for &(original, lower, upper, camel, snake, screaming, kebab, screaming_kebab) in &[
             (
-                "Outcome", "outcome", "OUTCOME", "outcome", "outcome", "OUTCOME", "outcome",
-                "OUTCOME",
+                "Outcome", "outcome", "OUTCOME", "outcome", "outcome", "OUTCOME", "outcome", "OUTCOME",
             ),
             (
                 "VeryTasty",
@@ -136,10 +133,7 @@ mod tests {
             assert_eq!(SnakeCase.apply_to_variant(original), snake);
             assert_eq!(ScreamingSnakeCase.apply_to_variant(original), screaming);
             assert_eq!(KebabCase.apply_to_variant(original), kebab);
-            assert_eq!(
-                ScreamingKebabCase.apply_to_variant(original),
-                screaming_kebab
-            );
+            assert_eq!(ScreamingKebabCase.apply_to_variant(original), screaming_kebab);
         }
     }
 

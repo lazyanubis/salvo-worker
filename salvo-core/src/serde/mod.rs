@@ -2,10 +2,7 @@ use std::borrow::Cow;
 use std::hash::Hash;
 
 pub use serde::de::value::{Error as ValError, MapDeserializer, SeqDeserializer};
-use serde::de::{
-    Deserialize, DeserializeSeed, EnumAccess, Error as DeError, IntoDeserializer, VariantAccess,
-    Visitor,
-};
+use serde::de::{Deserialize, DeserializeSeed, EnumAccess, Error as DeError, IntoDeserializer, VariantAccess, Visitor};
 
 mod request;
 pub use request::from_request;
@@ -24,9 +21,7 @@ where
     K: Into<Cow<'de, str>>,
     V: Into<Cow<'de, str>>,
 {
-    let iter = input
-        .into_iter()
-        .map(|(k, v)| (CowValue(k.into()), CowValue(v.into())));
+    let iter = input.into_iter().map(|(k, v)| (CowValue(k.into()), CowValue(v.into())));
     T::deserialize(MapDeserializer::new(iter))
 }
 
@@ -39,12 +34,9 @@ where
     C: IntoIterator<Item = V> + 'de,
     V: Into<Cow<'de, str>> + std::cmp::Eq + 'de,
 {
-    let iter = input.into_iter().map(|(k, v)| {
-        (
-            CowValue(k.into()),
-            VecValue(v.into_iter().map(|v| CowValue(v.into()))),
-        )
-    });
+    let iter = input
+        .into_iter()
+        .map(|(k, v)| (CowValue(k.into()), VecValue(v.into_iter().map(|v| CowValue(v.into())))));
     T::deserialize(MapDeserializer::new(iter))
 }
 
@@ -110,11 +102,7 @@ impl<'de> VariantAccess<'de> for UnitOnlyVariantAccess {
     }
 
     #[inline]
-    fn struct_variant<V>(
-        self,
-        _fields: &'static [&'static str],
-        _visitor: V,
-    ) -> Result<V::Value, Self::Error>
+    fn struct_variant<V>(self, _fields: &'static [&'static str], _visitor: V) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,
     {

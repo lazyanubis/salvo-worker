@@ -304,11 +304,7 @@ impl<T> AsyncRead for Rewind<T>
 where
     T: AsyncRead + Unpin,
 {
-    fn poll_read(
-        mut self: Pin<&mut Self>,
-        cx: &mut task::Context<'_>,
-        buf: &mut ReadBuf<'_>,
-    ) -> Poll<IoResult<()>> {
+    fn poll_read(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>, buf: &mut ReadBuf<'_>) -> Poll<IoResult<()>> {
         if let Some(mut prefix) = self.pre.take() {
             // If there are no remaining bytes, let the bytes get dropped.
             if !prefix.is_empty() {
@@ -331,11 +327,7 @@ impl<T> AsyncWrite for Rewind<T>
 where
     T: AsyncWrite + Unpin,
 {
-    fn poll_write(
-        mut self: Pin<&mut Self>,
-        cx: &mut task::Context<'_>,
-        buf: &[u8],
-    ) -> Poll<IoResult<usize>> {
+    fn poll_write(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>, buf: &[u8]) -> Poll<IoResult<usize>> {
         Pin::new(&mut self.inner).poll_write(cx, buf)
     }
 

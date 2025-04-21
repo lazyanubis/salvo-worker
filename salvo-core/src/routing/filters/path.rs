@@ -38,14 +38,8 @@ pub trait WispBuilder: Send + Sync {
 type WispBuilderMap = RwLock<HashMap<String, Arc<Box<dyn WispBuilder>>>>;
 static WISP_BUILDERS: LazyLock<WispBuilderMap> = LazyLock::new(|| {
     let mut map: HashMap<String, Arc<Box<dyn WispBuilder>>> = HashMap::with_capacity(8);
-    map.insert(
-        "num".into(),
-        Arc::new(Box::new(CharsWispBuilder::new(is_num))),
-    );
-    map.insert(
-        "hex".into(),
-        Arc::new(Box::new(CharsWispBuilder::new(is_hex))),
-    );
+    map.insert("num".into(), Arc::new(Box::new(CharsWispBuilder::new(is_num))));
+    map.insert("hex".into(), Arc::new(Box::new(CharsWispBuilder::new(is_hex))));
     RwLock::new(map)
 });
 
@@ -177,10 +171,7 @@ impl WispBuilder for CharsWispBuilder {
             }
             .into());
         }
-        let ps = args[0]
-            .splitn(2, "..")
-            .map(|s| s.trim())
-            .collect::<Vec<_>>();
+        let ps = args[0].splitn(2, "..").map(|s| s.trim()).collect::<Vec<_>>();
         let (min_width, max_width) = if ps.is_empty() {
             (1, None)
         } else {
@@ -324,20 +315,14 @@ impl CombWisp {
             match wisp {
                 WispKind::Const(wisp) => {
                     if is_greedy {
-                        return Err(format!(
-                            "ConstWisp `{}` follows a greedy wisp in CombWisp",
-                            wisp.0
-                        ));
+                        return Err(format!("ConstWisp `{}` follows a greedy wisp in CombWisp", wisp.0));
                     }
                     is_prev_named = false;
                     comb_regex.push_str(&regex::escape(&wisp.0))
                 }
                 WispKind::Named(wisp) => {
                     if is_greedy {
-                        return Err(format!(
-                            "NamedWisp `{}` follows a greedy wisp in CombWisp",
-                            wisp.0
-                        ));
+                        return Err(format!("NamedWisp `{}` follows a greedy wisp in CombWisp", wisp.0));
                     }
                     if is_prev_named {
                         return Err(format!(
@@ -359,10 +344,7 @@ impl CombWisp {
                 }
                 WispKind::Regex(wisp) => {
                     if is_greedy {
-                        return Err(format!(
-                            "RegexWisp `{}` follows a greedy wisp in CombWisp",
-                            wisp.name
-                        ));
+                        return Err(format!("RegexWisp `{}` follows a greedy wisp in CombWisp", wisp.name));
                     }
                     is_prev_named = false;
                     if wisp.name.starts_with('*') {
@@ -372,20 +354,13 @@ impl CombWisp {
                         wild_start = Some(star_mark.to_owned());
                         names.push(name.to_owned());
                     } else {
-                        let regex = wisp
-                            .regex
-                            .as_str()
-                            .trim_start_matches('^')
-                            .trim_end_matches('$');
+                        let regex = wisp.regex.as_str().trim_start_matches('^').trim_end_matches('$');
                         comb_regex.push_str(&format!("(?<{}>{})", wisp.name, regex));
                         names.push(wisp.name);
                     }
                 }
                 WispKind::Chars(wisp) => {
-                    return Err(format!(
-                        "unsupported CharsWisp `{}` add to CombWisp",
-                        wisp.name
-                    ));
+                    return Err(format!("unsupported CharsWisp `{}` add to CombWisp", wisp.name));
                 }
                 _ => {
                     return Err(format!("unsupported wisp: {:?} add to CombWisp", wisp));
@@ -463,17 +438,10 @@ impl PathWisp for CombWisp {
         } else {
             return false;
         }
-        if let (Some(wild_name), Some(wild_regex), Some(wild_start)) = (
-            self.names.last(),
-            self.wild_regex.as_ref(),
-            self.wild_start.as_ref(),
-        ) {
-            if wild_start.starts_with("*?")
-                && wild_path
-                    .trim_start_matches('/')
-                    .trim_end_matches('/')
-                    .contains('/')
-            {
+        if let (Some(wild_name), Some(wild_regex), Some(wild_start)) =
+            (self.names.last(), self.wild_regex.as_ref(), self.wild_start.as_ref())
+        {
+            if wild_start.starts_with("*?") && wild_path.trim_start_matches('/').trim_end_matches('/').contains('/') {
                 return false;
             }
             if !wild_path.is_empty() || !wild_start.starts_with("*+") {
@@ -505,12 +473,7 @@ impl PathWisp for NamedWisp {
     fn detect(&self, state: &mut PathState) -> bool {
         if self.0.starts_with('*') {
             let rest = state.all_rest().unwrap_or_default();
-            if self.0.starts_with("*?")
-                && rest
-                    .trim_start_matches('/')
-                    .trim_end_matches('/')
-                    .contains('/')
-            {
+            if self.0.starts_with("*?") && rest.trim_start_matches('/').trim_end_matches('/').contains('/') {
                 return false;
             }
             if !rest.is_empty() || !self.0.starts_with("*+") {
@@ -577,12 +540,7 @@ impl PathWisp for RegexWisp {
     fn detect(&self, state: &mut PathState) -> bool {
         if self.name.starts_with('*') {
             let rest = state.all_rest().unwrap_or_default();
-            if self.name.starts_with("*?")
-                && rest
-                    .trim_start_matches('/')
-                    .trim_end_matches('/')
-                    .contains('/')
-            {
+            if self.name.starts_with("*?") && rest.trim_start_matches('/').trim_end_matches('/').contains('/') {
                 return false;
             }
             if !rest.is_empty() || !self.name.starts_with("*+") {
@@ -809,8 +767,7 @@ impl PathParser {
                     wisps.push(ConstWisp(part).into());
                     continue;
                 }
-                self.next(true)
-                    .ok_or_else(|| "char is needed after <".to_owned())?;
+                self.next(true).ok_or_else(|| "char is needed after <".to_owned())?;
                 let name = self.scan_ident()?;
                 if name.is_empty() {
                     return Err("name is empty string".to_owned());
@@ -824,15 +781,13 @@ impl PathParser {
                     self.next(false);
                     let sign = self.scan_ident()?;
                     self.skip_blanks();
-                    let lb = self
-                        .curr()
-                        .ok_or_else(|| "path ended unexpectedly".to_owned())?;
+                    let lb = self.curr().ok_or_else(|| "path ended unexpectedly".to_owned())?;
                     let args = if lb == '[' || lb == '(' {
                         let rb = if lb == '[' { ']' } else { ')' };
                         let mut args = "".to_owned();
-                        ch = self.next(true).ok_or_else(|| {
-                            "current position is out of index when scan ident".to_owned()
-                        })?;
+                        ch = self
+                            .next(true)
+                            .ok_or_else(|| "current position is out of index when scan ident".to_owned())?;
                         while ch != rb {
                             args.push(ch);
                             if let Some(c) = self.next(false) {
@@ -861,9 +816,7 @@ impl PathParser {
                     let builders = WISP_BUILDERS.read();
                     let builder = builders
                         .get(&sign)
-                        .ok_or_else(|| {
-                            format!("WISP_BUILDERS does not contains fn part with sign {sign}")
-                        })?
+                        .ok_or_else(|| format!("WISP_BUILDERS does not contains fn part with sign {sign}"))?
                         .clone();
 
                     wisps.push(builder.build(name, sign, args)?);
@@ -914,10 +867,7 @@ impl PathParser {
         loop {
             self.skip_slashes();
             if self.curr().map(|c| c == '/').unwrap_or(false) {
-                return Err(format!(
-                    "'/' is not allowed after '/' at offset `{}`",
-                    self.offset
-                ));
+                return Err(format!("'/' is not allowed after '/' at offset `{}`", self.offset));
             }
             let mut scanned = self.scan_wisps()?;
             if scanned.len() > 1 {
@@ -1038,10 +988,7 @@ impl PathFilter {
                 panic!("{}, raw_value: {}", e, raw_value);
             }
         };
-        PathFilter {
-            raw_value,
-            path_wisps,
-        }
+        PathFilter { raw_value, path_wisps }
     }
     /// Register new path wisp builder.
     #[inline]
@@ -1056,10 +1003,7 @@ impl PathFilter {
     #[inline]
     pub fn register_wisp_regex(name: impl Into<String>, regex: Regex) {
         let mut builders = WISP_BUILDERS.write();
-        builders.insert(
-            name.into(),
-            Arc::new(Box::new(RegexWispBuilder::new(regex))),
-        );
+        builders.insert(name.into(), Arc::new(Box::new(RegexWispBuilder::new(regex))));
     }
     /// Detect is that path is match.
     pub fn detect(&self, state: &mut PathState) -> bool {
@@ -1104,10 +1048,7 @@ mod tests {
     #[test]
     fn test_parse_multi_const() {
         let segments = PathParser::new("/hello/world").parse().unwrap();
-        assert_eq!(
-            format!("{:?}", segments),
-            r#"[ConstWisp("hello"), ConstWisp("world")]"#
-        );
+        assert_eq!(format!("{:?}", segments), r#"[ConstWisp("hello"), ConstWisp("world")]"#);
     }
     #[test]
     fn test_parse_single_regex() {
@@ -1143,9 +1084,7 @@ mod tests {
     }
     #[test]
     fn test_parse_single_regex_with_prefix_and_suffix() {
-        let segments = PathParser::new(r"/prefix{abc|\d+}suffix.png")
-            .parse()
-            .unwrap();
+        let segments = PathParser::new(r"/prefix{abc|\d+}suffix.png").parse().unwrap();
         assert_eq!(
             format!("{:?}", segments),
             r#"[CombWisp { names: ["abc"], comb_regex: Regex("^prefix(?<abc>\\d+)suffix\\.png$"), wild_regex: None, wild_start: None }]"#
@@ -1153,9 +1092,7 @@ mod tests {
     }
     #[test]
     fn test_parse_dot_after_param() {
-        let segments = PathParser::new(r"/{pid}/show/{table_name}.bu")
-            .parse()
-            .unwrap();
+        let segments = PathParser::new(r"/{pid}/show/{table_name}.bu").parse().unwrap();
         assert_eq!(
             format!("{:?}", segments),
             r#"[NamedWisp("pid"), ConstWisp("show"), CombWisp { names: ["table_name"], comb_regex: Regex("^(?<table_name>.*)\\.bu$"), wild_regex: None, wild_start: None }]"#
@@ -1163,9 +1100,7 @@ mod tests {
     }
     #[test]
     fn test_parse_multi_regex() {
-        let segments = PathParser::new(r"/first{id}/prefix{abc|\d+}")
-            .parse()
-            .unwrap();
+        let segments = PathParser::new(r"/first{id}/prefix{abc|\d+}").parse().unwrap();
         assert_eq!(
             format!("{:?}", segments),
             r#"[CombWisp { names: ["id"], comb_regex: Regex("^first(?<id>.*)$"), wild_regex: None, wild_start: None }, CombWisp { names: ["abc"], comb_regex: Regex("^prefix(?<abc>\\d+)$"), wild_regex: None, wild_start: None }]"#
@@ -1173,9 +1108,7 @@ mod tests {
     }
     #[test]
     fn test_parse_multi_regex_with_prefix() {
-        let segments = PathParser::new(r"/first{id}/prefix{abc|\d+}")
-            .parse()
-            .unwrap();
+        let segments = PathParser::new(r"/first{id}/prefix{abc|\d+}").parse().unwrap();
         assert_eq!(
             format!("{:?}", segments),
             r#"[CombWisp { names: ["id"], comb_regex: Regex("^first(?<id>.*)$"), wild_regex: None, wild_start: None }, CombWisp { names: ["abc"], comb_regex: Regex("^prefix(?<abc>\\d+)$"), wild_regex: None, wild_start: None }]"#
@@ -1183,9 +1116,7 @@ mod tests {
     }
     #[test]
     fn test_parse_multi_regex_with_suffix() {
-        let segments = PathParser::new(r"/first{id|\d+}/prefix{abc|\d+}")
-            .parse()
-            .unwrap();
+        let segments = PathParser::new(r"/first{id|\d+}/prefix{abc|\d+}").parse().unwrap();
         assert_eq!(
             format!("{:?}", segments),
             r#"[CombWisp { names: ["id"], comb_regex: Regex("^first(?<id>\\d+)$"), wild_regex: None, wild_start: None }, CombWisp { names: ["abc"], comb_regex: Regex("^prefix(?<abc>\\d+)$"), wild_regex: None, wild_start: None }]"#
@@ -1193,9 +1124,7 @@ mod tests {
     }
     #[test]
     fn test_parse_multi_regex_with_prefix_and_suffix() {
-        let segments = PathParser::new(r"/first{id}/prefix{abc|\d+}ext")
-            .parse()
-            .unwrap();
+        let segments = PathParser::new(r"/first{id}/prefix{abc|\d+}ext").parse().unwrap();
         assert_eq!(
             format!("{:?}", segments),
             r#"[CombWisp { names: ["id"], comb_regex: Regex("^first(?<id>.*)$"), wild_regex: None, wild_start: None }, CombWisp { names: ["abc"], comb_regex: Regex("^prefix(?<abc>\\d+)ext$"), wild_regex: None, wild_start: None }]"#
@@ -1279,28 +1208,16 @@ mod tests {
 
     #[test]
     fn test_parse_rest2_failed() {
-        assert!(
-            PathParser::new(r"/first{id}{*ext}/{**rest}")
-                .parse()
-                .is_err()
-        );
+        assert!(PathParser::new(r"/first{id}{*ext}/{**rest}").parse().is_err());
     }
 
     #[test]
     fn test_parse_rest_failed1() {
-        assert!(
-            PathParser::new(r"/first{id}ext2/{**rest}{id}")
-                .parse()
-                .is_err()
-        );
+        assert!(PathParser::new(r"/first{id}ext2/{**rest}{id}").parse().is_err());
     }
     #[test]
     fn test_parse_rest_failed2() {
-        assert!(
-            PathParser::new(r"/first{id}ext2/{**rest}wefwe")
-                .parse()
-                .is_err()
-        );
+        assert!(PathParser::new(r"/first{id}ext2/{**rest}wefwe").parse().is_err());
     }
     #[test]
     fn test_parse_many_slashes() {
@@ -1364,10 +1281,7 @@ mod tests {
 
         let mut state = PathState::new("/users/123e4567-e89b-12d3-a456-9AC7CBDCEE52");
         assert!(filter.detect(&mut state));
-        assert_eq!(
-            state.matched_parts,
-            vec!["users".to_owned(), "{id}".to_owned()]
-        );
+        assert_eq!(state.matched_parts, vec!["users".to_owned(), "{id}".to_owned()]);
     }
     #[test]
     fn test_detect_wildcard() {

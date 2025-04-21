@@ -11,7 +11,7 @@ pub struct PathState {
     pub(crate) params: PathParams,
     #[cfg(feature = "matched-path")]
     pub(crate) matched_parts: Vec<String>,
-    pub(crate) end_slash: bool, // For rest match, we want include the last slash.
+    pub(crate) end_slash: bool,  // For rest match, we want include the last slash.
     pub(crate) once_ended: bool, // Once it has ended, used to determine whether the error code returned is 404 or 405.
 }
 impl PathState {

@@ -80,11 +80,7 @@ impl Router {
     }
 
     /// Detect current router is matched for current request.
-    pub async fn detect(
-        &self,
-        req: &mut Request,
-        path_state: &mut PathState,
-    ) -> Option<DetectMatched> {
+    pub async fn detect(&self, req: &mut Request, path_state: &mut PathState) -> Option<DetectMatched> {
         Box::pin(async move {
             for filter in &self.filters {
                 if !filter.filter(req, path_state).await {
@@ -103,9 +99,7 @@ impl Router {
                         });
                     } else {
                         #[cfg(feature = "matched-path")]
-                        path_state
-                            .matched_parts
-                            .truncate(original_matched_parts_len);
+                        path_state.matched_parts.truncate(original_matched_parts_len);
                         path_state.cursor = original_cursor;
                     }
                 }
@@ -184,10 +178,7 @@ impl Router {
         H: Handler,
         F: Fn(&Request, &Depot) -> bool + Send + Sync + 'static,
     {
-        self.hoops.push(Arc::new(WhenHoop {
-            inner: hoop,
-            filter,
-        }));
+        self.hoops.push(Arc::new(WhenHoop { inner: hoop, filter }));
         self
     }
 
@@ -427,10 +418,7 @@ mod tests {
         let router = Router::default()
             .push(
                 Router::with_path("users")
-                    .push(
-                        Router::with_path("{id}")
-                            .push(Router::with_path("emails").get(fake_handler)),
-                    )
+                    .push(Router::with_path("{id}").push(Router::with_path("emails").get(fake_handler)))
                     .push(
                         Router::with_path("{id}/articles/{aid}")
                             .get(fake_handler)
@@ -444,11 +432,7 @@ mod tests {
                             .get(fake_handler)
                             .delete(fake_handler),
                     )
-                    .push(
-                        Router::with_path("{id}")
-                            .get(fake_handler)
-                            .delete(fake_handler),
-                    ),
+                    .push(Router::with_path("{id}").get(fake_handler).delete(fake_handler)),
             );
         assert_eq!(
             format!("{:?}", router),
@@ -472,10 +456,10 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect1() {
-        let router =
-            Router::default().push(Router::with_path("users").push(
-                Router::with_path("{id}").push(Router::with_path("emails").get(fake_handler)),
-            ));
+        let router = Router::default().push(
+            Router::with_path("users")
+                .push(Router::with_path("{id}").push(Router::with_path("emails").get(fake_handler))),
+        );
         let mut req = TestClient::get("http://local.host/users/12/emails").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -485,9 +469,10 @@ mod tests {
     async fn test_router_detect2() {
         let router = Router::new()
             .push(Router::with_path("users").push(Router::with_path("{id}").get(fake_handler)))
-            .push(Router::with_path("users").push(
-                Router::with_path("{id}").push(Router::with_path("emails").get(fake_handler)),
-            ));
+            .push(
+                Router::with_path("users")
+                    .push(Router::with_path("{id}").push(Router::with_path("emails").get(fake_handler))),
+            );
         let mut req = TestClient::get("http://local.host/users/12/emails").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -497,10 +482,8 @@ mod tests {
     async fn test_router_detect3() {
         let router = Router::new().push(
             Router::with_path("users").push(
-                Router::with_path(r"{id|\d+}").push(
-                    Router::new()
-                        .push(Router::with_path("facebook/insights/{**rest}").goal(fake_handler)),
-                ),
+                Router::with_path(r"{id|\d+}")
+                    .push(Router::new().push(Router::with_path("facebook/insights/{**rest}").goal(fake_handler))),
             ),
         );
         let mut req = TestClient::get("http://local.host/users/12/facebook/insights").build();
@@ -518,10 +501,8 @@ mod tests {
     async fn test_router_detect4() {
         let router = Router::new().push(
             Router::with_path("users").push(
-                Router::with_path(r"{id|\d+}").push(
-                    Router::new()
-                        .push(Router::with_path("facebook/insights/{*+rest}").goal(fake_handler)),
-                ),
+                Router::with_path(r"{id|\d+}")
+                    .push(Router::new().push(Router::with_path("facebook/insights/{*+rest}").goal(fake_handler))),
             ),
         );
         let mut req = TestClient::get("http://local.host/users/12/facebook/insights").build();
@@ -537,16 +518,12 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect5() {
-        let router = Router::new().push(
-            Router::with_path("users").push(
-                Router::with_path(r"{id|\d+}").push(
-                    Router::new().push(
-                        Router::with_path("facebook/insights")
-                            .push(Router::with_path("{**rest}").goal(fake_handler)),
-                    ),
+        let router =
+            Router::new().push(Router::with_path("users").push(Router::with_path(r"{id|\d+}").push(
+                Router::new().push(
+                    Router::with_path("facebook/insights").push(Router::with_path("{**rest}").goal(fake_handler)),
                 ),
-            ),
-        );
+            )));
         let mut req = TestClient::get("http://local.host/users/12/facebook/insights").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -560,16 +537,12 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect6() {
-        let router = Router::new().push(
-            Router::with_path("users").push(
-                Router::with_path(r"{id|\d+}").push(
-                    Router::new().push(
-                        Router::with_path("facebook/insights")
-                            .push(Router::new().path("{*+rest}").goal(fake_handler)),
-                    ),
+        let router =
+            Router::new().push(Router::with_path("users").push(Router::with_path(r"{id|\d+}").push(
+                Router::new().push(
+                    Router::with_path("facebook/insights").push(Router::new().path("{*+rest}").goal(fake_handler)),
                 ),
-            ),
-        );
+            )));
         let mut req = TestClient::get("http://local.host/users/12/facebook/insights").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -582,32 +555,25 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect_utf8() {
-        let router = Router::new().push(
-            Router::with_path("用户").push(
-                Router::with_path(r"{id|\d+}").push(
-                    Router::new().push(
-                        Router::with_path("facebook/insights")
-                            .push(Router::with_path("{*+rest}").goal(fake_handler)),
-                    ),
+        let router =
+            Router::new().push(Router::with_path("用户").push(Router::with_path(r"{id|\d+}").push(
+                Router::new().push(
+                    Router::with_path("facebook/insights").push(Router::with_path("{*+rest}").goal(fake_handler)),
                 ),
-            ),
-        );
-        let mut req =
-            TestClient::get("http://local.host/%E7%94%A8%E6%88%B7/12/facebook/insights").build();
+            )));
+        let mut req = TestClient::get("http://local.host/%E7%94%A8%E6%88%B7/12/facebook/insights").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
         assert!(matched.is_none());
 
-        let mut req =
-            TestClient::get("http://local.host/%E7%94%A8%E6%88%B7/12/facebook/insights/23").build();
+        let mut req = TestClient::get("http://local.host/%E7%94%A8%E6%88%B7/12/facebook/insights/23").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
         assert!(matched.is_some());
     }
     #[tokio::test]
     async fn test_router_detect9() {
-        let router = Router::new()
-            .push(Router::with_path("users/{sub|(images|css)}/{filename}").goal(fake_handler));
+        let router = Router::new().push(Router::with_path("users/{sub|(images|css)}/{filename}").goal(fake_handler));
         let mut req = TestClient::get("http://local.host/users/12/m.jpg").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -620,8 +586,7 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect10() {
-        let router = Router::new()
-            .push(Router::with_path(r"users/{*sub|(images|css)/.+}").goal(fake_handler));
+        let router = Router::new().push(Router::with_path(r"users/{*sub|(images|css)/.+}").goal(fake_handler));
         let mut req = TestClient::get("http://local.host/users/12/m.jpg").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -634,8 +599,8 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect11() {
-        let router = Router::new()
-            .push(Router::with_path(r"avatars/{width|\d+}x{height|\d+}.{ext}").goal(fake_handler));
+        let router =
+            Router::new().push(Router::with_path(r"avatars/{width|\d+}x{height|\d+}.{ext}").goal(fake_handler));
         let mut req = TestClient::get("http://local.host/avatars/321x641f.webp").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
@@ -648,12 +613,9 @@ mod tests {
     }
     #[tokio::test]
     async fn test_router_detect12() {
-        let router = Router::new()
-            .push(Router::with_path("/.well-known/acme-challenge/{token}").goal(fake_handler));
+        let router = Router::new().push(Router::with_path("/.well-known/acme-challenge/{token}").goal(fake_handler));
 
-        let mut req =
-            TestClient::get("http://local.host/.well-known/acme-challenge/q1XXrxIx79uXNl3I")
-                .build();
+        let mut req = TestClient::get("http://local.host/.well-known/acme-challenge/q1XXrxIx79uXNl3I").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
         assert!(matched.is_some());
@@ -664,13 +626,11 @@ mod tests {
         let router = Router::new()
             .path("user/{id|[0-9a-z]{8}(-[0-9a-z]{4}){3}-[0-9a-z]{12}}")
             .get(fake_handler);
-        let mut req =
-            TestClient::get("http://local.host/user/726d694c-7af0-4bb0-9d22-706f7e38641e").build();
+        let mut req = TestClient::get("http://local.host/user/726d694c-7af0-4bb0-9d22-706f7e38641e").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
         assert!(matched.is_some());
-        let mut req =
-            TestClient::get("http://local.host/user/726d694c-7af0-4bb0-9d22-706f7e386e").build();
+        let mut req = TestClient::get("http://local.host/user/726d694c-7af0-4bb0-9d22-706f7e386e").build();
         let mut path_state = PathState::new(req.uri().path());
         let matched = router.detect(&mut req, &mut path_state).await;
         assert!(matched.is_none());

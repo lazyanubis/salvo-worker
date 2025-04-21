@@ -31,9 +31,7 @@ impl FromStr for SourceFrom {
             #[cfg(feature = "cookie")]
             "cookie" => Ok(Self::Cookie),
             "body" => Ok(Self::Body),
-            _ => Err(crate::Error::Other(
-                format!("invalid source from `{input}`").into(),
-            )),
+            _ => Err(crate::Error::Other(format!("invalid source from `{input}`").into())),
         }
     }
 }
@@ -134,11 +132,7 @@ impl Metadata {
 
     /// Check is this type has body required.
     pub(crate) fn has_body_required(&self) -> bool {
-        if self
-            .default_sources
-            .iter()
-            .any(|s| s.from == SourceFrom::Body)
-        {
+        if self.default_sources.iter().any(|s| s.from == SourceFrom::Body) {
             return true;
         }
         self.fields.iter().any(|f| f.has_body_required())
@@ -268,10 +262,7 @@ mod tests {
 
     #[test]
     fn test_parse_source_format() {
-        for (key, value) in [
-            ("multimap", SourceParser::MultiMap),
-            ("json", SourceParser::Json),
-        ] {
+        for (key, value) in [("multimap", SourceParser::MultiMap), ("json", SourceParser::Json)] {
             assert_eq!(key.parse::<SourceParser>().unwrap(), value);
         }
         assert!("abcd".parse::<SourceParser>().is_err());

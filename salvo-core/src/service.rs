@@ -94,10 +94,7 @@ impl Service {
         H: Handler,
         F: Fn(&Request, &Depot) -> bool + Send + Sync + 'static,
     {
-        self.hoops.push(Arc::new(WhenHoop {
-            inner: hoop,
-            filter,
-        }));
+        self.hoops.push(Arc::new(WhenHoop { inner: hoop, filter }));
         self
     }
 
@@ -174,13 +171,7 @@ where
 struct DefaultStatusOK;
 #[async_trait]
 impl Handler for DefaultStatusOK {
-    async fn handle(
-        &self,
-        req: &mut Request,
-        depot: &mut Depot,
-        res: &mut Response,
-        ctrl: &mut FlowCtrl,
-    ) {
+    async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
         ctrl.call_next(req, depot, res).await;
         if res.status_code.is_none() {
             res.status_code = Some(StatusCode::OK);
@@ -231,15 +222,8 @@ impl HyperHandler {
                 }
                 // Set default status code before service hoops executed.
                 // We hope all hoops in service can get the correct status code.
-                let mut ctrl = FlowCtrl::new(
-                    [
-                        &hoops[..],
-                        &dm.hoops[..],
-                        &[Arc::new(DefaultStatusOK)],
-                        &[dm.goal],
-                    ]
-                    .concat(),
-                );
+                let mut ctrl =
+                    FlowCtrl::new([&hoops[..], &dm.hoops[..], &[Arc::new(DefaultStatusOK)], &[dm.goal]].concat());
                 ctrl.call_next(&mut req, &mut depot, &mut res).await;
                 // Set it to default status code again if any hoop set status code to None.
                 if res.status_code.is_none() {
@@ -304,10 +288,7 @@ impl HyperHandler {
                     "http response content type header not set"
                 );
             }
-            if Method::HEAD != *req.method()
-                && (res.body.is_none() || res.body.is_error())
-                && has_error
-            {
+            if Method::HEAD != *req.method() && (res.body.is_none() || res.body.is_error()) && has_error {
                 if let Some(catcher) = catcher {
                     catcher.catch(&mut req, &mut depot, &mut res).await;
                 } else {
@@ -324,24 +305,22 @@ impl HyperHandler {
             {
                 use bytes::Bytes;
                 use std::sync::Mutex;
-                if let Some(session) =
-                    req.extensions.remove::<Arc<
-                        crate::proto::WebTransportSession<salvo_http3::quinn::Connection, Bytes>,
-                    >>()
+                if let Some(session) = req
+                    .extensions
+                    .remove::<Arc<crate::proto::WebTransportSession<salvo_http3::quinn::Connection, Bytes>>>()
                 {
                     res.extensions.insert(session);
                 }
-                if let Some(conn) = req.extensions.remove::<Arc<
-                    Mutex<salvo_http3::server::Connection<salvo_http3::quinn::Connection, Bytes>>,
-                >>() {
+                if let Some(conn) = req
+                    .extensions
+                    .remove::<Arc<Mutex<salvo_http3::server::Connection<salvo_http3::quinn::Connection, Bytes>>>>()
+                {
                     res.extensions.insert(conn);
                 }
-                if let Some(stream) = req.extensions.remove::<Arc<
-                    salvo_http3::server::RequestStream<
-                        salvo_http3::quinn::BidiStream<Bytes>,
-                        Bytes,
-                    >,
-                >>() {
+                if let Some(stream) = req
+                    .extensions
+                    .remove::<Arc<salvo_http3::server::RequestStream<salvo_http3::quinn::BidiStream<Bytes>, Bytes>>>()
+                {
                     res.extensions.insert(stream);
                 }
             }
@@ -364,11 +343,7 @@ where
         #[cfg(not(feature = "fix-http1-request-uri"))] req: HyperRequest<B>,
         #[cfg(feature = "fix-http1-request-uri")] mut req: HyperRequest<B>,
     ) -> Self::Future {
-        let scheme = req
-            .uri()
-            .scheme()
-            .cloned()
-            .unwrap_or_else(|| self.http_scheme.clone());
+        let scheme = req.uri().scheme().cloned().unwrap_or_else(|| self.http_scheme.clone());
         // https://github.com/hyperium/hyper/issues/1310
         #[cfg(feature = "fix-http1-request-uri")]
         if req.uri().scheme().is_none() {
@@ -401,12 +376,7 @@ mod tests {
     #[tokio::test]
     async fn test_service() {
         #[handler]
-        async fn before1(
-            req: &mut Request,
-            depot: &mut Depot,
-            res: &mut Response,
-            ctrl: &mut FlowCtrl,
-        ) {
+        async fn before1(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
             res.render(Text::Plain("before1"));
             if req.query::<String>("b").unwrap_or_default() == "1" {
                 ctrl.skip_rest();
@@ -415,12 +385,7 @@ mod tests {
             }
         }
         #[handler]
-        async fn before2(
-            req: &mut Request,
-            depot: &mut Depot,
-            res: &mut Response,
-            ctrl: &mut FlowCtrl,
-        ) {
+        async fn before2(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
             res.render(Text::Plain("before2"));
             if req.query::<String>("b").unwrap_or_default() == "2" {
                 ctrl.skip_rest();
@@ -429,12 +394,7 @@ mod tests {
             }
         }
         #[handler]
-        async fn before3(
-            req: &mut Request,
-            depot: &mut Depot,
-            res: &mut Response,
-            ctrl: &mut FlowCtrl,
-        ) {
+        async fn before3(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
             res.render(Text::Plain("before3"));
             if req.query::<String>("b").unwrap_or_default() == "3" {
                 ctrl.skip_rest();
@@ -481,42 +441,28 @@ mod tests {
         async fn hello() -> &'static str {
             "hello"
         }
-        let router = Router::new()
-            .push(Router::with_path("hello").goal(hello))
-            .push(
-                Router::with_path("login")
-                    .post(login)
-                    .push(Router::with_path("user").get(login)),
-            );
+        let router = Router::new().push(Router::with_path("hello").goal(hello)).push(
+            Router::with_path("login")
+                .post(login)
+                .push(Router::with_path("user").get(login)),
+        );
         let service = Service::new(router);
 
-        let res = TestClient::get("http://127.0.0.1:5801/hello")
-            .send(&service)
-            .await;
+        let res = TestClient::get("http://127.0.0.1:5801/hello").send(&service).await;
         assert_eq!(res.status_code.unwrap(), StatusCode::OK);
-        let res = TestClient::put("http://127.0.0.1:5801/hello")
-            .send(&service)
-            .await;
+        let res = TestClient::put("http://127.0.0.1:5801/hello").send(&service).await;
         assert_eq!(res.status_code.unwrap(), StatusCode::OK);
 
-        let res = TestClient::post("http://127.0.0.1:5801/login")
-            .send(&service)
-            .await;
+        let res = TestClient::post("http://127.0.0.1:5801/login").send(&service).await;
         assert_eq!(res.status_code.unwrap(), StatusCode::OK);
 
-        let res = TestClient::get("http://127.0.0.1:5801/login")
-            .send(&service)
-            .await;
+        let res = TestClient::get("http://127.0.0.1:5801/login").send(&service).await;
         assert_eq!(res.status_code.unwrap(), StatusCode::METHOD_NOT_ALLOWED);
 
-        let res = TestClient::get("http://127.0.0.1:5801/login2")
-            .send(&service)
-            .await;
+        let res = TestClient::get("http://127.0.0.1:5801/login2").send(&service).await;
         assert_eq!(res.status_code.unwrap(), StatusCode::NOT_FOUND);
 
-        let res = TestClient::get("http://127.0.0.1:5801/login/user")
-            .send(&service)
-            .await;
+        let res = TestClient::get("http://127.0.0.1:5801/login/user").send(&service).await;
         assert_eq!(res.status_code.unwrap(), StatusCode::OK);
 
         let res = TestClient::post("http://127.0.0.1:5801/login/user")

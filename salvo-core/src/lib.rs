@@ -43,6 +43,7 @@ mod depot;
 mod error;
 pub mod extract;
 pub mod fs;
+#[cfg(feature = "needless")]
 pub mod fuse;
 pub mod handler;
 pub mod http;
