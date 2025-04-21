@@ -2,16 +2,24 @@
 mod named_file;
 pub use named_file::*;
 
+#[allow(unused)]
 use std::cmp;
+#[allow(unused)]
 use std::io::{self, Error as IoError, ErrorKind, Read, Result as IoResult, Seek};
+#[allow(unused)]
 use std::pin::Pin;
+#[allow(unused)]
 use std::task::{Context, Poll, ready};
 
+#[allow(unused)]
 use bytes::Bytes;
+#[allow(unused)]
 use futures_util::stream::Stream;
 
 pub(crate) enum ChunkedState<T> {
+    #[allow(unused)]
     File(Option<T>),
+    #[cfg(feature = "needless")]
     Future(tokio::task::JoinHandle<IoResult<(T, Bytes)>>),
 }
 
@@ -19,6 +27,7 @@ pub(crate) enum ChunkedState<T> {
 ///
 /// This struct is used to read a file in chunks, where each chunk is a `Bytes` object.
 /// It implements the `Stream` trait from the `futures_util` crate.
+#[allow(unused)]
 pub struct ChunkedFile<T> {
     total_size: u64,
     read_size: u64,
@@ -27,6 +36,7 @@ pub struct ChunkedFile<T> {
     state: ChunkedState<T>,
 }
 
+#[cfg(feature = "needless")]
 impl<T> Stream for ChunkedFile<T>
 where
     T: Read + Seek + Unpin + Send + 'static,

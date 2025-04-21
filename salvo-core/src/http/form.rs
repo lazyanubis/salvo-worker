@@ -28,7 +28,7 @@ use rand::rngs::OsRng;
 use tempfile::Builder;
 #[cfg(feature = "needless")]
 use tokio::fs::File;
-#[allow(unused)]
+#[cfg(feature = "needless")]
 use tokio::io::AsyncWriteExt;
 
 #[allow(unused)]
@@ -113,7 +113,7 @@ pub struct FilePart {
     headers: HeaderMap,
     /// A temporary file containing the file content
     path: PathBuf,
-    /// Optionally, the size of the file.  This is filled when multiparts are parsed, but is
+    /// Optionally, the size of the file.  This is filled when multi-parts are parsed, but is
     /// not necessary when they are generated.
     size: u64,
     // The temporary directory the upload was put into, saved for the Drop trait
@@ -198,6 +198,7 @@ impl FilePart {
         })
     }
 }
+#[cfg(feature = "needless")]
 impl Drop for FilePart {
     fn drop(&mut self) {
         if let Some(temp_dir) = &self.temp_dir {

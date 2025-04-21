@@ -5,7 +5,7 @@ use std::io::SeekFrom;
 use std::time::SystemTime;
 
 use headers::*;
-#[allow(unused)]
+#[cfg(feature = "needless")]
 use tokio::io::{AsyncRead, AsyncSeek, AsyncSeekExt};
 #[cfg(feature = "needless")]
 use tokio_util::io::ReaderStream;
@@ -33,15 +33,15 @@ use crate::{Depot, Writer, async_trait};
 /// }
 /// ```
 #[derive(Debug)]
+#[allow(unused)]
 pub struct ReadSeeker<R> {
-    #[allow(unused)]
     reader: R,
-    #[allow(unused)]
     length: u64,
     last_modified: Option<SystemTime>,
     etag: Option<ETag>,
 }
 
+#[cfg(feature = "needless")]
 impl<R> ReadSeeker<R>
 where
     R: AsyncSeek + AsyncRead + Unpin + Send + 'static,

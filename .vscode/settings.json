@@ -8,6 +8,7 @@
         "docsrs",
         "downcasting",
         "enumflags2",
+        "fastrand",
         "fusewire",
         "indexmap",
         "multer",

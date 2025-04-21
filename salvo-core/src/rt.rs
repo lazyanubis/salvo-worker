@@ -7,6 +7,7 @@
 pub use hyper::rt::*;
 
 /// Tokio runtimes
+#[cfg(feature = "needless")]
 pub mod tokio {
     pub use hyper_util::rt::{TokioExecutor, TokioIo};
 }
