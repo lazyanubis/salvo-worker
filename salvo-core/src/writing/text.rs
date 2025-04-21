@@ -45,7 +45,7 @@ where
     C: AsRef<str>,
 {
     fn try_set_header(self, res: &mut Response) -> C {
-        let (ctype, content) = match self {
+        let (c_type, content) = match self {
             Self::Plain(content) => (HeaderValue::from_static("text/plain; charset=utf-8"), content),
             Self::Json(content) => (HeaderValue::from_static("application/json; charset=utf-8"), content),
             Self::Xml(content) => (HeaderValue::from_static("application/xml; charset=utf-8"), content),
@@ -57,7 +57,7 @@ where
             Self::Rss(content) => (HeaderValue::from_static("application/rss+xml; charset=utf-8"), content),
             Self::Rdf(content) => (HeaderValue::from_static("application/rdf+xml; charset=utf-8"), content),
         };
-        try_set_header(&mut res.headers, CONTENT_TYPE, ctype);
+        try_set_header(&mut res.headers, CONTENT_TYPE, c_type);
         content
     }
 }

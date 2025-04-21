@@ -473,6 +473,7 @@ mod tests {
 
     use crate::macros::Extractible;
     use crate::test::TestClient;
+    use crate::prelude::*;
 
     #[tokio::test]
     async fn test_de_request_from_query() {

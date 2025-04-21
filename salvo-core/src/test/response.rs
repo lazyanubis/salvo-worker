@@ -8,6 +8,7 @@ use http_body_util::BodyExt;
 use mime::Mime;
 use serde::de::DeserializeOwned;
 use tokio::io::Error as IoError;
+#[cfg(feature = "needless")]
 use zstd::stream::write::Decoder as ZstdDecoder;
 
 use crate::Error;
@@ -56,10 +57,7 @@ pub trait ResponseExt {
         compress: Option<&str>,
     ) -> impl Future<Output = crate::Result<String>>;
     /// Take all body bytes. If body is none, it will creates and returns a new [`Bytes`].
-    fn take_bytes(
-        &mut self,
-        content_type: Option<&Mime>,
-    ) -> impl Future<Output = crate::Result<Bytes>> + Send;
+    fn take_bytes(&mut self, content_type: Option<&Mime>) -> impl Future<Output = crate::Result<Bytes>> + Send;
 }
 
 impl ResponseExt for Response {
@@ -114,11 +112,13 @@ impl ResponseExt for Response {
                     full = decoder.get_mut().take();
                 }
                 "zstd" => {
-                    let mut decoder =
-                        ZstdDecoder::new(Writer::new()).expect("failed to create zstd decoder");
-                    decoder.write_all(full.as_ref())?;
-                    decoder.flush()?;
-                    full = decoder.get_mut().take();
+                    #[cfg(feature = "needless")]
+                    {
+                        let mut decoder = ZstdDecoder::new(Writer::new()).expect("failed to create zstd decoder");
+                        decoder.write_all(full.as_ref())?;
+                        decoder.flush()?;
+                        full = decoder.get_mut().take();
+                    }
                 }
                 _ => {
                     tracing::error!(algo, "unknown compress format");

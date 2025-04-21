@@ -410,6 +410,7 @@ mod tests {
     use crate::Response;
     use crate::handler;
     use crate::test::TestClient;
+    use crate::prelude::*;
 
     #[handler]
     async fn fake_handler(_res: &mut Response) {}

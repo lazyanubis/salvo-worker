@@ -86,14 +86,14 @@ impl Catcher {
         &mut self.hoops
     }
 
-    /// Add a handler as middleware, it will run the handler when error catched.
+    /// Add a handler as middleware, it will run the handler when error caught.
     #[inline]
     pub fn hoop<H: Handler>(mut self, hoop: H) -> Self {
         self.hoops.push(Arc::new(hoop));
         self
     }
 
-    /// Add a handler as middleware, it will run the handler when error catched.
+    /// Add a handler as middleware, it will run the handler when error caught.
     ///
     /// This middleware is only effective when the filter returns true..
     #[inline]

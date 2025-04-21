@@ -152,9 +152,12 @@ impl Service {
     pub async fn handle(&self, request: impl Into<Request> + Send) -> Response {
         let request = request.into();
         self.hyper_handler(
+            #[cfg(feature = "needless")]
             request.local_addr.clone(),
+            #[cfg(feature = "needless")]
             request.remote_addr.clone(),
             request.scheme.clone(),
+            #[cfg(feature = "needless")]
             None,
             None,
         )
@@ -266,7 +269,7 @@ impl HyperHandler {
                 StatusCode::NOT_FOUND
             };
             if !allowed_media_types.is_empty() {
-                if let Some(ctype) = res
+                if let Some(c_type) = res
                     .headers()
                     .get(CONTENT_TYPE)
                     .and_then(|c| c.to_str().ok())
@@ -274,7 +277,7 @@ impl HyperHandler {
                 {
                     let mut is_allowed = false;
                     for mime in &*allowed_media_types {
-                        if mime.type_() == ctype.type_() && mime.subtype() == ctype.subtype() {
+                        if mime.type_() == c_type.type_() && mime.subtype() == c_type.subtype() {
                             is_allowed = true;
                             break;
                         }

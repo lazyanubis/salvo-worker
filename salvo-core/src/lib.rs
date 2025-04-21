@@ -86,6 +86,16 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub mod prelude {
     pub use async_trait::async_trait;
     pub use salvo_macros::{Extractible, handler};
+    pub mod salvo {
+        pub use super::super::*;
+        pub use super::Depot;
+        pub use super::FlowCtrl;
+        pub use super::Handler;
+        pub use super::Request;
+        pub use super::Response;
+        pub use super::Writer;
+        pub use super::async_trait;
+    }
 
     pub use crate::depot::Depot;
     pub use crate::http::{Request, Response, StatusCode, StatusError};

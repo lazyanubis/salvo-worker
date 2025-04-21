@@ -1,5 +1,6 @@
 {
     "cSpell.words": [
+        "Bidi",
         "bitflags",
         "cdylib",
         "clippy",
@@ -9,7 +10,10 @@
         "downcasting",
         "enumflags2",
         "fastrand",
+        "flate2",
         "fusewire",
+        "getrandom",
+        "impls",
         "indexmap",
         "multer",
         "multimap",
@@ -17,9 +21,11 @@
         "repr",
         "rngs",
         "rustdoc",
+        "rustflags",
         "rustls",
         "serde",
         "subsec",
-        "thiserror"
+        "thiserror",
+        "zstd"
     ]
 }

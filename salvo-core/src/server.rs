@@ -572,11 +572,13 @@ mod tests {
                 .await;
             Server::new(acceptor).serve(Router::new()).await;
         };
+        #[cfg(feature = "needless")]
         let _: &dyn Send = &async {
             let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 6878));
             let acceptor = TcpListener::new(addr).bind().await;
             Server::new(acceptor).serve(Router::new()).await;
         };
+        #[cfg(feature = "needless")]
         #[cfg(unix)]
         let _: &dyn Send = &async {
             use crate::conn::UnixListener;
