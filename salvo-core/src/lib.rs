@@ -38,6 +38,7 @@ extern crate self as salvo_core;
 mod cfg;
 
 pub mod catcher;
+#[cfg(feature = "needless")]
 pub mod conn;
 mod depot;
 mod error;
@@ -68,6 +69,7 @@ cfg_feature! {
     pub use proto::webtransport;
 }
 
+#[cfg(feature = "needless")]
 pub use self::conn::Listener;
 pub use self::depot::Depot;
 pub use self::error::{BoxedError, Error};
@@ -107,10 +109,11 @@ pub mod prelude {
         #![feature ="quinn"]
         pub use crate::conn::QuinnListener;
     }
-    cfg_feature! {
-        #![unix]
-        pub use crate::conn::UnixListener;
-    }
+    // cfg_feature! {
+    //     #![unix]
+    //     pub use crate::conn::UnixListener;
+    // }
+    #[cfg(feature = "needless")]
     pub use crate::conn::{JoinedListener, Listener, TcpListener};
     pub use crate::handler::{self, Handler};
     pub use crate::routing::{FlowCtrl, Router};

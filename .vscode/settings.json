@@ -1,11 +1,24 @@
 {
     "cSpell.words": [
+        "bitflags",
         "cdylib",
         "clippy",
         "codegen",
+        "Deque",
         "docsrs",
         "downcasting",
+        "enumflags2",
+        "fusewire",
+        "indexmap",
+        "multer",
+        "multimap",
+        "nanos",
+        "repr",
+        "rngs",
         "rustdoc",
-        "serde"
+        "rustls",
+        "serde",
+        "subsec",
+        "thiserror"
     ]
 }

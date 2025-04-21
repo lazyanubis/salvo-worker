@@ -23,11 +23,15 @@ pub use response::Response;
 pub use http::version::Version;
 
 use std::io::Result as IoResult;
+#[allow(unused)]
 use std::sync::Arc;
 
+#[cfg(feature = "needless")]
 use tokio_util::sync::CancellationToken;
 
+#[cfg(feature = "needless")]
 use crate::conn::HttpBuilder;
+#[cfg(feature = "needless")]
 use crate::fuse::ArcFusewire;
 use crate::service::HyperHandler;
 
@@ -37,11 +41,12 @@ pub trait HttpConnection {
     fn serve(
         self,
         handler: HyperHandler,
-        builder: Arc<HttpBuilder>,
-        graceful_stop_token: Option<CancellationToken>,
+        #[cfg(feature = "needless")] builder: Arc<HttpBuilder>,
+        #[cfg(feature = "needless")] graceful_stop_token: Option<CancellationToken>,
     ) -> impl Future<Output = IoResult<()>> + Send;
 
     /// Get the fusewire of this connection.
+    #[cfg(feature = "needless")]
     fn fusewire(&self) -> Option<ArcFusewire>;
 }
 

@@ -1,6 +1,9 @@
+#[allow(unused)]
 use std::borrow::Cow;
+#[allow(unused)]
 use std::cmp;
 use std::fs::Metadata;
+#[allow(unused)]
 use std::ops::{Deref, DerefMut};
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -10,13 +13,19 @@ use std::os::unix::fs::MetadataExt;
 
 use enumflags2::{BitFlags, bitflags};
 use headers::*;
+#[cfg(feature = "needless")]
 use tokio::fs::File;
 
+#[allow(unused)]
 use super::{ChunkedFile, ChunkedState};
+#[allow(unused)]
 use crate::http::header::{CONTENT_DISPOSITION, CONTENT_ENCODING, CONTENT_TYPE, IF_NONE_MATCH, RANGE};
+#[allow(unused)]
 use crate::http::{HttpRange, Mime, Request, Response, StatusCode, StatusError};
+#[allow(unused)]
 use crate::{Depot, Error, Result, Writer, async_trait};
 
+#[allow(unused)]
 const CHUNK_SIZE: u64 = 1024 * 1024;
 
 #[bitflags(default = Etag | LastModified | ContentDisposition)]
@@ -44,8 +53,10 @@ pub(crate) enum Flag {
 #[derive(Debug)]
 pub struct NamedFile {
     path: PathBuf,
+    #[cfg(feature = "needless")]
     file: File,
     modified: Option<SystemTime>,
+    #[allow(unused)]
     buffer_size: u64,
     metadata: Metadata,
     flags: BitFlags<Flag>,
@@ -57,6 +68,7 @@ pub struct NamedFile {
 /// Builder for build [`NamedFile`].
 #[derive(Clone)]
 pub struct NamedFileBuilder {
+    #[allow(unused)]
     path: PathBuf,
     attached_name: Option<String>,
     disposition_type: Option<String>,
@@ -138,6 +150,7 @@ impl NamedFileBuilder {
     }
 
     /// Build a new `NamedFile` and send it.
+    #[cfg(feature = "needless")]
     pub async fn send(self, req_headers: &HeaderMap, res: &mut Response) {
         if !self.path.exists() {
             res.render(StatusError::not_found());
@@ -150,6 +163,7 @@ impl NamedFileBuilder {
     }
 
     /// Build a new [`NamedFile`].
+    #[cfg(feature = "needless")]
     pub async fn build(self) -> Result<NamedFile> {
         let NamedFileBuilder {
             path,
@@ -164,9 +178,9 @@ impl NamedFileBuilder {
         let file = File::open(&path).await?;
         let content_type = content_type.unwrap_or_else(|| {
             let ct = mime_infer::from_path(&path).first_or_octet_stream();
-            let ftype = ct.type_();
-            let stype = ct.subtype();
-            if (ftype == mime::TEXT || stype == mime::JSON || stype == mime::JAVASCRIPT)
+            let f_type = ct.type_();
+            let s_type = ct.subtype();
+            if (f_type == mime::TEXT || s_type == mime::JSON || s_type == mime::JAVASCRIPT)
                 && ct.get_param(mime::CHARSET).is_none()
             {
                 //TODO: auto detect charset
@@ -204,6 +218,7 @@ impl NamedFileBuilder {
         })
     }
 }
+#[cfg(feature = "needless")]
 fn build_content_disposition(
     file_path: impl AsRef<Path>,
     content_type: &Mime,
@@ -265,6 +280,7 @@ impl NamedFile {
     /// let file = NamedFile::open("foo.txt").await;
     /// # }
     /// ```
+    #[cfg(feature = "needless")]
     #[inline]
     pub async fn open<P>(path: P) -> Result<NamedFile>
     where
@@ -274,6 +290,7 @@ impl NamedFile {
     }
 
     /// Returns reference to the underlying `File` object.
+    #[cfg(feature = "needless")]
     #[inline]
     pub fn file(&self) -> &File {
         &self.file
@@ -399,6 +416,7 @@ impl NamedFile {
         }
     }
     ///Consume self and send content to [`Response`].
+    #[cfg(feature = "needless")]
     pub async fn send(mut self, req_headers: &HeaderMap, res: &mut Response) {
         let etag = if self.flags.contains(Flag::Etag) {
             self.etag()
@@ -500,7 +518,7 @@ impl NamedFile {
                     res.headers_mut().typed_insert(content_range);
                 }
                 Err(e) => {
-                    tracing::error!(error = ?e, "set file's content ranage failed");
+                    tracing::error!(error = ?e, "set file's content range failed");
                 }
             }
             let reader = ChunkedFile {
@@ -527,6 +545,7 @@ impl NamedFile {
     }
 }
 
+#[cfg(feature = "needless")]
 #[async_trait]
 impl Writer for NamedFile {
     async fn write(self, req: &mut Request, _depot: &mut Depot, res: &mut Response) {
@@ -534,6 +553,7 @@ impl Writer for NamedFile {
     }
 }
 
+#[cfg(feature = "needless")]
 impl Deref for NamedFile {
     type Target = File;
 
@@ -542,6 +562,7 @@ impl Deref for NamedFile {
     }
 }
 
+#[cfg(feature = "needless")]
 impl DerefMut for NamedFile {
     fn deref_mut(&mut self) -> &mut File {
         &mut self.file
@@ -549,6 +570,7 @@ impl DerefMut for NamedFile {
 }
 
 /// Returns true if `req_headers` has no `If-Match` header or one which matches `etag`.
+#[cfg(feature = "needless")]
 fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfMatch>() {
         None => true,
@@ -565,6 +587,7 @@ fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
 }
 
 /// Returns true if `req_headers` doesn't have an `If-None-Match` header matching `req`.
+#[cfg(feature = "needless")]
 fn none_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfNoneMatch>() {
         None => true,

@@ -9,6 +9,7 @@ use hyper::body::{Body, Frame, Incoming, SizeHint};
 use bytes::Bytes;
 
 use crate::BoxedError;
+#[cfg(feature = "needless")]
 use crate::fuse::{ArcFusewire, FuseEvent};
 
 pub(crate) type BoxedBody = Pin<Box<dyn Body<Data = Bytes, Error = BoxedError> + Send + Sync + 'static>>;
@@ -28,6 +29,7 @@ pub enum ReqBody {
         /// Inner body.
         inner: Incoming,
         /// Fusewire.
+        #[cfg(feature = "needless")]
         fusewire: Option<ArcFusewire>,
     },
     /// Boxed body.
@@ -35,20 +37,35 @@ pub enum ReqBody {
         /// Inner body.
         inner: BoxedBody,
         /// Fusewire.
+        #[cfg(feature = "needless")]
         fusewire: Option<ArcFusewire>,
     },
 }
 impl ReqBody {
     #[doc(hidden)]
-    pub fn set_fusewire(&mut self, value: Option<ArcFusewire>) {
+    pub fn set_fusewire(&mut self, #[cfg(feature = "needless")] value: Option<ArcFusewire>) {
         match self {
             Self::None => {}
             Self::Once(_) => {}
-            Self::Hyper { fusewire, .. } => {
-                *fusewire = value;
+            Self::Hyper {
+                #[cfg(feature = "needless")]
+                fusewire,
+                ..
+            } => {
+                #[cfg(feature = "needless")]
+                {
+                    *fusewire = value;
+                }
             }
-            Self::Boxed { fusewire, .. } => {
-                *fusewire = value;
+            Self::Boxed {
+                #[cfg(feature = "needless")]
+                fusewire,
+                ..
+            } => {
+                #[cfg(feature = "needless")]
+                {
+                    *fusewire = value;
+                }
             }
         }
     }
@@ -86,10 +103,11 @@ impl Body for ReqBody {
 
     fn poll_frame(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> PollFrame {
         #[inline]
-        fn through_fursewire(poll: PollFrame, fusewire: &Option<ArcFusewire>) -> PollFrame {
+        fn through_fusewire(poll: PollFrame, #[cfg(feature = "needless")] fusewire: &Option<ArcFusewire>) -> PollFrame {
             match poll {
                 Poll::Ready(None) => Poll::Ready(None),
                 Poll::Ready(Some(Ok(data))) => {
+                    #[cfg(feature = "needless")]
                     if let Some(fusewire) = fusewire {
                         fusewire.event(FuseEvent::GainFrame);
                     }
@@ -97,6 +115,7 @@ impl Body for ReqBody {
                 }
                 Poll::Ready(Some(Err(e))) => Poll::Ready(Some(Err(e))),
                 Poll::Pending => {
+                    #[cfg(feature = "needless")]
                     if let Some(fusewire) = fusewire {
                         fusewire.event(FuseEvent::WaitFrame);
                     }
@@ -114,13 +133,29 @@ impl Body for ReqBody {
                     Poll::Ready(Some(Ok(Frame::data(bytes))))
                 }
             }
-            Self::Hyper { inner, fusewire } => {
+            Self::Hyper {
+                inner,
+                #[cfg(feature = "needless")]
+                fusewire,
+            } => {
                 let poll = Pin::new(inner).poll_frame(cx).map_err(IoError::other);
-                through_fursewire(poll, fusewire)
+                through_fusewire(
+                    poll,
+                    #[cfg(feature = "needless")]
+                    fusewire,
+                )
             }
-            Self::Boxed { inner, fusewire } => {
+            Self::Boxed {
+                inner,
+                #[cfg(feature = "needless")]
+                fusewire,
+            } => {
                 let poll = Pin::new(inner).poll_frame(cx).map_err(IoError::other);
-                through_fursewire(poll, fusewire)
+                through_fusewire(
+                    poll,
+                    #[cfg(feature = "needless")]
+                    fusewire,
+                )
             }
         }
     }
@@ -163,7 +198,11 @@ impl From<Bytes> for ReqBody {
 }
 impl From<Incoming> for ReqBody {
     fn from(inner: Incoming) -> Self {
-        Self::Hyper { inner, fusewire: None }
+        Self::Hyper {
+            inner,
+            #[cfg(feature = "needless")]
+            fusewire: None,
+        }
     }
 }
 impl From<String> for ReqBody {

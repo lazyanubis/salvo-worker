@@ -1,6 +1,7 @@
 //! HTTP response.
 use std::collections::VecDeque;
 use std::fmt::{self, Debug, Display, Formatter};
+#[allow(unused)]
 use std::path::PathBuf;
 
 #[cfg(feature = "cookie")]
@@ -11,9 +12,13 @@ pub use http::response::Parts;
 use http::{Extensions, version::Version};
 use mime::Mime;
 
+#[allow(unused)]
 use crate::fs::NamedFile;
+#[cfg(feature = "needless")]
 use crate::fuse::TransProto;
-use crate::http::{StatusCode, StatusError};
+use crate::http::StatusCode;
+#[allow(unused)]
+use crate::http::StatusError;
 use crate::{BoxedError, Error, Scribe};
 use bytes::Bytes;
 
@@ -161,6 +166,8 @@ impl Response {
     pub fn version_mut(&mut self) -> &mut Version {
         &mut self.version
     }
+
+    #[cfg(feature = "needless")]
     #[doc(hidden)]
     pub fn trans_proto(&self) -> TransProto {
         if self.version == Version::HTTP_3 {
@@ -399,6 +406,7 @@ impl Response {
     /// Attempts to send a file. If file not exists, not found error will occur.
     ///
     /// If you want more settings, you can use `NamedFile::builder` to create a new [`NamedFileBuilder`](crate::fs::NamedFileBuilder).
+    #[cfg(feature = "needless")]
     pub async fn send_file<P>(&mut self, path: P, req_headers: &HeaderMap)
     where
         P: Into<PathBuf> + Send,

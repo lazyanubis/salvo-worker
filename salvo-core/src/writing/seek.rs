@@ -1,13 +1,20 @@
+#[allow(unused)]
 use std::cmp;
+#[allow(unused)]
 use std::io::SeekFrom;
 use std::time::SystemTime;
 
 use headers::*;
+#[allow(unused)]
 use tokio::io::{AsyncRead, AsyncSeek, AsyncSeekExt};
+#[cfg(feature = "needless")]
 use tokio_util::io::ReaderStream;
 
+#[allow(unused)]
 use crate::http::header::{IF_NONE_MATCH, RANGE};
+#[allow(unused)]
 use crate::http::{HttpRange, Request, Response, StatusCode, StatusError};
+#[allow(unused)]
 use crate::{Depot, Writer, async_trait};
 
 /// `ReadSeeker` is used to write data to [`Response`] from a reader which implements [`AsyncRead`] and [`AsyncSeek`].
@@ -27,7 +34,9 @@ use crate::{Depot, Writer, async_trait};
 /// ```
 #[derive(Debug)]
 pub struct ReadSeeker<R> {
+    #[allow(unused)]
     reader: R,
+    #[allow(unused)]
     length: u64,
     last_modified: Option<SystemTime>,
     etag: Option<ETag>,
@@ -60,6 +69,7 @@ where
     }
 
     ///Consume self and send content to [`Response`].
+    #[cfg(feature = "needless")]
     pub async fn send(mut self, req_headers: &HeaderMap, res: &mut Response) {
         // check preconditions
         let precondition_failed = if !any_match(self.etag.as_ref(), req_headers) {
@@ -147,6 +157,7 @@ where
     }
 }
 
+#[cfg(feature = "needless")]
 #[async_trait]
 impl<R> Writer for ReadSeeker<R>
 where
@@ -159,6 +170,7 @@ where
 }
 
 /// Returns true if `req_headers` has no `If-Match` header or one which matches `etag`.
+#[cfg(feature = "needless")]
 fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfMatch>() {
         None => true,
@@ -175,6 +187,7 @@ fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
 }
 
 /// Returns true if `req_headers` doesn't have an `If-None-Match` header matching `req`.
+#[cfg(feature = "needless")]
 fn none_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfNoneMatch>() {
         None => true,

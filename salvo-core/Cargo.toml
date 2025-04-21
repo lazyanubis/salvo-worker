@@ -5,10 +5,102 @@ edition.workspace = true
 
 
 [features]
-default = ["full"]
-test = ["dep:serde_urlencoded"]
+default = [
+    # "cookie",
+    # "fix-http1-request-uri",
+    # "server",
+    # "server-handle",
+    # "http1",
+    # "http2",
+    # "test",
+    # "ring",
+    # "matched-path",
+    "full",
+]
+full = [
+    # "cookie",
+    # "fix-http1-request-uri",
+    # "server",
+    # "server-handle",
+    # "http1",
+    # "http2",
+    # "http2-cleartext",
+    # "quinn",
+    # "rustls",
+    # "native-tls",
+    # "openssl",
+    # "unix",
+    # "test",
+    # "acme",
+    # "anyhow",
+    # "eyre",
+    # "ring",
+    # "matched-path",
+    # "socket2",
+]
+cookie = [
+    # "dep:cookie"
+]
+fix-http1-request-uri = [
+    # "http1"
+]
+server = []
+server-handle = []
+http1 = []
+http2 = [
+    # "hyper/http2"
+]
+http2-cleartext = [
+    # "http2"
+]
+quinn = [
+    # "dep:salvo-http3", "dep:quinn", "rustls"
+]
+rustls = [
+    # "dep:tokio-rustls", "dep:rustls-pemfile", "ring"
+]
+native-tls = [
+    # "dep:tokio-native-tls", "dep:native-tls"
+]
+openssl = [
+    # "dep:openssl", "dep:tokio-openssl"
+]
+unix = [
+    # "http1"
+]
+test = [
+    # "dep:brotli",
+    # "dep:flate2",
+    # "dep:zstd",
+    # "dep:encoding_rs",
+    # "dep:serde_urlencoded",
+    # "dep:url",
+    # "tokio/macros",
+]
+acme = [
+    # "http1",
+    # "http2",
+    # "hyper-util/http1",
+    # "hyper-util/http2",
+    # "hyper-util/client-legacy",
+    # "dep:hyper-rustls",
+    # "dep:rcgen",
+    # "dep:ring",
+    # "ring",
+    # "dep:x509-parser",
+    # "dep:tokio-rustls",
+    # "dep:rustls-pemfile",
+]
+socket2 = [
+    # "dep:socket2"
+]
+# aws-lc-rs = ["hyper-rustls?/aws-lc-rs", "tokio-rustls?/aws-lc-rs"]
+ring = [
+    # "hyper-rustls?/ring", "tokio-rustls?/ring"
+]
+matched-path = []
 
-full = ["test"]
+needless = []
 
 [dependencies]
 salvo_macros = "0.78.0"
@@ -16,10 +108,36 @@ salvo_macros = "0.78.0"
 headers = "0.4"
 http = "1"
 hyper = { version = "1", features = ["full"] }
+hyper-util = { version = "0.1", default-features = true, features = ["tokio"] }
 mime = "0.3"
 serde = "1"
-serde_json = "1"
+serde_json = { version = "1", features = ["raw_value"] }
 serde_urlencoded = { version = "0.7", optional = true }
+serde-xml-rs = "0.7"
+thiserror = "2"
+multer = "3"
+mime-infer = "4"
+regex = "1"
+futures-util = { version = "0.3", default-features = false }
+form_urlencoded = "1"
+percent-encoding = "2"
+bytes = "1"
+async-trait = "0.1"
+tracing = "0.1"
+tokio = { version = "1.44.2", default-features = false }
+tokio-util = { version = "0.7.14", default-features = false }
+eyre = { version = "0.6", optional = true }
+anyhow = { version = "1", optional = true }
+enumflags2 = "0.7"
+indexmap = "2"
+multimap = { version = "0.10", features = ["serde"] }
+parking_lot = "0.12"
+futures-channel = "0.3"
+sync_wrapper = "1"
+http-body-util = "0.1"
+base64 = "0.22"
+tempfile = "3.19.1"
+rand = "0.9"
 
 worker = { workspace = true }
 

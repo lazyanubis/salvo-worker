@@ -1,22 +1,39 @@
 //! Form parse module.
+#[allow(unused)]
 use std::ffi::OsStr;
+#[allow(unused)]
 use std::io::{Cursor, Write};
+#[allow(unused)]
 use std::path::{Path, PathBuf};
 
+#[allow(unused)]
 use base64::engine::Engine;
+#[allow(unused)]
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+#[allow(unused)]
 use futures_util::StreamExt;
+#[allow(unused)]
 use http_body_util::BodyExt;
 use mime::Mime;
-use multer::{Field, Multipart};
+#[allow(unused)]
+use multer::Field;
+#[allow(unused)]
+use multer::Multipart;
 use multimap::MultiMap;
+#[cfg(feature = "needless")]
 use rand::TryRngCore;
+#[cfg(feature = "needless")]
 use rand::rngs::OsRng;
+#[cfg(feature = "needless")]
 use tempfile::Builder;
+#[cfg(feature = "needless")]
 use tokio::fs::File;
+#[allow(unused)]
 use tokio::io::AsyncWriteExt;
 
+#[allow(unused)]
 use crate::http::ParseError;
+#[allow(unused)]
 use crate::http::body::ReqBody;
 use crate::http::header::{CONTENT_TYPE, HeaderMap};
 
@@ -43,19 +60,20 @@ impl FormData {
     }
 
     /// Parse MIME `multipart/*` information from a stream as a `FormData`.
+    #[cfg(feature = "needless")]
     pub(crate) async fn read(headers: &HeaderMap, body: ReqBody) -> Result<FormData, ParseError> {
-        let ctype: Option<Mime> = headers
+        let c_type: Option<Mime> = headers
             .get(CONTENT_TYPE)
             .and_then(|h| h.to_str().ok())
             .and_then(|v| v.parse().ok());
-        match ctype {
-            Some(ctype) if ctype.subtype() == mime::WWW_FORM_URLENCODED => {
+        match c_type {
+            Some(c_type) if c_type.subtype() == mime::WWW_FORM_URLENCODED => {
                 let data = BodyExt::collect(body).await.map_err(ParseError::other)?.to_bytes();
                 let mut form_data = FormData::new();
                 form_data.fields = form_urlencoded::parse(&data).into_owned().collect();
                 Ok(form_data)
             }
-            Some(ctype) if ctype.type_() == mime::MULTIPART => {
+            Some(c_type) if c_type.type_() == mime::MULTIPART => {
                 let mut form_data = FormData::new();
                 if let Some(boundary) = headers
                     .get(CONTENT_TYPE)
@@ -148,6 +166,7 @@ impl FilePart {
 
     /// Create a new temporary FilePart (when created this way, the file will be
     /// deleted once the FilePart object goes out of scope).
+    #[cfg(feature = "needless")]
     pub async fn create(field: &mut Field<'_>) -> Result<FilePart, ParseError> {
         // Setup a file to capture the contents.
         let mut path = tokio::task::spawn_blocking(|| Builder::new().prefix("salvo_http_multipart").tempdir())
@@ -193,6 +212,7 @@ impl Drop for FilePart {
 }
 
 // Port from https://github.com/mikedilger/textnonce/blob/master/src/lib.rs
+#[cfg(feature = "needless")]
 fn text_nonce() -> String {
     const BYTE_LEN: usize = 24;
     let mut raw: Vec<u8> = vec![0; BYTE_LEN];
@@ -200,10 +220,10 @@ fn text_nonce() -> String {
     // Get the first 12 bytes from the current time
     if let Ok(now) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
         let secs: u64 = now.as_secs();
-        let nsecs: u32 = now.subsec_nanos();
+        let ns: u32 = now.subsec_nanos();
 
         let mut cursor = Cursor::new(&mut *raw);
-        Write::write_all(&mut cursor, &nsecs.to_le_bytes()).expect("write_all failed");
+        Write::write_all(&mut cursor, &ns.to_le_bytes()).expect("write_all failed");
         Write::write_all(&mut cursor, &secs.to_le_bytes()).expect("write_all failed");
 
         // Get the last bytes from random data

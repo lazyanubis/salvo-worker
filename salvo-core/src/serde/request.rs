@@ -22,9 +22,11 @@ where
     T: Deserialize<'de>,
 {
     // Ensure body is parsed correctly.
-    if let Some(ctype) = req.content_type() {
-        match ctype.subtype() {
-            mime::WWW_FORM_URLENCODED | mime::FORM_DATA => {
+    if let Some(c_type) = req.content_type() {
+        match c_type.subtype() {
+            mime::WWW_FORM_URLENCODED | mime::FORM_DATA =>
+            {
+                #[cfg(feature = "needless")]
                 if metadata.has_body_required() {
                     let _ = req.form_data().await;
                 }
@@ -81,8 +83,8 @@ impl<'de> RequestDeserializer<'de> {
         let mut payload = None;
 
         if metadata.has_body_required() {
-            if let Some(ctype) = request.content_type() {
-                match ctype.subtype() {
+            if let Some(c_type) = request.content_type() {
+                match c_type.subtype() {
                     mime::WWW_FORM_URLENCODED | mime::FORM_DATA => {
                         payload = request.form_data.get().map(Payload::FormData);
                     }

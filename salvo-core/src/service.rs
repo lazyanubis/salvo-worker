@@ -8,7 +8,9 @@ use hyper::service::Service as HyperService;
 use hyper::{Method, Request as HyperRequest, Response as HyperResponse};
 
 use crate::catcher::{Catcher, write_error_default};
+#[cfg(feature = "needless")]
 use crate::conn::SocketAddr;
+#[cfg(feature = "needless")]
 use crate::fuse::ArcFusewire;
 use crate::handler::{Handler, WhenHoop};
 use crate::http::body::{ReqBody, ResBody};
@@ -123,20 +125,23 @@ impl Service {
     #[inline]
     pub fn hyper_handler(
         &self,
-        local_addr: SocketAddr,
-        remote_addr: SocketAddr,
+        #[cfg(feature = "needless")] local_addr: SocketAddr,
+        #[cfg(feature = "needless")] remote_addr: SocketAddr,
         http_scheme: Scheme,
-        fusewire: Option<ArcFusewire>,
+        #[cfg(feature = "needless")] fusewire: Option<ArcFusewire>,
         alt_svc_h3: Option<HeaderValue>,
     ) -> HyperHandler {
         HyperHandler {
+            #[cfg(feature = "needless")]
             local_addr,
+            #[cfg(feature = "needless")]
             remote_addr,
             http_scheme,
             router: self.router.clone(),
             catcher: self.catcher.clone(),
             hoops: self.hoops.clone(),
             allowed_media_types: self.allowed_media_types.clone(),
+            #[cfg(feature = "needless")]
             fusewire,
             alt_svc_h3,
         }
@@ -182,13 +187,16 @@ impl Handler for DefaultStatusOK {
 #[doc(hidden)]
 #[derive(Clone)]
 pub struct HyperHandler {
+    #[cfg(feature = "needless")]
     pub(crate) local_addr: SocketAddr,
+    #[cfg(feature = "needless")]
     pub(crate) remote_addr: SocketAddr,
     pub(crate) http_scheme: Scheme,
     pub(crate) router: Arc<Router>,
     pub(crate) catcher: Option<Arc<Catcher>>,
     pub(crate) hoops: Vec<Arc<dyn Handler>>,
     pub(crate) allowed_media_types: Arc<Vec<Mime>>,
+    #[cfg(feature = "needless")]
     pub(crate) fusewire: Option<ArcFusewire>,
     pub(crate) alt_svc_h3: Option<HeaderValue>,
 }
@@ -197,8 +205,11 @@ impl HyperHandler {
     pub fn handle(&self, mut req: Request) -> impl Future<Output = Response> + 'static {
         let catcher = self.catcher.clone();
         let allowed_media_types = self.allowed_media_types.clone();
-        req.local_addr = self.local_addr.clone();
-        req.remote_addr = self.remote_addr.clone();
+        #[cfg(feature = "needless")]
+        {
+            req.local_addr = self.local_addr.clone();
+            req.remote_addr = self.remote_addr.clone();
+        }
         #[cfg(not(feature = "cookie"))]
         let mut res = Response::new();
         #[cfg(feature = "cookie")]
@@ -361,8 +372,13 @@ where
                 }
             }
         }
-        let mut request = Request::from_hyper(req, scheme);
-        request.body.set_fusewire(self.fusewire.clone());
+        #[cfg(not(feature = "needless"))]
+        let request = Request::from_hyper(req, scheme);
+        #[cfg(feature = "needless")]
+        {
+            let mut request = Request::from_hyper(req, scheme);
+            request.body.set_fusewire(self.fusewire.clone());
+        }
         let response = self.handle(request);
         Box::pin(async move { Ok(response.await.into_hyper()) })
     }
