@@ -1,17 +1,10 @@
-[package]
-name = "salvo-worker"
+[workspace]
+members = ["salvo-core", "salvo-worker"]
+resolver = "3"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
-license = "Apache-2.0"
-readme = "README.md"
-include = ["src", "Cargo.toml", "LICENSE", "README.md"]
-description = "Write Cloudflare's Worker to provide Web services using the Salvo framework"
-authors = ["Anubis"]
-repository = "https://github.com/lazyanubis/salvo-worker"
-
-# [lib]
-# path = "src/lib.rs"
-# crate-type = ["cdylib"]
 
 [profile.release]
 lto = true # 通过对整个程序进行分析，并以增加链接时间为代价，LTO 可以生成更加优化的代码。
@@ -28,12 +21,21 @@ opt-level = 3 # 优化级别
 # "z": 优化二进制文件大小，但也会关闭循环向量化
 codegen-units = 1 # 指定一个包会被分隔为多少个代码生成单元。更多的代码生成单元会提升代码的并行编译速度，但是可能会降低运行速度。
 
-[features]
-default = [
-    # "full",
-    #
-]
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unreachable_pub = "warn"
+missing_docs = "warn"
 
-full = []
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "warn"
 
-[dependencies]
+[workspace.lints.clippy]
+future_not_send = "warn"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+
+[workspace.dependencies]
+salvo-core = { path = "salvo-core" }
+
+worker = { version = "*" }

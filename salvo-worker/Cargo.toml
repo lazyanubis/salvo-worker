@@ -1,0 +1,24 @@
+[package]
+name = "salvo-worker"
+version.workspace = true
+edition.workspace = true
+license = "Apache-2.0"
+readme = "README.md"
+include = ["src", "Cargo.toml", "../LICENSE", "../README.md"]
+description = "Write Cloudflare's Worker to provide Web services using the Salvo framework"
+authors = ["Anubis"]
+repository = "https://github.com/lazyanubis/salvo-worker"
+
+# [lib]
+# path = "src/lib.rs"
+# crate-type = ["cdylib"]
+
+[features]
+default = []
+
+full = []
+
+[dependencies]
+salvo-core = { workspace = true }
+
+worker = { workspace = true }

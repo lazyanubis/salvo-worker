@@ -1,4 +1,4 @@
-#![doc = include_str!("../README.md")]
+#![doc = include_str!("../../README.md")]
 #![deny(unreachable_pub)] // ! lib 需要检查此项
 #![deny(unsafe_code)] // 拒绝 unsafe 代码
 #![deny(missing_docs)] // ! 必须写文档
@@ -7,6 +7,10 @@
 #![deny(clippy::unwrap_used)] // 不许用 unwrap
 #![deny(clippy::expect_used)] // 不许用 expect
 #![deny(clippy::panic)] // 不许用 panic
+
+/// handle
+mod handle;
+pub use handle::handle;
 
 /// test add
 pub fn add(a: u32, b: u32) -> u32 {

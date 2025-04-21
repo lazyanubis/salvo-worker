@@ -3,6 +3,9 @@
         "cdylib",
         "clippy",
         "codegen",
+        "docsrs",
+        "downcasting",
+        "rustdoc",
         "serde"
     ]
 }

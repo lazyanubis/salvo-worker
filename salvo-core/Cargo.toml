@@ -1,0 +1,33 @@
+[package]
+name = "salvo-core"
+version.workspace = true
+edition.workspace = true
+
+
+[features]
+default = ["full"]
+test = ["dep:serde_urlencoded"]
+
+full = ["test"]
+
+[dependencies]
+salvo_macros = "0.78.0"
+
+headers = "0.4"
+http = "1"
+hyper = { version = "1", features = ["full"] }
+mime = "0.3"
+serde = "1"
+serde_json = "1"
+serde_urlencoded = { version = "0.7", optional = true }
+
+worker = { workspace = true }
+
+[dev-dependencies]
+tokio = { version = "1.44.2", features = [
+    "fs",
+    "io-util",
+    "macros",
+    "net",
+    "rt-multi-thread",
+] }
