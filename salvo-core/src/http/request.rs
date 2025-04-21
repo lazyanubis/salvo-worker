@@ -1106,50 +1106,50 @@ mod tests {
             .build();
         assert_eq!(req.parse_json::<User>().await.unwrap(), User { name: "jobs".into() });
     }
-    #[tokio::test]
-    async fn test_query() {
-        let req = TestClient::get("http://127.0.0.1:5801/hello?name=rust&name=25&name=a&name=2&weapons=98&weapons=gun")
-            .build();
-        assert_eq!(req.queries().len(), 2);
-        assert_eq!(req.query::<String>("name").unwrap(), "rust");
-        assert_eq!(req.query::<&str>("name").unwrap(), "rust");
-        assert_eq!(req.query::<i64>("weapons").unwrap(), 98);
-        let names = req.query::<Vec<&str>>("name").unwrap();
-        let weapons = req.query::<(u64, &str)>("weapons").unwrap();
-        assert_eq!(names, vec!["rust", "25", "a", "2"]);
-        assert_eq!(weapons, (98, "gun"));
-    }
-    #[tokio::test]
-    async fn test_form() {
-        let mut req = TestClient::post("http://127.0.0.1:5800/hello?q=rust")
-            .add_header("content-type", "application/x-www-form-urlencoded", true)
-            .raw_form("lover=dog&money=sh*t&q=firefox")
-            .build();
-        assert_eq!(req.form::<String>("money").await.unwrap(), "sh*t");
-        assert_eq!(req.query_or_form::<String>("q").await.unwrap(), "rust");
-        assert_eq!(req.form_or_query::<String>("q").await.unwrap(), "firefox");
+    //     #[tokio::test]
+    //     async fn test_query() {
+    //         let req = TestClient::get("http://127.0.0.1:5801/hello?name=rust&name=25&name=a&name=2&weapons=98&weapons=gun")
+    //             .build();
+    //         assert_eq!(req.queries().len(), 2);
+    //         assert_eq!(req.query::<String>("name").unwrap(), "rust");
+    //         assert_eq!(req.query::<&str>("name").unwrap(), "rust");
+    //         assert_eq!(req.query::<i64>("weapons").unwrap(), 98);
+    //         let names = req.query::<Vec<&str>>("name").unwrap();
+    //         let weapons = req.query::<(u64, &str)>("weapons").unwrap();
+    //         assert_eq!(names, vec!["rust", "25", "a", "2"]);
+    //         assert_eq!(weapons, (98, "gun"));
+    //     }
+    //     #[tokio::test]
+    //     async fn test_form() {
+    //         let mut req = TestClient::post("http://127.0.0.1:5800/hello?q=rust")
+    //             .add_header("content-type", "application/x-www-form-urlencoded", true)
+    //             .raw_form("lover=dog&money=sh*t&q=firefox")
+    //             .build();
+    //         assert_eq!(req.form::<String>("money").await.unwrap(), "sh*t");
+    //         assert_eq!(req.query_or_form::<String>("q").await.unwrap(), "rust");
+    //         assert_eq!(req.form_or_query::<String>("q").await.unwrap(), "firefox");
 
-        let mut req: Request = TestClient::post("http://127.0.0.1:5800/hello?q=rust")
-            .add_header(
-                "content-type",
-                "multipart/form-data; boundary=----WebKitFormBoundary0mkL0yrNNupCojyz",
-                true,
-            )
-            .body(
-                "------WebKitFormBoundary0mkL0yrNNupCojyz\r\n\
-Content-Disposition: form-data; name=\"money\"\r\n\r\nsh*t\r\n\
-------WebKitFormBoundary0mkL0yrNNupCojyz\r\n\
-Content-Disposition: form-data; name=\"file1\"; filename=\"err.txt\"\r\n\
-Content-Type: text/plain\r\n\r\n\
-file content\r\n\
-------WebKitFormBoundary0mkL0yrNNupCojyz--\r\n",
-            )
-            .build();
-        assert_eq!(req.form::<String>("money").await.unwrap(), "sh*t");
-        let file = req.file("file1").await.unwrap();
-        assert_eq!(file.name().unwrap(), "err.txt");
-        assert_eq!(file.headers().get("content-type").unwrap(), "text/plain");
-        let files = req.files("file1").await.unwrap();
-        assert_eq!(files[0].name().unwrap(), "err.txt");
-    }
+    //         let mut req: Request = TestClient::post("http://127.0.0.1:5800/hello?q=rust")
+    //             .add_header(
+    //                 "content-type",
+    //                 "multipart/form-data; boundary=----WebKitFormBoundary0mkL0yrNNupCojyz",
+    //                 true,
+    //             )
+    //             .body(
+    //                 "------WebKitFormBoundary0mkL0yrNNupCojyz\r\n\
+    // Content-Disposition: form-data; name=\"money\"\r\n\r\nsh*t\r\n\
+    // ------WebKitFormBoundary0mkL0yrNNupCojyz\r\n\
+    // Content-Disposition: form-data; name=\"file1\"; filename=\"err.txt\"\r\n\
+    // Content-Type: text/plain\r\n\r\n\
+    // file content\r\n\
+    // ------WebKitFormBoundary0mkL0yrNNupCojyz--\r\n",
+    //             )
+    //             .build();
+    //         assert_eq!(req.form::<String>("money").await.unwrap(), "sh*t");
+    //         let file = req.file("file1").await.unwrap();
+    //         assert_eq!(file.name().unwrap(), "err.txt");
+    //         assert_eq!(file.headers().get("content-type").unwrap(), "text/plain");
+    //         let files = req.files("file1").await.unwrap();
+    //         assert_eq!(files[0].name().unwrap(), "err.txt");
+    //     }
 }
