@@ -3,6 +3,7 @@
 use std::io::Result as IoResult;
 #[allow(unused)]
 use std::sync::Arc;
+#[allow(unused)]
 #[cfg(feature = "server-handle")]
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -16,6 +17,7 @@ compile_error!(
 use hyper::server::conn::http1;
 #[cfg(feature = "http2")]
 use hyper::server::conn::http2;
+#[allow(unused)]
 #[cfg(feature = "server-handle")]
 use tokio::{
     sync::{
@@ -24,6 +26,7 @@ use tokio::{
     },
     time::Duration,
 };
+#[allow(unused)]
 #[cfg(feature = "server-handle")]
 use tokio_util::sync::CancellationToken;
 
@@ -88,7 +91,8 @@ impl ServerHandle {
     ///     server.serve(Router::new()).await;
     /// }
     /// ```
-    pub fn stop_graceful(&self, timeout: impl Into<Option<Duration>>) {
+    pub fn stop_graceful(&self, #[allow(unused)] timeout: impl Into<Option<Duration>>) {
+        #[cfg(feature = "needless")]
         let _ = self.tx_cmd.send(ServerCommand::StopGraceful(timeout.into()));
     }
 }
@@ -96,6 +100,7 @@ impl ServerHandle {
 #[cfg(feature = "server-handle")]
 enum ServerCommand {
     StopForcible,
+    #[cfg(feature = "needless")]
     StopGraceful(Option<Duration>),
 }
 
@@ -109,8 +114,10 @@ pub struct Server<A> {
     builder: HttpBuilder,
     #[cfg(feature = "needless")]
     fuse_factory: Option<ArcFuseFactory>,
+    #[cfg(feature = "needless")]
     #[cfg(feature = "server-handle")]
     tx_cmd: UnboundedSender<ServerCommand>,
+    #[cfg(feature = "needless")]
     #[cfg(feature = "server-handle")]
     rx_cmd: UnboundedReceiver<ServerCommand>,
 }
