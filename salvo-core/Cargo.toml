@@ -22,8 +22,8 @@ full = [
     "fix-http1-request-uri",
     "server",
     "server-handle",
-    # "http1",
-    # "http2",
+    "http1",
+    "http2",
     # "http2-cleartext",
     # "quinn",
     # "rustls",
@@ -43,9 +43,7 @@ fix-http1-request-uri = ["http1"]
 server = []
 server-handle = []
 http1 = []
-http2 = [
-    # "hyper/http2"
-]
+http2 = ["hyper/http2"]
 http2-cleartext = [
     # "http2"
 ]

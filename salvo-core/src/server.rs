@@ -16,6 +16,7 @@ compile_error!(
 #[cfg(feature = "http1")]
 use hyper::server::conn::http1;
 #[cfg(feature = "http2")]
+#[cfg(feature = "needless")]
 use hyper::server::conn::http2;
 #[allow(unused)]
 #[cfg(feature = "server-handle")]
