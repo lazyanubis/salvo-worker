@@ -39,7 +39,10 @@ affix-state = []
 basic-auth = ["dep:base64"]
 caching-headers = ["dep:etag", "dep:tracing"]
 catch-panic = ["dep:futures-util", "dep:tracing"]
-force-https = ["dep:tracing", "salvo-core/rustls"]
+force-https = [
+    "dep:tracing",
+    # "salvo-core/rustls"
+]
 logging = ["dep:tracing"]
 concurrency-limiter = ["dep:tracing", "tokio"]
 size-limiter = []
@@ -70,12 +73,7 @@ tower-compat = [
 
 needless = []
 
-# # It's recommended to set the flag on a per-target basis:
-# [target.wasm32-unknown-unknown]
-# rustflags = ['--cfg', 'getrandom_backend="wasm_js"']
-
 [dependencies]
-
 base64 = { workspace = true, optional = true }
 etag = { workspace = true, features = ["std"], optional = true }
 futures-util = { workspace = true, optional = true }

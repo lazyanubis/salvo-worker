@@ -38,6 +38,7 @@ panic = "deny"
 [workspace.dependencies]
 salvo-core = { path = "salvo/core" }
 salvo-extra = { path = "salvo/extra", default-features = false }
+salvo-cache = { path = "salvo/cache", default-features = false }
 
 base64 = "0.22"
 http = "1"
@@ -61,5 +62,8 @@ tokio-util = { version = "0.7.14", default-features = false }
 tower = { version = "0.5", default-features = false }
 tracing = "0.1"
 ulid = { version = "1", default-features = false }
+moka = "0.12"
+time = "0.3"
+sha2 = "0.10"
 
 worker = { version = "*" }

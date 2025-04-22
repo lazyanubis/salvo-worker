@@ -17,6 +17,7 @@
         "hyperdrive",
         "impls",
         "indexmap",
+        "moka",
         "multer",
         "multimap",
         "nanos",

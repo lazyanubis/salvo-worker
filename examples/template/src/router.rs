@@ -1,13 +1,15 @@
 use once_cell::sync::Lazy;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Duration;
 
-use salvo_worker::salvo::*;
+use salvo_worker::salvo::{self, *};
 
 pub(crate) static ROUTER: Lazy<Arc<Router>> = Lazy::new(init_router);
 
 mod affix_state;
 mod basic_auth;
+mod cache;
 
 fn init_router() -> Arc<Router> {
     let config = affix_state::Config {
@@ -16,6 +18,20 @@ fn init_router() -> Arc<Router> {
     };
 
     let auth_handler = salvo_worker::salvo::basic_auth::BasicAuth::new(basic_auth::Validator);
+
+    use salvo::cache::{Cache, RequestIssuer, WorkerStore};
+    let short_cache = salvo::cache::Cache::new(
+        WorkerStore::builder("KV_TEST".into())
+            .time_to_live(Duration::from_secs(60))
+            .build(),
+        RequestIssuer::default(),
+    );
+    let long_cache = Cache::new(
+        WorkerStore::builder("KV_TEST".into())
+            .time_to_live(Duration::from_secs(120))
+            .build(),
+        RequestIssuer::default(),
+    );
 
     let router = Router::new()
         .get(hello)
@@ -39,7 +55,13 @@ fn init_router() -> Arc<Router> {
                 .push(Router::with_path("hello").get(affix_state::hello)),
         )
         // basic_auth
-        .push(Router::with_path("basic_auth").push(Router::with_hoop(auth_handler).goal(basic_auth::hello)));
+        .push(Router::with_path("basic_auth").push(Router::with_hoop(auth_handler).goal(basic_auth::hello)))
+        // cache
+        .push(
+            Router::with_path("cache")
+                .push(Router::with_path("short").hoop(short_cache).get(cache::short))
+                .push(Router::with_path("long").hoop(long_cache).get(cache::long)),
+        );
     Arc::new(router)
 }
 

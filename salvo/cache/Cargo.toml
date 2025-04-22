@@ -1,0 +1,42 @@
+[package]
+name = "salvo-cache"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+
+[package.metadata.release]
+release = false
+
+# https://github.com/rustwasm/wasm-pack/issues/1247
+# [package.metadata.wasm-pack.profile.release]
+# wasm-opt = false
+
+# [lib]
+# crate-type = ["cdylib"]
+
+[lints]
+workspace = true
+
+[features]
+default = ["worker-store"]
+full = ["moka-store"]
+moka-store = ["dep:moka"]
+worker-store = ["dep:worker"]
+
+needless = []
+
+[dependencies]
+bytes = { workspace = true }
+moka = { workspace = true, optional = true, features = ["future"] }
+salvo-core = { workspace = true, features = ["http1"] }
+tracing = { workspace = true }
+time = { workspace = true }
+tokio = { workspace = true, default-features = false }
+sha2 = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+ciborium = "0.2"
+
+worker = { workspace = true, optional = true }
+
+[dev-dependencies]

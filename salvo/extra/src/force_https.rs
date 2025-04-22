@@ -29,16 +29,19 @@
 //!     let router = Router::new().get(hello);
 //!     let service = Service::new(router).hoop(ForceHttps::new().https_port(5443));
 //!
+//!     #[cfg(feature = "needless")]
 //!     let config = RustlsConfig::new(
 //!         Keycert::new()
 //!             .cert(include_bytes!("../../core/certs/cert.pem").as_ref())
 //!             .key(include_bytes!("../../core/certs/key.pem").as_ref()),
 //!     );
+//!     #[cfg(feature = "needless")]
 //!     let acceptor = TcpListener::new("0.0.0.0:5443")
 //!         .rustls(config)
 //!         .join(TcpListener::new("0.0.0.0:5800"))
 //!         .bind()
 //!         .await;
+//!     #[cfg(feature = "needless")]
 //!     Server::new(acceptor).serve(service).await;
 //! }
 //! ```
@@ -49,7 +52,7 @@ use salvo_core::http::header;
 use salvo_core::http::uri::{Scheme, Uri};
 use salvo_core::http::{Request, ResBody, Response};
 use salvo_core::writing::Redirect;
-use salvo_core::{async_trait, Depot, FlowCtrl, Handler};
+use salvo_core::{Depot, FlowCtrl, Handler, async_trait};
 
 /// Middleware for force redirect to http uri.
 #[derive(Default)]

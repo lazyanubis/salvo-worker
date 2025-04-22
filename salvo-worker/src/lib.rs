@@ -25,4 +25,7 @@ pub mod salvo {
 
     #[cfg(feature = "basic-auth")]
     pub use salvo_extra::basic_auth;
+
+    #[cfg(feature = "cache")]
+    pub use salvo_cache as cache;
 }
