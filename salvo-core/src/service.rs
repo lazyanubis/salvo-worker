@@ -222,7 +222,7 @@ impl HyperHandler {
                 res.headers_mut().insert(ALT_SVC, alt_svc_h3.clone());
             }
         }
-        let mut depot = depot.unwrap_or_else(|| Depot::new());
+        let mut depot = depot.unwrap_or_default();
         let mut path_state = PathState::new(req.uri().path());
         let router = self.router.clone();
 

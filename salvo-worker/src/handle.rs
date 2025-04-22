@@ -3,6 +3,7 @@ use std::sync::Arc;
 use worker::*;
 
 /// handle request
+#[inline]
 pub async fn handle(router: Arc<salvo_core::Router>, req: Request, env: Env, ctx: Context) -> worker::Result<Response> {
     // parse request
     let request: HttpRequest = req.try_into()?;

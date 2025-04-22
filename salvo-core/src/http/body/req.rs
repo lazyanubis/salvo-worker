@@ -102,6 +102,7 @@ impl Body for ReqBody {
     type Error = IoError;
 
     fn poll_frame(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> PollFrame {
+        #[allow(clippy::needless_match)]
         #[inline]
         fn through_fusewire(poll: PollFrame, #[cfg(feature = "needless")] fusewire: &Option<ArcFusewire>) -> PollFrame {
             match poll {
