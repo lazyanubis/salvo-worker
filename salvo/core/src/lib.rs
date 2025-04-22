@@ -86,6 +86,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub mod prelude {
     pub use async_trait::async_trait;
     pub use salvo_macros::{Extractible, handler};
+
+    /// salvo
     pub mod salvo {
         pub use super::super::*;
         pub use super::Depot;

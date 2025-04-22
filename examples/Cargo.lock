@@ -1112,6 +1112,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "salvo-extra"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "salvo-core",
+]
+
+[[package]]
 name = "salvo-serde-util"
 version = "0.78.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1130,6 +1138,7 @@ dependencies = [
  "futures",
  "http",
  "salvo-core",
+ "salvo-extra",
  "serde",
  "serde_json",
  "worker",

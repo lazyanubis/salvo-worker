@@ -20,6 +20,9 @@ pub mod salvo {
     pub use salvo_core::prelude::*;
     pub use serde::{Deserialize, Serialize};
 
-    // #[cfg(feature = "affix-state")]
-    // pub use salvo_extra::affix_state;
+    #[cfg(feature = "affix-state")]
+    pub use salvo_extra::affix_state;
+
+    #[cfg(feature = "basic-auth")]
+    pub use salvo_extra::basic_auth;
 }

@@ -37,11 +37,29 @@ panic = "deny"
 
 [workspace.dependencies]
 salvo-core = { path = "salvo/core" }
+salvo-extra = { path = "salvo/extra", default-features = false }
 
+base64 = "0.22"
 http = "1"
 serde = "1"
 serde_json = "1"
 futures = "0.3"
 bytes = "1"
+etag = "4"
+futures-util = { version = "0.3", default-features = false }
+http-body-util = "0.1"
+hyper = { version = "1", features = [
+    "client",
+    "http1",
+    # "http2",
+    "server",
+] }
+pin-project = "1"
+tokio = { version = "1.44.2", default-features = false }
+tokio-tungstenite = { version = "0.26", default-features = false }
+tokio-util = { version = "0.7.14", default-features = false }
+tower = { version = "0.5", default-features = false }
+tracing = "0.1"
+ulid = { version = "1", default-features = false }
 
 worker = { version = "*" }
