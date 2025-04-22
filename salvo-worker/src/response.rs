@@ -27,6 +27,13 @@ pub(crate) async fn handle_response(mut response: salvo_core::Response) -> worke
         }
     }
 
+    #[cfg(feature = "cookie")]
+    for cookie in response.cookies {
+        if let Ok(hv) = cookie.encoded().to_string().parse() {
+            headers.append(http::header::SET_COOKIE, hv);
+        }
+    }
+
     let builder = Response::builder()
         .with_status(response.status_code.map(|code| code.as_u16()).unwrap_or(200))
         .with_headers(headers)
