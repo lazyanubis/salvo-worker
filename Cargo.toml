@@ -42,6 +42,7 @@ salvo-cache = { path = "salvo/cache", default-features = false }
 salvo-compression = { path = "salvo/compression", default-features = false }
 salvo-cors = { path = "salvo/cors" }
 salvo-session = { path = "salvo/session" }
+salvo-csrf = { path = "salvo/csrf" }
 
 base64 = "0.22"
 http = "1"
@@ -75,5 +76,10 @@ flate2 = { version = "1", default-features = false }
 zstd = { version = "0.13", default-features = false }
 async-session = "3"
 cookie = "0.18"
+aead = "0.5"
+aes-gcm = "0.10"
+bcrypt = "0.17"
+chacha20poly1305 = "0.10"
+hmac = "0.12"
 
 worker = { version = "*" }

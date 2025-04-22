@@ -1015,9 +1015,8 @@ impl Request {
     where
         T: Deserialize<'de>,
     {
-        if let Some(ctype) = self.content_type() {
-            if ctype.subtype() == mime::WWW_FORM_URLENCODED || ctype.subtype() == mime::FORM_DATA {
-                #[cfg(feature = "needless")]
+        if let Some(c_type) = self.content_type() {
+            if c_type.subtype() == mime::WWW_FORM_URLENCODED || c_type.subtype() == mime::FORM_DATA {
                 return from_str_multi_map(self.form_data().await?.fields.iter_all()).map_err(ParseError::Deserialize);
             }
         }
@@ -1038,11 +1037,10 @@ impl Request {
     where
         T: Deserialize<'de>,
     {
-        if let Some(ctype) = self.content_type() {
-            if ctype.subtype() == mime::WWW_FORM_URLENCODED || ctype.subtype() == mime::FORM_DATA {
-                #[cfg(feature = "needless")]
+        if let Some(c_type) = self.content_type() {
+            if c_type.subtype() == mime::WWW_FORM_URLENCODED || c_type.subtype() == mime::FORM_DATA {
                 return from_str_multi_map(self.form_data().await?.fields.iter_all()).map_err(ParseError::Deserialize);
-            } else if ctype.subtype() == mime::JSON {
+            } else if c_type.subtype() == mime::JSON {
                 return self
                     .payload_with_max_size(max_size)
                     .await

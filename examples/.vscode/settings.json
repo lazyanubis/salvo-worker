@@ -2,9 +2,11 @@
     "cSpell.words": [
         "bindgen",
         "cdylib",
+        "chacha20poly1305",
         "clippy",
         "codegen",
         "getrandom",
+        "hmac",
         "hyperdrive",
         "reqwest",
         "rustdoc",

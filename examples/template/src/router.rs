@@ -19,6 +19,7 @@ mod cache;
 mod caching_headers;
 mod catch_panic;
 mod concurrency_limiter;
+mod csrf;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
@@ -64,6 +65,16 @@ fn init_router() -> Arc<Router> {
     )
     .build()
     .unwrap();
+
+    // Configure CSRF token finder in form data
+    let form_finder = salvo::csrf::FormFinder::new("csrf_token");
+
+    // Initialize different CSRF protection methods
+    // let bcrypt_csrf = bcrypt_cookie_csrf(form_finder.clone());
+    let hmac_csrf = salvo::csrf::hmac_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
+    let aes_gcm_cookie_csrf =
+        salvo::csrf::aes_gcm_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
+    let ccp_cookie_csrf = salvo::csrf::ccp_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
 
     let router = Router::new()
         .get(hello)
@@ -121,6 +132,34 @@ fn init_router() -> Arc<Router> {
                 .get(session::home)
                 .push(Router::with_path("login").get(session::login).post(session::login))
                 .push(Router::with_path("logout").get(session::logout)),
+        )
+        // csrf
+        .push(
+            Router::with_path("csrf")
+                .get(csrf::home)
+                // // Bcrypt-based CSRF protection
+                // .push(
+                //     Router::with_hoop(bcrypt_csrf)
+                //         .path("bcrypt")
+                //         .get(csrf::get_page)
+                //         .post(csrf::post_page),
+                // )
+                // HMAC-based CSRF protection
+                .push(
+                    Router::with_hoop(hmac_csrf)
+                        .path("hmac")
+                        .get(csrf::get_page)
+                        .post(csrf::post_page),
+                )
+                // AES-GCM-based CSRF protection
+                .push(
+                    Router::with_hoop(aes_gcm_cookie_csrf)
+                        .path("aes_gcm")
+                        .get(csrf::get_page)
+                        .post(csrf::post_page),
+                )
+                // ChaCha20Poly1305-based CSRF protection
+                .push(Router::with_hoop(ccp_cookie_csrf).path("ccp").get(csrf::get_page)),
         );
     Arc::new(router)
 }

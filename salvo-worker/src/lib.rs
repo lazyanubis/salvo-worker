@@ -47,4 +47,7 @@ pub mod salvo {
 
     #[cfg(feature = "session")]
     pub use salvo_session as session;
+
+    #[cfg(feature = "csrf")]
+    pub use salvo_csrf as csrf;
 }
