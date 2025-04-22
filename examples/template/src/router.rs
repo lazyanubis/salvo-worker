@@ -10,6 +10,8 @@ pub(crate) static ROUTER: Lazy<Arc<Router>> = Lazy::new(init_router);
 mod affix_state;
 mod basic_auth;
 mod cache;
+mod caching_headers;
+mod catch_panic;
 
 fn init_router() -> Arc<Router> {
     let config = affix_state::Config {
@@ -61,6 +63,20 @@ fn init_router() -> Arc<Router> {
             Router::with_path("cache")
                 .push(Router::with_path("short").hoop(short_cache).get(cache::short))
                 .push(Router::with_path("long").hoop(long_cache).get(cache::long)),
+        )
+        // caching headers
+        .push(
+            Router::with_path("caching_headers").push(
+                Router::with_hoop(salvo::caching_headers::CachingHeaders::new())
+                    // .hoop(salvo::caching_headers::Co) // TODO compression
+                    .get(caching_headers::hello),
+            ),
+        )
+        // catch panic
+        .push(
+            Router::with_path("catch_panic")
+                .hoop(salvo::catch_panic::CatchPanic::new())
+                .get(catch_panic::hello),
         );
     Arc::new(router)
 }

@@ -27,14 +27,13 @@ use std::panic::AssertUnwindSafe;
 use futures_util::FutureExt;
 
 use salvo_core::http::{Request, Response, StatusError};
-use salvo_core::{async_trait, Depot, FlowCtrl, Error, Handler};
-
+use salvo_core::{Depot, Error, FlowCtrl, Handler, async_trait};
 
 /// Middleware that catches panics in handlers and converts them to HTTP 500 responses.
-/// 
+///
 /// This middleware should be registered as the first middleware in your router chain
 /// to ensure it catches panics from all subsequent handlers and middlewares.
-/// 
+///
 /// View [module level documentation](index.html) for more details.
 #[derive(Default, Debug)]
 pub struct CatchPanic {}
@@ -60,6 +59,7 @@ impl Handler for CatchPanic {
     }
 }
 
+#[cfg(feature = "needless")]
 #[cfg(test)]
 mod tests {
     use salvo_core::prelude::*;

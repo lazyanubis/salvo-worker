@@ -28,4 +28,10 @@ pub mod salvo {
 
     #[cfg(feature = "cache")]
     pub use salvo_cache as cache;
+
+    #[cfg(feature = "caching-headers")]
+    pub use salvo_extra::caching_headers;
+
+    #[cfg(feature = "catch-panic")]
+    pub use salvo_extra::catch_panic;
 }

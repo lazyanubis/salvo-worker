@@ -28,10 +28,12 @@ default = []
 # ! 存疑，Cloudflare 里面的路由可能随时是新的，因此存在路由里面的数据可能会被重置
 affix-state = ["salvo-extra/affix-state"] # 不同路由和处理器之间共享任何类型的数据
 # ! 存疑，Cloudflare 里面的路由可能随时是新的，因此存在路由里面的数据可能会被重置
-basic-auth = ["salvo-extra/basic-auth"] # 请求头中包含 Authorization 字段来传递用户名和密码
+basic-auth = ["salvo-extra/basic-auth"]           # 请求头中包含 Authorization 字段来传递用户名和密码
 cache = ["dep:salvo-cache"]
+caching-headers = ["salvo-extra/caching-headers"]
+catch-panic = ["salvo-extra/catch-panic"]
 
-full = ["affix-state", "basic-auth", "cache"]
+full = ["affix-state", "basic-auth", "cache", "caching-headers", "catch-panic"]
 
 [dependencies]
 salvo-core = { workspace = true }
