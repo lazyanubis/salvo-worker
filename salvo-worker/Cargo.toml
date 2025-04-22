@@ -16,10 +16,14 @@ repository = "https://github.com/lazyanubis/salvo-worker"
 [features]
 default = []
 
+# affix-state = ["salvo_extra/affix-state"] # 不同路由和处理器之间共享任何类型的数据
+
 full = []
 
 [dependencies]
 salvo-core = { workspace = true }
+
+# salvo_extra = { version = "0.78.0", optional = true }
 
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

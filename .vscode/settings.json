@@ -21,6 +21,7 @@
         "multimap",
         "nanos",
         "pemfile",
+        "quic",
         "rcgen",
         "repr",
         "reqwest",

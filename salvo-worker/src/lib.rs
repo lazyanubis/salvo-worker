@@ -19,4 +19,7 @@ pub use handle::handle;
 pub mod salvo {
     pub use salvo_core::prelude::*;
     pub use serde::{Deserialize, Serialize};
+
+    // #[cfg(feature = "affix-state")]
+    // pub use salvo_extra::affix_state;
 }

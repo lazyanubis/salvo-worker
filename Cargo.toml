@@ -1,5 +1,5 @@
 [workspace]
-members = ["salvo-core", "salvo-worker"]
+members = ["salvo/*", "salvo-worker"]
 resolver = "3"
 
 [workspace.package]
@@ -36,7 +36,7 @@ expect_used = "deny"
 panic = "deny"
 
 [workspace.dependencies]
-salvo-core = { path = "salvo-core" }
+salvo-core = { path = "salvo/core" }
 
 http = "1"
 serde = "1"
