@@ -21,4 +21,10 @@ full = []
 [dependencies]
 salvo-core = { workspace = true }
 
-worker = { workspace = true }
+http = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+futures = { workspace = true }
+bytes = { workspace = true }
+
+worker = { workspace = true, features = ["http"] }

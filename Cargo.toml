@@ -38,4 +38,10 @@ panic = "deny"
 [workspace.dependencies]
 salvo-core = { path = "salvo-core" }
 
+http = "1"
+serde = "1"
+serde_json = "1"
+futures = "0.3"
+bytes = "1"
+
 worker = { version = "*" }
