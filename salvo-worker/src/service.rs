@@ -21,6 +21,13 @@ impl WorkerService {
         }
     }
 
+    /// hoop
+    pub fn hoop<H: salvo_core::Handler>(self, hoop: H) -> Self {
+        Self {
+            service: self.service.hoop(hoop),
+        }
+    }
+
     /// cors
     #[cfg(feature = "cors")]
     pub fn cors(self, cors: super::salvo::cors::CorsHandler) -> Self {

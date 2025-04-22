@@ -40,6 +40,7 @@ session = ["dep:salvo-session"]
 csrf = ["dep:salvo-csrf"]
 flash = ["dep:salvo-flash"]
 jwt-auth = ["dep:salvo-jwt-auth"]
+logging = ["salvo-extra/logging"]
 
 full = [
     "cookie",
@@ -55,6 +56,7 @@ full = [
     "csrf",
     "flash",
     # "jwt-auth", # ! ring error wasm
+    "logging",
 ]
 
 [dependencies]

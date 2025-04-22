@@ -1579,6 +1579,7 @@ dependencies = [
  "salvo-core",
  "tokio",
  "tracing",
+ "worker",
 ]
 
 [[package]]

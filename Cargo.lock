@@ -2016,6 +2016,7 @@ dependencies = [
  "tower",
  "tracing",
  "ulid",
+ "worker",
 ]
 
 [[package]]

@@ -5,8 +5,8 @@
 //! ```no_run
 //! use salvo_core::prelude::*;
 //! use salvo_extra::logging::Logger;
-//! 
-//! 
+//!
+//!
 //! #[handler]
 //! async fn hello() -> &'static str {
 //!     "Hello World"
@@ -16,17 +16,18 @@
 //! async fn main() {
 //!     let router = Router::new().get(hello);
 //!     let service = Service::new(router).hoop(Logger::new());
-//! 
+//!
 //!     let acceptor = TcpListener::new("0.0.0.0:5800").bind().await;
 //!     Server::new(acceptor).serve(service).await;
 //! }
 //! ```
-use std::time::Instant;
+#[allow(unused)]
+use std::time::{Duration, Instant};
 
 use tracing::{Instrument, Level};
 
 use salvo_core::http::{Request, ResBody, Response, StatusCode};
-use salvo_core::{async_trait, Depot, FlowCtrl, Handler};
+use salvo_core::{Depot, FlowCtrl, Handler, async_trait};
 
 /// A simple logger middleware.
 #[derive(Default, Debug)]
@@ -42,6 +43,7 @@ impl Logger {
 #[async_trait]
 impl Handler for Logger {
     async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
+        #[cfg(feature = "needless")]
         let span = tracing::span!(
             Level::INFO,
             "Request",
@@ -50,11 +52,30 @@ impl Handler for Logger {
             method = %req.method(),
             path = %req.uri(),
         );
+        #[cfg(not(feature = "needless"))]
+        let span = tracing::span!(
+            Level::INFO,
+            "Request",
+            version = ?req.version(),
+            method = %req.method(),
+            path = %req.uri(),
+        );
 
         async move {
-            let now = Instant::now();
-            ctrl.call_next(req, depot, res).await;
-            let duration = now.elapsed();
+            #[cfg(feature = "needless")]
+            let duration = {
+                let now = Instant::now();
+                ctrl.call_next(req, depot, res).await;
+                now.elapsed()
+            };
+
+            #[cfg(not(feature = "needless"))]
+            let duration = {
+                let now = worker::js_sys::Date::now();
+                ctrl.call_next(req, depot, res).await;
+                let end = worker::js_sys::Date::now();
+                Duration::from_millis((end - now) as u64)
+            };
 
             let status = res.status_code.unwrap_or(match &res.body {
                 ResBody::None => StatusCode::NOT_FOUND,
@@ -72,6 +93,7 @@ impl Handler for Logger {
     }
 }
 
+#[cfg(feature = "needless")]
 #[cfg(test)]
 mod tests {
     use salvo_core::prelude::*;

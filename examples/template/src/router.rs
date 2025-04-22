@@ -22,11 +22,13 @@ mod concurrency_limiter;
 mod csrf;
 mod flash_cookie;
 mod flash_session;
+mod logging;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
     let service: WorkerService = init_router().into();
     let service = service.cors(init_cors());
+    let service = service.hoop(salvo::logging::Logger::new());
     Arc::new(service)
 }
 

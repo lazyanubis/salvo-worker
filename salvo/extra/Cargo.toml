@@ -98,4 +98,6 @@ tower = { workspace = true, optional = true, default-features = false, features 
 tracing = { workspace = true, optional = true }
 ulid = { workspace = true, optional = true, features = ["std"] }
 
+worker = { workspace = true }
+
 [dev-dependencies]

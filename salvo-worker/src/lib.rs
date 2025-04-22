@@ -61,4 +61,7 @@ pub mod salvo {
 
     #[cfg(feature = "jwt-auth")]
     pub use salvo_jwt_auth as jwt_auth;
+
+    #[cfg(feature = "logging")]
+    pub use salvo_extra::logging;
 }
