@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "Bidi",
+        "bindgen",
         "bitflags",
         "cdylib",
         "clippy",
@@ -20,6 +21,7 @@
         "multimap",
         "nanos",
         "repr",
+        "reqwest",
         "rngs",
         "rustdoc",
         "rustflags",
