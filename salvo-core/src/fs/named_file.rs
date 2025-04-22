@@ -47,6 +47,7 @@ pub(crate) enum Flag {
 /// ```
 /// use salvo_core::fs::NamedFile;
 /// async fn open() {
+///     #[cfg(feature = "needless")]
 ///     let file = NamedFile::open("foo.txt").await;
 /// }
 ///

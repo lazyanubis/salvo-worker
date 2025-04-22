@@ -1,5 +1,5 @@
 //! Utilities for testing application.
-//! 
+//!
 //! # Example
 //!
 //! ```no_run
@@ -16,7 +16,9 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
+//!     #[cfg(feature = "needless")]
 //!     let acceptor = TcpListener::new("0.0.0.0:5800").bind().await;
+//!     #[cfg(feature = "needless")]
 //!     Server::new(acceptor).serve(route()).await;
 //! }
 //!
@@ -24,11 +26,11 @@
 //! mod tests {
 //!     use salvo_core::prelude::*;
 //!     use salvo_core::test::{ResponseExt, TestClient};
-//! 
+//!
 //!     #[tokio::test]
 //!     async fn test_hello() {
 //!         let service = Service::new(super::route());
-//! 
+//!
 //!         let content = TestClient::get("http://0.0.0.0:5800/")
 //!             .send(&service)
 //!             .await

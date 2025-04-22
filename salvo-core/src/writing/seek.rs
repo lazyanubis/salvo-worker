@@ -24,6 +24,7 @@ use crate::{Depot, Writer, async_trait};
 /// use salvo_core::prelude::*;
 /// use salvo_core::writing::ReadSeeker;
 ///
+/// #[cfg(feature = "needless")]
 /// #[handler]
 /// async fn video_stream(req: &mut Request, res: &mut Response) {
 ///     let file = tokio::fs::File::open("video.mp4").await.unwrap();

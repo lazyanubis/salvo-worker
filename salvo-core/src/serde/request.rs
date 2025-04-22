@@ -472,8 +472,8 @@ mod tests {
     use serde::{Deserialize, Serialize};
 
     use crate::macros::Extractible;
-    use crate::test::TestClient;
     use crate::prelude::*;
+    use crate::test::TestClient;
 
     #[tokio::test]
     async fn test_de_request_from_query() {
@@ -687,6 +687,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "needless")]
     #[tokio::test]
     async fn test_de_request_with_form_json_str() {
         #[derive(Deserialize, Eq, PartialEq, Debug)]

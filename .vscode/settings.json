@@ -13,6 +13,7 @@
         "flate2",
         "fusewire",
         "getrandom",
+        "hyperdrive",
         "impls",
         "indexmap",
         "multer",
