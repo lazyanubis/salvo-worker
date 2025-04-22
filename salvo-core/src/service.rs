@@ -149,7 +149,7 @@ impl Service {
     /// Handle new request, this function only used for test.
     #[cfg(feature = "test")]
     #[inline]
-    pub async fn handle(&self, request: impl Into<Request> + Send) -> Response {
+    pub async fn handle(&self, request: impl Into<Request> + Send, depot: Option<Depot>) -> Response {
         let request = request.into();
         self.hyper_handler(
             #[cfg(feature = "needless")]
@@ -161,7 +161,7 @@ impl Service {
             None,
             None,
         )
-        .handle(request)
+        .handle(request, depot)
         .await
     }
 }
@@ -205,7 +205,7 @@ pub struct HyperHandler {
 }
 impl HyperHandler {
     /// Handle [`Request`] and returns [`Response`].
-    pub fn handle(&self, mut req: Request) -> impl Future<Output = Response> + 'static {
+    pub fn handle(&self, mut req: Request, depot: Option<Depot>) -> impl Future<Output = Response> + 'static {
         let catcher = self.catcher.clone();
         let allowed_media_types = self.allowed_media_types.clone();
         #[cfg(feature = "needless")]
@@ -222,7 +222,7 @@ impl HyperHandler {
                 res.headers_mut().insert(ALT_SVC, alt_svc_h3.clone());
             }
         }
-        let mut depot = Depot::new();
+        let mut depot = depot.unwrap_or_else(|| Depot::new());
         let mut path_state = PathState::new(req.uri().path());
         let router = self.router.clone();
 
@@ -382,7 +382,7 @@ where
             let mut request = Request::from_hyper(req, scheme);
             request.body.set_fusewire(self.fusewire.clone());
         }
-        let response = self.handle(request);
+        let response = self.handle(request, None);
         Box::pin(async move { Ok(response.await.into_hyper()) })
     }
 }

@@ -8,11 +8,15 @@
 #![deny(clippy::expect_used)] // 不许用 expect
 #![deny(clippy::panic)] // 不许用 panic
 
+/// response
+mod response;
+
 /// handle
 mod handle;
 pub use handle::handle;
 
-/// test add
-pub fn add(a: u32, b: u32) -> u32 {
-    a + b
+/// 导出所有 salvo 需要用到的
+pub mod salvo {
+    pub use salvo_core::prelude::*;
+    pub use serde::{Deserialize, Serialize};
 }

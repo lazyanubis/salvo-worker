@@ -1,0 +1,71 @@
+[workspace]
+members = ["template"]
+exclude = []
+resolver = "3"         # 依赖解析器的作用是依据项目的依赖声明，找出兼容的依赖版本组合。
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[profile.release]
+lto = true        # 用于启用链路时间优化
+opt-level = 'z'   # 优化级别
+codegen-units = 1 # 在整个crate中使用最高级别优化
+strip = true      # 剥离调试信息，减小输出大小
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unreachable_pub = "warn"
+missing_docs = "warn"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "warn"
+
+[workspace.lints.clippy]
+future_not_send = "warn"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+
+[workspace.dependencies]
+# 本地依赖
+salvo-worker = { path = "../salvo-worker" }
+
+# 运行框架相关
+# 调试 wasm32-unknown-unknown 上的 panic, 提供一个钩子能将 panic 消息转发给 console.error。
+# 当控制台报告错误时, 浏览器 devtools 和 node.js 通常会捕获堆栈跟踪并显示记录的错误消息。
+# 如果没有 console_error_panic_hook, 只会得到类似于 RuntimeError: Unreachable executed 的提示
+console_error_panic_hook = { version = "0.1.1" }
+# 绑定 Rust 到 Cloudflare Workers 环境。用 Rust 编写 Worker!
+worker = { version = "0.5.0", features = ["http", "axum", "d1"] }
+worker-macros = { version = "0.5.0", features = ["http"] }
+
+# axum = { version = "0.8.3", default-features = false } # web 框架
+# tower-service = { version = "0.3.3" }                  # 提供 Tower 所需的 Service Trait
+
+# 日志
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["time", "json"] }
+tracing-web = "0.1"
+
+# 工具
+time = { version = "0.3", features = ["wasm-bindgen"] }
+hex = "0.4"                                             # hex
+sha2 = "0.10"                                           # hash
+http = "1.2"                                            # 一个通用的HTTP类型库
+once_cell = "1.20.2"                                    # 初始化
+lazy_static = { version = "1" }                         # 懒加载
+futures = { version = "0.3.31" }                        # 异步操作
+# getrandom = { version = "0.3.2", features = ["wasm_js"] } # 随机数
+regex = { version = "1.11.1" } # 正则
+
+# 序列化
+serde = "1.0.214"          # 序列化
+serde_json = "1.0.132"
+serde-wasm-bindgen = "0.6"
+ciborium = "0.2"
+
+# 网络请求
+# worker::worker_sys::web_sys 提供了发起网络请求的对象
+# https://github.com/cloudflare/workers-rs/blob/main/examples/digest/src/lib.rs
+# reqwest = { version = "0.12.9", features = ["json", "blocking", "multipart"] }

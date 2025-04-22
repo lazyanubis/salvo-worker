@@ -2,13 +2,13 @@ use std::borrow::Borrow;
 use std::str;
 use std::sync::Arc;
 
-use base64::engine::{general_purpose, Engine};
+use base64::engine::{Engine, general_purpose};
 use http::header::{self, HeaderMap, HeaderValue, IntoHeaderName};
 use http::uri::Scheme;
 use url::Url;
 
-use crate::http::body::ReqBody;
 use crate::http::Method;
+use crate::http::body::ReqBody;
 use crate::routing::{FlowCtrl, Router};
 use crate::{Depot, Error, Handler, Request, Response, Service};
 
@@ -257,7 +257,7 @@ pub trait SendTarget {
 }
 impl SendTarget for &Service {
     async fn call(self, req: Request) -> Response {
-        self.handle(req).await
+        self.handle(req, None).await
     }
 }
 impl SendTarget for Router {
@@ -269,7 +269,7 @@ impl SendTarget for Router {
 impl SendTarget for Arc<Router> {
     async fn call(self, req: Request) -> Response {
         let srv = Service::new(self);
-        srv.handle(req).await
+        srv.handle(req, None).await
     }
 }
 impl<T> SendTarget for Arc<T>
