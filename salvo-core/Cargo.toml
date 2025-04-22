@@ -4,22 +4,22 @@ version.workspace = true
 edition.workspace = true
 license = "MIT"
 
-
 [features]
 default = [
     # "cookie",
-    # "fix-http1-request-uri",
-    # "server",
+    "fix-http1-request-uri",
+    "server",
     # "server-handle",
-    # "http1",
+    "http1",
     # "http2",
-    # "test",
-    # "ring",
-    # "matched-path",
-    "full",
+    "test",
+    "anyhow",
+    "eyre",
+    "ring",
+    "matched-path",
 ]
 full = [
-    "cookie",
+    # "cookie",
     "fix-http1-request-uri",
     "server",
     # # "server-handle", # too many tokio
@@ -100,7 +100,7 @@ needless = []
 [dependencies]
 salvo_macros = "0.78.0"
 
-getrandom = { version = "0.2.15", features = ["js"] }
+# getrandom = { version = "0.2.15", features = ["js"] }
 # getrandom = { version = "0.3.2", default-features = true, features = [
 #     "wasm_js",
 # ] }

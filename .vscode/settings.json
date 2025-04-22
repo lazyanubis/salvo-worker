@@ -20,6 +20,8 @@
         "multer",
         "multimap",
         "nanos",
+        "pemfile",
+        "rcgen",
         "repr",
         "reqwest",
         "rngs",
