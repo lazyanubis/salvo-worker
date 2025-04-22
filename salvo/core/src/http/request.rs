@@ -739,7 +739,6 @@ impl Request {
     }
 
     /// Get field data from form.
-    #[cfg(feature = "needless")]
     #[inline]
     pub async fn form<'de, T>(&'de mut self, key: &str) -> Option<T>
     where
@@ -749,7 +748,6 @@ impl Request {
     }
 
     /// Try to get field data from form.
-    #[cfg(feature = "needless")]
     #[inline]
     pub async fn try_form<'de, T>(&'de mut self, key: &str) -> ParseResult<T>
     where
@@ -896,11 +894,10 @@ impl Request {
     /// Get `FormData` reference from request.
     ///
     /// *Notice: This method takes body and body's size is not limited.
-    #[cfg(feature = "needless")]
     #[inline]
     pub async fn form_data(&mut self) -> ParseResult<&FormData> {
-        if let Some(ctype) = self.content_type() {
-            if ctype.subtype() == mime::WWW_FORM_URLENCODED || ctype.type_() == mime::MULTIPART {
+        if let Some(c_type) = self.content_type() {
+            if c_type.subtype() == mime::WWW_FORM_URLENCODED || c_type.type_() == mime::MULTIPART {
                 let body = self.take_body();
                 let headers = self.headers();
                 self.form_data

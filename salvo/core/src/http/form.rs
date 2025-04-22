@@ -60,7 +60,6 @@ impl FormData {
     }
 
     /// Parse MIME `multipart/*` information from a stream as a `FormData`.
-    #[cfg(feature = "needless")]
     pub(crate) async fn read(headers: &HeaderMap, body: ReqBody) -> Result<FormData, ParseError> {
         let c_type: Option<Mime> = headers
             .get(CONTENT_TYPE)
@@ -82,13 +81,16 @@ impl FormData {
                 {
                     let body = body.map(|f| f.map(|f| f.into_data().unwrap_or_default()));
                     let mut multipart = Multipart::new(body, boundary);
-                    while let Some(mut field) = multipart.next_field().await? {
+                    while let Some(field) = multipart.next_field().await? {
                         if let Some(name) = field.name().map(|s| s.to_owned()) {
+                            #[cfg(feature = "needless")]
                             if field.headers().get(CONTENT_TYPE).is_some() {
                                 form_data.files.insert(name, FilePart::create(&mut field).await?);
                             } else {
                                 form_data.fields.insert(name, field.text().await?);
                             }
+                            #[cfg(not(feature = "needless"))]
+                            form_data.fields.insert(name, field.text().await?);
                         }
                     }
                 }

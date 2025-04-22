@@ -1,0 +1,32 @@
+[package]
+name = "salvo-session"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+
+[package.metadata.release]
+release = false
+
+# https://github.com/rustwasm/wasm-pack/issues/1247
+# [package.metadata.wasm-pack.profile.release]
+# wasm-opt = false
+
+# [lib]
+# crate-type = ["cdylib"]
+
+[lints]
+workspace = true
+
+[features]
+needless = []
+
+[dependencies]
+async-session = { workspace = true }
+cookie = { workspace = true, features = ["percent-encode", "signed"] }
+salvo-core = { workspace = true, features = ["cookie"] }
+tracing = { workspace = true }
+time = { workspace = true }
+
+worker = { workspace = true }
+
+[dev-dependencies]

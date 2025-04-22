@@ -19,6 +19,7 @@ mod cache;
 mod caching_headers;
 mod catch_panic;
 mod concurrency_limiter;
+mod session;
 
 fn init_service() -> Arc<WorkerService> {
     let service: WorkerService = init_router().into();
@@ -56,6 +57,13 @@ fn init_router() -> Arc<Router> {
             .build(),
         RequestIssuer::default(),
     );
+
+    let session_handler = salvo::session::SessionHandler::builder(
+        salvo::session::CookieStore::new(),
+        b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
+    )
+    .build()
+    .unwrap();
 
     let router = Router::new()
         .get(hello)
@@ -105,6 +113,14 @@ fn init_router() -> Arc<Router> {
             Router::with_path("concurrency_limiter")
                 .hoop(salvo::concurrency_limiter::max_concurrency(1))
                 .get(concurrency_limiter::index),
+        )
+        // session
+        .push(
+            Router::with_path("session")
+                .hoop(session_handler)
+                .get(session::home)
+                .push(Router::with_path("login").get(session::login).post(session::login))
+                .push(Router::with_path("logout").get(session::logout)),
         );
     Arc::new(router)
 }

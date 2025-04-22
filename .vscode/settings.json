@@ -14,6 +14,8 @@
         "flate2",
         "fusewire",
         "getrandom",
+        "HKDF",
+        "hmac",
         "hyperdrive",
         "impls",
         "indexmap",

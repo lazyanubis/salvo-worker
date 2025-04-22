@@ -44,4 +44,7 @@ pub mod salvo {
 
     #[cfg(feature = "cors")]
     pub use salvo_cors as cors;
+
+    #[cfg(feature = "session")]
+    pub use salvo_session as session;
 }

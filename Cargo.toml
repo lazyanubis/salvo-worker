@@ -41,6 +41,7 @@ salvo-extra = { path = "salvo/extra", default-features = false }
 salvo-cache = { path = "salvo/cache", default-features = false }
 salvo-compression = { path = "salvo/compression", default-features = false }
 salvo-cors = { path = "salvo/cors" }
+salvo-session = { path = "salvo/session" }
 
 base64 = "0.22"
 http = "1"
@@ -72,5 +73,7 @@ indexmap = "2"
 brotli = { version = "8", default-features = false }
 flate2 = { version = "1", default-features = false }
 zstd = { version = "0.13", default-features = false }
+async-session = "3"
+cookie = "0.18"
 
 worker = { version = "*" }

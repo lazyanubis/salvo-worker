@@ -36,8 +36,10 @@ catch-panic = ["salvo-extra/catch-panic"]
 compression = ["salvo-compression"]
 concurrency-limiter = ["salvo-extra/concurrency-limiter"]
 cors = ["dep:salvo-cors"]
+session = ["dep:salvo-session"]
 
 full = [
+    "cookie",
     "affix-state",
     "basic-auth",
     "cache",
@@ -46,6 +48,7 @@ full = [
     # "compression",
     "concurrency-limiter",
     "cors",
+    "session",
 ]
 
 [dependencies]
@@ -64,6 +67,7 @@ salvo-compression = { workspace = true, default-features = false, optional = tru
     "deflate",
 ] }
 salvo-cors = { workspace = true, optional = true }
+salvo-session = { workspace = true, optional = true }
 
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
