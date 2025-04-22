@@ -20,10 +20,10 @@ use multimap::MultiMap;
 use parking_lot::RwLock;
 use serde::de::Deserialize;
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::conn::SocketAddr;
 use crate::extract::{Extractible, Metadata};
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::TransProto;
 use crate::http::body::ReqBody;
 #[allow(unused)]
@@ -105,9 +105,9 @@ pub struct Request {
     /// The version of the HTTP protocol used.
     pub(crate) version: Version,
     pub(crate) scheme: Scheme,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) local_addr: SocketAddr,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) remote_addr: SocketAddr,
 
     pub(crate) secure_max_size: Option<usize>,
@@ -125,7 +125,7 @@ impl Debug for Request {
             .field("headers", self.headers())
             // omits Extensions because not useful
             .field("body", &self.body());
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         {
             f.field("local_addr", &self.local_addr)
                 .field("remote_addr", &self.remote_addr);
@@ -159,16 +159,16 @@ impl Request {
             payload: tokio::sync::OnceCell::new(),
             version: Version::default(),
             scheme: Scheme::HTTP,
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             local_addr: SocketAddr::Unknown,
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             remote_addr: SocketAddr::Unknown,
             secure_max_size: None,
             #[cfg(feature = "matched-path")]
             matched_path: Default::default(),
         }
     }
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[doc(hidden)]
     pub fn trans_proto(&self) -> TransProto {
         if self.version == Version::HTTP_3 {
@@ -224,9 +224,9 @@ impl Request {
             form_data: tokio::sync::OnceCell::new(),
             payload: tokio::sync::OnceCell::new(),
             // multipart: OnceLock::new(),
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             local_addr: SocketAddr::Unknown,
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             remote_addr: SocketAddr::Unknown,
             version,
             scheme,
@@ -375,26 +375,26 @@ impl Request {
     }
 
     /// Get request remote address.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn remote_addr(&self) -> &SocketAddr {
         &self.remote_addr
     }
     /// Get request remote address.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn remote_addr_mut(&mut self) -> &mut SocketAddr {
         &mut self.remote_addr
     }
 
     /// Get request local address reference.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn local_addr(&self) -> &SocketAddr {
         &self.local_addr
     }
     /// Get mutable request local address reference.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn local_addr_mut(&mut self) -> &mut SocketAddr {
         &mut self.local_addr
@@ -760,7 +760,7 @@ impl Request {
     }
 
     /// Get field data from form, if key is not found in form data, then get from query.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn form_or_query<'de, T>(&'de mut self, key: &str) -> Option<T>
     where
@@ -770,7 +770,7 @@ impl Request {
     }
 
     /// Try to get field data from form, if key is not found in form data, then get from query.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_form_or_query<'de, T>(&'de mut self, key: &str) -> ParseResult<T>
     where
@@ -785,7 +785,7 @@ impl Request {
     }
 
     /// Get value from query, if key is not found in queries, then get from form.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn query_or_form<'de, T>(&'de mut self, key: &str) -> Option<T>
     where
@@ -795,7 +795,7 @@ impl Request {
     }
 
     /// Try to get value from query, if key is not found in queries, then get from form.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_query_or_form<'de, T>(&'de mut self, key: &str) -> ParseResult<T>
     where
@@ -809,54 +809,54 @@ impl Request {
     }
 
     /// Get [`FilePart`] reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn file(&mut self, key: &str) -> Option<&FilePart> {
         self.try_file(key).await.ok().flatten()
     }
     /// Try to get [`FilePart`] reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_file(&mut self, key: &str) -> ParseResult<Option<&FilePart>> {
         self.form_data().await.map(|ps| ps.files.get(key))
     }
 
     /// Get [`FilePart`] reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn first_file(&mut self) -> Option<&FilePart> {
         self.try_first_file().await.ok().flatten()
     }
 
     /// Try to get [`FilePart`] reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_first_file(&mut self) -> ParseResult<Option<&FilePart>> {
         self.form_data().await.map(|ps| ps.files.iter().next().map(|(_, f)| f))
     }
 
     /// Get [`FilePart`] list reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn files(&mut self, key: &str) -> Option<&Vec<FilePart>> {
         self.try_files(key).await.ok().flatten()
     }
     /// Try to get [`FilePart`] list reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_files(&mut self, key: &str) -> ParseResult<Option<&Vec<FilePart>>> {
         self.form_data().await.map(|ps| ps.files.get_vec(key))
     }
 
     /// Get [`FilePart`] list reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn all_files(&mut self) -> Vec<&FilePart> {
         self.try_all_files().await.unwrap_or_default()
     }
 
     /// Try to get [`FilePart`] list reference from request.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_all_files(&mut self) -> ParseResult<Vec<&FilePart>> {
         self.form_data()

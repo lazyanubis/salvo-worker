@@ -26,9 +26,9 @@ use std::fmt::{self, Debug, Formatter};
 /// #[tokio::main]
 /// async fn main() {
 ///     let router = Router::new().hoop(set_user).goal(hello);
-///     #[cfg(feature = "needless")]
+///     #[cfg(not(target_arch = "wasm32"))]
 ///     let acceptor = TcpListener::new("0.0.0.0:5800").bind().await;
-///     #[cfg(feature = "needless")]
+///     #[cfg(not(target_arch = "wasm32"))]
 ///     Server::new(acceptor).serve(router).await;
 /// }
 /// ```

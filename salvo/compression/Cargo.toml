@@ -25,8 +25,6 @@ gzip = ["dep:flate2"]
 deflate = ["dep:flate2"]
 zstd = ["dep:zstd"]
 
-needless = []
-
 [dependencies]
 brotli = { workspace = true, optional = true, features = ["default"] }
 bytes = { workspace = true }

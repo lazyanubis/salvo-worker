@@ -18,7 +18,6 @@ release = false
 workspace = true
 
 [features]
-needless = []
 
 [dependencies]
 salvo-core = { workspace = true, default-features = false }

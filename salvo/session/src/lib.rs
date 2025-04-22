@@ -429,7 +429,7 @@ where
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
     use salvo_core::http::Method;

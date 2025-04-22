@@ -7,7 +7,7 @@
 pub use hyper::rt::*;
 
 /// Tokio runtimes
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod tokio {
     pub use hyper_util::rt::{TokioExecutor, TokioIo};
 }

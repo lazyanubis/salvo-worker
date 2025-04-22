@@ -14,7 +14,7 @@ use mime::Mime;
 
 #[allow(unused)]
 use crate::fs::NamedFile;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::TransProto;
 use crate::http::StatusCode;
 #[allow(unused)]
@@ -167,7 +167,7 @@ impl Response {
         &mut self.version
     }
 
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[doc(hidden)]
     pub fn trans_proto(&self) -> TransProto {
         if self.version == Version::HTTP_3 {
@@ -406,7 +406,7 @@ impl Response {
     /// Attempts to send a file. If file not exists, not found error will occur.
     ///
     /// If you want more settings, you can use `NamedFile::builder` to create a new [`NamedFileBuilder`](crate::fs::NamedFileBuilder).
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn send_file<P>(&mut self, path: P, req_headers: &HeaderMap)
     where
         P: Into<PathBuf> + Send,

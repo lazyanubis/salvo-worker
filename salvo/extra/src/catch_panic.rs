@@ -59,7 +59,7 @@ impl Handler for CatchPanic {
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
     use salvo_core::prelude::*;

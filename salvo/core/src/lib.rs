@@ -38,13 +38,13 @@ extern crate self as salvo_core;
 mod cfg;
 
 pub mod catcher;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod conn;
 mod depot;
 mod error;
 pub mod extract;
 pub mod fs;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 pub mod fuse;
 pub mod handler;
 pub mod http;
@@ -69,7 +69,7 @@ cfg_feature! {
     pub use proto::webtransport;
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 pub use self::conn::Listener;
 pub use self::depot::Depot;
 pub use self::error::{BoxedError, Error};
@@ -125,7 +125,7 @@ pub mod prelude {
     //     #![unix]
     //     pub use crate::conn::UnixListener;
     // }
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub use crate::conn::{JoinedListener, Listener, TcpListener};
     pub use crate::handler::{self, Handler};
     pub use crate::routing::{FlowCtrl, Router};

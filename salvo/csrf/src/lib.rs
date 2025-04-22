@@ -306,7 +306,7 @@ impl<C: CsrfCipher, S: CsrfStore> Handler for Csrf<C, S> {
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
     use super::*;

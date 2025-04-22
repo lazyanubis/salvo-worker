@@ -35,8 +35,6 @@ ring = [
     # "hyper-rustls?/ring"
 ]
 
-needless = []
-
 [dependencies]
 base64 = { workspace = true }
 bytes = { workspace = true, optional = true }

@@ -19,7 +19,7 @@ use futures_util::stream::Stream;
 pub(crate) enum ChunkedState<T> {
     #[allow(unused)]
     File(Option<T>),
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     Future(tokio::task::JoinHandle<IoResult<(T, Bytes)>>),
 }
 
@@ -36,7 +36,7 @@ pub struct ChunkedFile<T> {
     state: ChunkedState<T>,
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 impl<T> Stream for ChunkedFile<T>
 where
     T: Read + Seek + Unpin + Send + 'static,

@@ -23,8 +23,6 @@ full = ["moka-store"]
 moka-store = ["dep:moka"]
 worker-store = ["dep:worker"]
 
-needless = []
-
 [dependencies]
 bytes = { workspace = true }
 moka = { workspace = true, optional = true, features = ["future"] }

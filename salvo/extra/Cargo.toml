@@ -71,8 +71,6 @@ tower-compat = [
     "dep:tracing",
 ]
 
-needless = []
-
 [dependencies]
 base64 = { workspace = true, optional = true }
 etag = { workspace = true, features = ["std"], optional = true }

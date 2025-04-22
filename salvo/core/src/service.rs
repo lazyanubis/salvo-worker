@@ -8,9 +8,9 @@ use hyper::service::Service as HyperService;
 use hyper::{Method, Request as HyperRequest, Response as HyperResponse};
 
 use crate::catcher::{Catcher, write_error_default};
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::conn::SocketAddr;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::ArcFusewire;
 use crate::handler::{Handler, WhenHoop};
 use crate::http::body::{ReqBody, ResBody};
@@ -125,23 +125,23 @@ impl Service {
     #[inline]
     pub fn hyper_handler(
         &self,
-        #[cfg(feature = "needless")] local_addr: SocketAddr,
-        #[cfg(feature = "needless")] remote_addr: SocketAddr,
+        #[cfg(not(target_arch = "wasm32"))] local_addr: SocketAddr,
+        #[cfg(not(target_arch = "wasm32"))] remote_addr: SocketAddr,
         http_scheme: Scheme,
-        #[cfg(feature = "needless")] fusewire: Option<ArcFusewire>,
+        #[cfg(not(target_arch = "wasm32"))] fusewire: Option<ArcFusewire>,
         alt_svc_h3: Option<HeaderValue>,
     ) -> HyperHandler {
         HyperHandler {
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             local_addr,
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             remote_addr,
             http_scheme,
             router: self.router.clone(),
             catcher: self.catcher.clone(),
             hoops: self.hoops.clone(),
             allowed_media_types: self.allowed_media_types.clone(),
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             fusewire,
             alt_svc_h3,
         }
@@ -152,12 +152,12 @@ impl Service {
     pub async fn handle(&self, request: impl Into<Request> + Send, depot: Option<Depot>) -> Response {
         let request = request.into();
         self.hyper_handler(
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             request.local_addr.clone(),
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             request.remote_addr.clone(),
             request.scheme.clone(),
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             None,
             None,
         )
@@ -190,16 +190,16 @@ impl Handler for DefaultStatusOK {
 #[doc(hidden)]
 #[derive(Clone)]
 pub struct HyperHandler {
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) local_addr: SocketAddr,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) remote_addr: SocketAddr,
     pub(crate) http_scheme: Scheme,
     pub(crate) router: Arc<Router>,
     pub(crate) catcher: Option<Arc<Catcher>>,
     pub(crate) hoops: Vec<Arc<dyn Handler>>,
     pub(crate) allowed_media_types: Arc<Vec<Mime>>,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fusewire: Option<ArcFusewire>,
     pub(crate) alt_svc_h3: Option<HeaderValue>,
 }
@@ -208,7 +208,7 @@ impl HyperHandler {
     pub fn handle(&self, mut req: Request, depot: Option<Depot>) -> impl Future<Output = Response> + 'static {
         let catcher = self.catcher.clone();
         let allowed_media_types = self.allowed_media_types.clone();
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         {
             req.local_addr = self.local_addr.clone();
             req.remote_addr = self.remote_addr.clone();
@@ -375,9 +375,9 @@ where
                 }
             }
         }
-        #[cfg(not(feature = "needless"))]
+        #[cfg(target_arch = "wasm32")]
         let request = Request::from_hyper(req, scheme);
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         {
             let mut request = Request::from_hyper(req, scheme);
             request.body.set_fusewire(self.fusewire.clone());

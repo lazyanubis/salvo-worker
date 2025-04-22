@@ -26,7 +26,7 @@ where
         match c_type.subtype() {
             mime::WWW_FORM_URLENCODED | mime::FORM_DATA =>
             {
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 if metadata.has_body_required() {
                     let _ = req.form_data().await;
                 }
@@ -687,7 +687,7 @@ mod tests {
         );
     }
 
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[tokio::test]
     async fn test_de_request_with_form_json_str() {
         #[derive(Deserialize, Eq, PartialEq, Debug)]

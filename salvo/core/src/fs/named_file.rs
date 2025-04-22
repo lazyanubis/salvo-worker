@@ -13,7 +13,7 @@ use std::os::unix::fs::MetadataExt;
 
 use enumflags2::{BitFlags, bitflags};
 use headers::*;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::fs::File;
 
 #[allow(unused)]
@@ -47,14 +47,14 @@ pub(crate) enum Flag {
 /// ```
 /// use salvo_core::fs::NamedFile;
 /// async fn open() {
-///     #[cfg(feature = "needless")]
+///     #[cfg(not(target_arch = "wasm32"))]
 ///     let file = NamedFile::open("foo.txt").await;
 /// }
 ///
 #[derive(Debug)]
 pub struct NamedFile {
     path: PathBuf,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     file: File,
     modified: Option<SystemTime>,
     #[allow(unused)]
@@ -151,7 +151,7 @@ impl NamedFileBuilder {
     }
 
     /// Build a new `NamedFile` and send it.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn send(self, req_headers: &HeaderMap, res: &mut Response) {
         if !self.path.exists() {
             res.render(StatusError::not_found());
@@ -164,7 +164,7 @@ impl NamedFileBuilder {
     }
 
     /// Build a new [`NamedFile`].
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn build(self) -> Result<NamedFile> {
         let NamedFileBuilder {
             path,
@@ -219,7 +219,7 @@ impl NamedFileBuilder {
         })
     }
 }
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 fn build_content_disposition(
     file_path: impl AsRef<Path>,
     content_type: &Mime,
@@ -281,7 +281,7 @@ impl NamedFile {
     /// let file = NamedFile::open("foo.txt").await;
     /// # }
     /// ```
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn open<P>(path: P) -> Result<NamedFile>
     where
@@ -291,7 +291,7 @@ impl NamedFile {
     }
 
     /// Returns reference to the underlying `File` object.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn file(&self) -> &File {
         &self.file
@@ -417,7 +417,7 @@ impl NamedFile {
         }
     }
     ///Consume self and send content to [`Response`].
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn send(mut self, req_headers: &HeaderMap, res: &mut Response) {
         let etag = if self.flags.contains(Flag::Etag) {
             self.etag()
@@ -546,7 +546,7 @@ impl NamedFile {
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait]
 impl Writer for NamedFile {
     async fn write(self, req: &mut Request, _depot: &mut Depot, res: &mut Response) {
@@ -554,7 +554,7 @@ impl Writer for NamedFile {
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 impl Deref for NamedFile {
     type Target = File;
 
@@ -563,7 +563,7 @@ impl Deref for NamedFile {
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 impl DerefMut for NamedFile {
     fn deref_mut(&mut self) -> &mut File {
         &mut self.file
@@ -571,7 +571,7 @@ impl DerefMut for NamedFile {
 }
 
 /// Returns true if `req_headers` has no `If-Match` header or one which matches `etag`.
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfMatch>() {
         None => true,
@@ -588,7 +588,7 @@ fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
 }
 
 /// Returns true if `req_headers` doesn't have an `If-None-Match` header matching `req`.
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 fn none_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfNoneMatch>() {
         None => true,

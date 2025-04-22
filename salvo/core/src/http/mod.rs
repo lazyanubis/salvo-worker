@@ -26,12 +26,12 @@ use std::io::Result as IoResult;
 #[allow(unused)]
 use std::sync::Arc;
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio_util::sync::CancellationToken;
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::conn::HttpBuilder;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::ArcFusewire;
 use crate::service::HyperHandler;
 
@@ -41,12 +41,12 @@ pub trait HttpConnection {
     fn serve(
         self,
         handler: HyperHandler,
-        #[cfg(feature = "needless")] builder: Arc<HttpBuilder>,
-        #[cfg(feature = "needless")] graceful_stop_token: Option<CancellationToken>,
+        #[cfg(not(target_arch = "wasm32"))] builder: Arc<HttpBuilder>,
+        #[cfg(not(target_arch = "wasm32"))] graceful_stop_token: Option<CancellationToken>,
     ) -> impl Future<Output = IoResult<()>> + Send;
 
     /// Get the fusewire of this connection.
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     fn fusewire(&self) -> Option<ArcFusewire>;
 }
 

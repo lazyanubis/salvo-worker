@@ -16,7 +16,7 @@ compile_error!(
 #[cfg(feature = "http1")]
 use hyper::server::conn::http1;
 #[cfg(feature = "http2")]
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use hyper::server::conn::http2;
 #[allow(unused)]
 #[cfg(feature = "server-handle")]
@@ -35,9 +35,9 @@ use tokio_util::sync::CancellationToken;
 use crate::Service;
 #[cfg(feature = "quinn")]
 use crate::conn::quinn;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::conn::{Accepted, Acceptor, Holding, HttpBuilder};
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::{ArcFuseFactory, FuseFactory};
 #[allow(unused)]
 use crate::http::{HeaderValue, HttpConnection, Version};
@@ -93,7 +93,7 @@ impl ServerHandle {
     /// }
     /// ```
     pub fn stop_graceful(&self, #[allow(unused)] timeout: impl Into<Option<Duration>>) {
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         let _ = self.tx_cmd.send(ServerCommand::StopGraceful(timeout.into()));
     }
 }
@@ -101,7 +101,7 @@ impl ServerHandle {
 #[cfg(feature = "server-handle")]
 enum ServerCommand {
     StopForcible,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     StopGraceful(Option<Duration>),
 }
 
@@ -111,19 +111,19 @@ enum ServerCommand {
 pub struct Server<A> {
     #[allow(unused)]
     acceptor: A,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     builder: HttpBuilder,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     fuse_factory: Option<ArcFuseFactory>,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "server-handle")]
     tx_cmd: UnboundedSender<ServerCommand>,
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "server-handle")]
     rx_cmd: UnboundedReceiver<ServerCommand>,
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 impl<A: Acceptor + Send> Server<A> {
     /// Create new `Server` with [`Acceptor`].
     ///
@@ -572,13 +572,13 @@ mod tests {
                 .await;
             Server::new(acceptor).serve(Router::new()).await;
         };
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         let _: &dyn Send = &async {
             let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 6878));
             let acceptor = TcpListener::new(addr).bind().await;
             Server::new(acceptor).serve(Router::new()).await;
         };
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         #[cfg(unix)]
         let _: &dyn Send = &async {
             use crate::conn::UnixListener;

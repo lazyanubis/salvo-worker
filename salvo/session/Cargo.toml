@@ -18,7 +18,6 @@ release = false
 workspace = true
 
 [features]
-needless = []
 
 [dependencies]
 async-session = { workspace = true }

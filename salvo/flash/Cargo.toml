@@ -23,8 +23,6 @@ full = ["cookie-store", "session-store"]
 cookie-store = ["salvo-core/cookie", "dep:serde_json"]
 session-store = ["dep:salvo-session"]
 
-needless = []
-
 [dependencies]
 async-session = { workspace = true, optional = true }
 salvo-core = { workspace = true, default-features = false }

@@ -5,9 +5,9 @@ use std::io::SeekFrom;
 use std::time::SystemTime;
 
 use headers::*;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::io::{AsyncRead, AsyncSeek, AsyncSeekExt};
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio_util::io::ReaderStream;
 
 #[allow(unused)]
@@ -24,7 +24,7 @@ use crate::{Depot, Writer, async_trait};
 /// use salvo_core::prelude::*;
 /// use salvo_core::writing::ReadSeeker;
 ///
-/// #[cfg(feature = "needless")]
+/// #[cfg(not(target_arch = "wasm32"))]
 /// #[handler]
 /// async fn video_stream(req: &mut Request, res: &mut Response) {
 ///     let file = tokio::fs::File::open("video.mp4").await.unwrap();
@@ -42,7 +42,7 @@ pub struct ReadSeeker<R> {
     etag: Option<ETag>,
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 impl<R> ReadSeeker<R>
 where
     R: AsyncSeek + AsyncRead + Unpin + Send + 'static,
@@ -70,7 +70,7 @@ where
     }
 
     ///Consume self and send content to [`Response`].
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn send(mut self, req_headers: &HeaderMap, res: &mut Response) {
         // check preconditions
         let precondition_failed = if !any_match(self.etag.as_ref(), req_headers) {
@@ -158,7 +158,7 @@ where
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait]
 impl<R> Writer for ReadSeeker<R>
 where
@@ -171,7 +171,7 @@ where
 }
 
 /// Returns true if `req_headers` has no `If-Match` header or one which matches `etag`.
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfMatch>() {
         None => true,
@@ -188,7 +188,7 @@ fn any_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
 }
 
 /// Returns true if `req_headers` doesn't have an `If-None-Match` header matching `req`.
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 fn none_match(etag: Option<&ETag>, req_headers: &HeaderMap) -> bool {
     match req_headers.typed_get::<IfNoneMatch>() {
         None => true,

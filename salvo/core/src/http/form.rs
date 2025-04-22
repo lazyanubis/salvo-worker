@@ -20,15 +20,15 @@ use multer::Field;
 #[allow(unused)]
 use multer::Multipart;
 use multimap::MultiMap;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use rand::TryRngCore;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use rand::rngs::OsRng;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tempfile::Builder;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::fs::File;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::io::AsyncWriteExt;
 
 #[allow(unused)]
@@ -83,13 +83,13 @@ impl FormData {
                     let mut multipart = Multipart::new(body, boundary);
                     while let Some(field) = multipart.next_field().await? {
                         if let Some(name) = field.name().map(|s| s.to_owned()) {
-                            #[cfg(feature = "needless")]
+                            #[cfg(not(target_arch = "wasm32"))]
                             if field.headers().get(CONTENT_TYPE).is_some() {
                                 form_data.files.insert(name, FilePart::create(&mut field).await?);
                             } else {
                                 form_data.fields.insert(name, field.text().await?);
                             }
-                            #[cfg(not(feature = "needless"))]
+                            #[cfg(target_arch = "wasm32")]
                             form_data.fields.insert(name, field.text().await?);
                         }
                     }
@@ -168,7 +168,7 @@ impl FilePart {
 
     /// Create a new temporary FilePart (when created this way, the file will be
     /// deleted once the FilePart object goes out of scope).
-    #[cfg(feature = "needless")]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn create(field: &mut Field<'_>) -> Result<FilePart, ParseError> {
         // Setup a file to capture the contents.
         let mut path = tokio::task::spawn_blocking(|| Builder::new().prefix("salvo_http_multipart").tempdir())
@@ -200,7 +200,7 @@ impl FilePart {
         })
     }
 }
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 impl Drop for FilePart {
     fn drop(&mut self) {
         if let Some(temp_dir) = &self.temp_dir {
@@ -215,7 +215,7 @@ impl Drop for FilePart {
 }
 
 // Port from https://github.com/mikedilger/textnonce/blob/master/src/lib.rs
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 fn text_nonce() -> String {
     const BYTE_LEN: usize = 24;
     let mut raw: Vec<u8> = vec![0; BYTE_LEN];

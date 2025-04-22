@@ -43,7 +43,7 @@ impl Logger {
 #[async_trait]
 impl Handler for Logger {
     async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         let span = tracing::span!(
             Level::INFO,
             "Request",
@@ -52,7 +52,7 @@ impl Handler for Logger {
             method = %req.method(),
             path = %req.uri(),
         );
-        #[cfg(not(feature = "needless"))]
+        #[cfg(target_arch = "wasm32")]
         let span = tracing::span!(
             Level::INFO,
             "Request",
@@ -62,14 +62,14 @@ impl Handler for Logger {
         );
 
         async move {
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             let duration = {
                 let now = Instant::now();
                 ctrl.call_next(req, depot, res).await;
                 now.elapsed()
             };
 
-            #[cfg(not(feature = "needless"))]
+            #[cfg(target_arch = "wasm32")]
             let duration = {
                 let now = worker::js_sys::Date::now();
                 ctrl.call_next(req, depot, res).await;
@@ -93,7 +93,7 @@ impl Handler for Logger {
     }
 }
 
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
     use salvo_core::prelude::*;

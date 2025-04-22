@@ -9,7 +9,7 @@ use hyper::body::{Body, Frame, Incoming, SizeHint};
 use bytes::Bytes;
 
 use crate::BoxedError;
-#[cfg(feature = "needless")]
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::{ArcFusewire, FuseEvent};
 
 pub(crate) type BoxedBody = Pin<Box<dyn Body<Data = Bytes, Error = BoxedError> + Send + Sync + 'static>>;
@@ -29,7 +29,7 @@ pub enum ReqBody {
         /// Inner body.
         inner: Incoming,
         /// Fusewire.
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         fusewire: Option<ArcFusewire>,
     },
     /// Boxed body.
@@ -37,32 +37,32 @@ pub enum ReqBody {
         /// Inner body.
         inner: BoxedBody,
         /// Fusewire.
-        #[cfg(feature = "needless")]
+        #[cfg(not(target_arch = "wasm32"))]
         fusewire: Option<ArcFusewire>,
     },
 }
 impl ReqBody {
     #[doc(hidden)]
-    pub fn set_fusewire(&mut self, #[cfg(feature = "needless")] value: Option<ArcFusewire>) {
+    pub fn set_fusewire(&mut self, #[cfg(not(target_arch = "wasm32"))] value: Option<ArcFusewire>) {
         match self {
             Self::None => {}
             Self::Once(_) => {}
             Self::Hyper {
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 fusewire,
                 ..
             } => {
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 {
                     *fusewire = value;
                 }
             }
             Self::Boxed {
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 fusewire,
                 ..
             } => {
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 {
                     *fusewire = value;
                 }
@@ -104,11 +104,14 @@ impl Body for ReqBody {
     fn poll_frame(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> PollFrame {
         #[allow(clippy::needless_match)]
         #[inline]
-        fn through_fusewire(poll: PollFrame, #[cfg(feature = "needless")] fusewire: &Option<ArcFusewire>) -> PollFrame {
+        fn through_fusewire(
+            poll: PollFrame,
+            #[cfg(not(target_arch = "wasm32"))] fusewire: &Option<ArcFusewire>,
+        ) -> PollFrame {
             match poll {
                 Poll::Ready(None) => Poll::Ready(None),
                 Poll::Ready(Some(Ok(data))) => {
-                    #[cfg(feature = "needless")]
+                    #[cfg(not(target_arch = "wasm32"))]
                     if let Some(fusewire) = fusewire {
                         fusewire.event(FuseEvent::GainFrame);
                     }
@@ -116,7 +119,7 @@ impl Body for ReqBody {
                 }
                 Poll::Ready(Some(Err(e))) => Poll::Ready(Some(Err(e))),
                 Poll::Pending => {
-                    #[cfg(feature = "needless")]
+                    #[cfg(not(target_arch = "wasm32"))]
                     if let Some(fusewire) = fusewire {
                         fusewire.event(FuseEvent::WaitFrame);
                     }
@@ -136,25 +139,25 @@ impl Body for ReqBody {
             }
             Self::Hyper {
                 inner,
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 fusewire,
             } => {
                 let poll = Pin::new(inner).poll_frame(cx).map_err(IoError::other);
                 through_fusewire(
                     poll,
-                    #[cfg(feature = "needless")]
+                    #[cfg(not(target_arch = "wasm32"))]
                     fusewire,
                 )
             }
             Self::Boxed {
                 inner,
-                #[cfg(feature = "needless")]
+                #[cfg(not(target_arch = "wasm32"))]
                 fusewire,
             } => {
                 let poll = Pin::new(inner).poll_frame(cx).map_err(IoError::other);
                 through_fusewire(
                     poll,
-                    #[cfg(feature = "needless")]
+                    #[cfg(not(target_arch = "wasm32"))]
                     fusewire,
                 )
             }
@@ -201,7 +204,7 @@ impl From<Incoming> for ReqBody {
     fn from(inner: Incoming) -> Self {
         Self::Hyper {
             inner,
-            #[cfg(feature = "needless")]
+            #[cfg(not(target_arch = "wasm32"))]
             fusewire: None,
         }
     }
