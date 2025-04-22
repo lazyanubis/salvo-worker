@@ -80,7 +80,7 @@ pub use self::routing::{FlowCtrl, Router};
 pub use self::service::Service;
 pub use self::writing::{Scribe, Writer};
 /// Result type which has `salvo::Error` as its error type.
-pub type Result<T> = std::result::Result<T, Error>;
+type Result<T> = std::result::Result<T, Error>;
 
 /// A list of things that automatically imports into application use salvo_core.
 pub mod prelude {

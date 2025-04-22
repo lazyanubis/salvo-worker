@@ -36,10 +36,11 @@ expect_used = "deny"
 panic = "deny"
 
 [workspace.dependencies]
-salvo-core = { path = "salvo/core" }
+salvo-core = { path = "salvo/core", default-features = false }
 salvo-extra = { path = "salvo/extra", default-features = false }
 salvo-cache = { path = "salvo/cache", default-features = false }
 salvo-compression = { path = "salvo/compression", default-features = false }
+salvo-cors = { path = "salvo/cors" }
 
 base64 = "0.22"
 http = "1"

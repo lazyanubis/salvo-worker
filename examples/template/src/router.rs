@@ -1,11 +1,17 @@
 use once_cell::sync::Lazy;
+use salvo_worker::WorkerService;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 
-use salvo_worker::salvo::{self, *};
+use salvo_worker::salvo::{
+    self,
+    cors::{Cors, CorsHandler},
+    http::Method,
+    *,
+};
 
-pub(crate) static ROUTER: Lazy<Arc<Router>> = Lazy::new(init_router);
+pub(crate) static WORKER_SERVICE: Lazy<Arc<WorkerService>> = Lazy::new(init_service);
 
 mod affix_state;
 mod basic_auth;
@@ -13,6 +19,21 @@ mod cache;
 mod caching_headers;
 mod catch_panic;
 mod concurrency_limiter;
+
+fn init_service() -> Arc<WorkerService> {
+    let service: WorkerService = init_router().into();
+    let service = service.cors(init_cors());
+    Arc::new(service)
+}
+
+fn init_cors() -> CorsHandler {
+    let cors = Cors::new()
+        .allow_origin(["http://127.0.0.1:5800", "http://localhost:5800"])
+        .allow_methods(vec![Method::GET, Method::POST, Method::DELETE])
+        .allow_headers("authorization")
+        .into_handler();
+    cors
+}
 
 fn init_router() -> Arc<Router> {
     let config = affix_state::Config {

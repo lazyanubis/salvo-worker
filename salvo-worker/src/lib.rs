@@ -11,14 +11,15 @@
 /// response
 mod response;
 
-/// handle
-mod handle;
-pub use handle::handle;
+/// service
+mod service;
+pub use service::*;
 
 /// 导出所有 salvo 需要用到的
 pub mod salvo {
+    pub use ::serde::{Deserialize, Serialize};
     pub use salvo_core::prelude::*;
-    pub use serde::{Deserialize, Serialize};
+    pub use salvo_core::*;
 
     #[cfg(feature = "affix-state")]
     pub use salvo_extra::affix_state;
@@ -40,4 +41,7 @@ pub mod salvo {
 
     #[cfg(feature = "concurrency-limiter")]
     pub use salvo_extra::concurrency_limiter;
+
+    #[cfg(feature = "cors")]
+    pub use salvo_cors as cors;
 }

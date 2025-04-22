@@ -23,7 +23,7 @@ fn start() {
     tracing_subscriber::registry().with(fmt_layer).with(perf_layer).init();
 
     // 初始化
-    let _ = router::ROUTER.clone();
+    let _ = router::WORKER_SERVICE.clone();
 }
 
 /// 定时任务
@@ -42,6 +42,5 @@ async fn fetch(req: Request, env: Env, ctx: Context) -> Result<Response> {
     // // console_error_panic_hook::set_once();
     // initial::do_init(&env).await; // 初始化
 
-    let router = router::ROUTER.clone();
-    salvo_worker::handle(router, req, env, ctx).await
+    router::WORKER_SERVICE.handle(req, env, ctx).await
 }

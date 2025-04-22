@@ -1571,6 +1571,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "salvo-cors"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "salvo-core",
+ "tracing",
+ "worker",
+]
+
+[[package]]
 name = "salvo-extra"
 version = "0.1.0"
 dependencies = [
@@ -1612,6 +1622,7 @@ dependencies = [
  "salvo-cache",
  "salvo-compression",
  "salvo-core",
+ "salvo-cors",
  "salvo-extra",
  "serde",
  "serde_json",
