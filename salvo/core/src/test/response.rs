@@ -8,6 +8,7 @@ use http_body_util::BodyExt;
 use mime::Mime;
 use serde::de::DeserializeOwned;
 use tokio::io::Error as IoError;
+#[allow(unused)]
 #[cfg(not(target_arch = "wasm32"))]
 use zstd::stream::write::Decoder as ZstdDecoder;
 
@@ -111,14 +112,13 @@ impl ResponseExt for Response {
                     decoder.flush()?;
                     full = decoder.get_mut().take();
                 }
+                #[cfg(not(target_arch = "wasm32"))]
                 "zstd" => {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    {
-                        let mut decoder = ZstdDecoder::new(Writer::new()).expect("failed to create zstd decoder");
-                        decoder.write_all(full.as_ref())?;
-                        decoder.flush()?;
-                        full = decoder.get_mut().take();
-                    }
+                    use zstd::stream::write::Decoder as ZstdDecoder;
+                    let mut decoder = ZstdDecoder::new(Writer::new()).expect("failed to create zstd decoder");
+                    decoder.write_all(full.as_ref())?;
+                    decoder.flush()?;
+                    full = decoder.get_mut().take();
                 }
                 _ => {
                     tracing::error!(algo, "unknown compress format");

@@ -8,8 +8,10 @@
         "getrandom",
         "hmac",
         "hyperdrive",
+        "oapi",
         "reqwest",
         "rustdoc",
-        "serde"
+        "serde",
+        "unshift"
     ]
 }

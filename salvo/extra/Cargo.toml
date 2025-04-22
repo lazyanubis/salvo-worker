@@ -102,3 +102,4 @@ worker = { workspace = true }
 tracing-test = { workspace = true }
 
 [dev-dependencies]
+tokio-stream = { workspace = true }

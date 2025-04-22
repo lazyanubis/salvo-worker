@@ -41,6 +41,7 @@ csrf = ["dep:salvo-csrf"]
 flash = ["dep:salvo-flash"]
 jwt-auth = ["dep:salvo-jwt-auth"]
 logging = ["salvo-extra/logging"]
+oapi = ["dep:salvo-oapi"]
 
 full = [
     "cookie",
@@ -57,6 +58,7 @@ full = [
     "flash",
     # "jwt-auth", # ! ring error wasm
     "logging",
+    "oapi",
 ]
 
 [dependencies]
@@ -79,6 +81,7 @@ salvo-session = { workspace = true, optional = true }
 salvo-csrf = { workspace = true, optional = true, features = ["full"] }
 salvo-flash = { workspace = true, optional = true, features = ["full"] }
 salvo-jwt-auth = { workspace = true, optional = true, features = ["full"] }
+salvo-oapi = { workspace = true, optional = true, features = ["full"] }
 
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

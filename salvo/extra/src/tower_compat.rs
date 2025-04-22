@@ -56,11 +56,7 @@ where
     SB::Data: Into<Bytes> + Send + fmt::Debug + 'static,
     SB::Error: StdError + Send + Sync + 'static,
     E: StdError + Send + Sync + 'static,
-    T: Service<hyper::Request<ReqBody>, Response = hyper::Response<SB>, Future = Fut>
-        + Clone
-        + Send
-        + Sync
-        + 'static,
+    T: Service<hyper::Request<ReqBody>, Response = hyper::Response<SB>, Future = Fut> + Clone + Send + Sync + 'static,
     Fut: Future<Output = Result<hyper::Response<SB>, E>> + Send + 'static,
 {
 }
@@ -77,21 +73,11 @@ where
     SB::Data: Into<Bytes> + Send + fmt::Debug + 'static,
     SB::Error: StdError + Send + Sync + 'static,
     E: StdError + Send + Sync + 'static,
-    Svc: Service<hyper::Request<QB>, Response = hyper::Response<SB>, Future = Fut>
-        + Send
-        + Sync
-        + Clone
-        + 'static,
+    Svc: Service<hyper::Request<QB>, Response = hyper::Response<SB>, Future = Fut> + Send + Sync + Clone + 'static,
     Svc::Error: StdError + Send + Sync + 'static,
     Fut: Future<Output = Result<hyper::Response<SB>, E>> + Send + 'static,
 {
-    async fn handle(
-        &self,
-        req: &mut Request,
-        _depot: &mut Depot,
-        res: &mut Response,
-        _ctrl: &mut FlowCtrl,
-    ) {
+    async fn handle(&self, req: &mut Request, _depot: &mut Depot, res: &mut Response, _ctrl: &mut FlowCtrl) {
         let mut svc = self.0.clone();
         if svc.ready().await.is_err() {
             tracing::error!("tower service not ready.");
@@ -102,9 +88,7 @@ where
             Ok(hyper_req) => hyper_req,
             Err(_) => {
                 tracing::error!("strip request to hyper failed.");
-                res.render(
-                    StatusError::internal_server_error().cause("strip request to hyper failed."),
-                );
+                res.render(StatusError::internal_server_error().cause("strip request to hyper failed."));
                 return;
             }
         };
@@ -113,17 +97,13 @@ where
             Ok(hyper_res) => hyper_res,
             Err(e) => {
                 tracing::error!(error = ?e, "call tower service failed: {}", e);
-                res.render(
-                    StatusError::internal_server_error()
-                        .cause(format!("call tower service failed: {}", e)),
-                );
+                res.render(StatusError::internal_server_error().cause(format!("call tower service failed: {}", e)));
                 return;
             }
         }
         .map(|res| {
             ResBody::Boxed(Box::pin(
-                res.map_frame(|f| f.map_data(|data| data.into()))
-                    .map_err(|e| e.into()),
+                res.map_frame(|f| f.map_data(|data| data.into())).map_err(|e| e.into()),
             ))
         });
 
@@ -154,11 +134,7 @@ struct FlowCtrlOutContext {
 }
 impl FlowCtrlOutContext {
     fn new(ctrl: FlowCtrl, request: Request, depot: Depot) -> Self {
-        Self {
-            ctrl,
-            request,
-            depot,
-        }
+        Self { ctrl, request, depot }
     }
 }
 
@@ -193,8 +169,7 @@ impl Service<hyper::Request<ReqBody>> for FlowCtrlService {
         };
         request.merge_hyper(hyper_req);
         Box::pin(async move {
-            ctrl.call_next(&mut request, &mut depot, &mut response)
-                .await;
+            ctrl.call_next(&mut request, &mut depot, &mut response).await;
             response
                 .extensions
                 .insert(Arc::new(FlowCtrlOutContext::new(ctrl, request, depot)));
@@ -222,9 +197,7 @@ pub trait TowerLayerCompat {
 impl<T> TowerLayerCompat for T where T: Layer<FlowCtrlService> + Send + Sync + Sized + 'static {}
 
 /// Tower service compat handler.
-pub struct TowerLayerHandler<Svc: Service<hyper::Request<QB>>, QB>(
-    Buffer<hyper::Request<QB>, Svc::Future>,
-);
+pub struct TowerLayerHandler<Svc: Service<hyper::Request<QB>>, QB>(Buffer<hyper::Request<QB>, Svc::Future>);
 
 #[async_trait]
 impl<Svc, QB, SB, E> Handler for TowerLayerHandler<Svc, QB>
@@ -239,13 +212,7 @@ where
     Svc::Future: Future<Output = Result<hyper::Response<SB>, E>> + Send + 'static,
     Svc::Error: StdError + Send + Sync,
 {
-    async fn handle(
-        &self,
-        req: &mut Request,
-        depot: &mut Depot,
-        res: &mut Response,
-        ctrl: &mut FlowCtrl,
-    ) {
+    async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
         let mut svc = self.0.clone();
         if svc.ready().await.is_err() {
             tracing::error!("tower service not ready.");
@@ -257,9 +224,7 @@ where
             Ok(hyper_req) => hyper_req,
             Err(_) => {
                 tracing::error!("strip request to hyper failed.");
-                res.render(
-                    StatusError::internal_server_error().cause("strip request to hyper failed."),
-                );
+                res.render(StatusError::internal_server_error().cause("strip request to hyper failed."));
                 return;
             }
         };
@@ -275,17 +240,13 @@ where
             Ok(hyper_res) => hyper_res,
             Err(e) => {
                 tracing::error!(error = ?e, "call tower service failed: {}", e);
-                res.render(
-                    StatusError::internal_server_error()
-                        .cause(format!("call tower service failed: {}", e)),
-                );
+                res.render(StatusError::internal_server_error().cause(format!("call tower service failed: {}", e)));
                 return;
             }
         }
         .map(|res| {
             ResBody::Boxed(Box::pin(
-                res.map_frame(|f| f.map_data(|data| data.into()))
-                    .map_err(|e| e.into()),
+                res.map_frame(|f| f.map_data(|data| data.into())).map_err(|e| e.into()),
             ))
         });
         let origin_depot = depot;
@@ -295,12 +256,7 @@ where
             .extensions_mut()
             .remove::<Arc<FlowCtrlOutContext>>()
             .and_then(Arc::into_inner);
-        if let Some(FlowCtrlOutContext {
-            ctrl,
-            request,
-            depot,
-        }) = ctx
-        {
+        if let Some(FlowCtrlOutContext { ctrl, request, depot }) = ctx {
             *origin_depot = depot;
             *origin_ctrl = ctrl;
             *req = request;
@@ -318,6 +274,7 @@ where
 mod tests {
 
     use super::*;
+    use salvo_core::prelude::salvo;
     use salvo_core::test::{ResponseExt, TestClient};
     use salvo_core::{Router, handler};
 

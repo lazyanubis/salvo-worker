@@ -37,4 +37,6 @@ ciborium = "0.2"
 
 worker = { workspace = true, optional = true }
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+
 [dev-dependencies]

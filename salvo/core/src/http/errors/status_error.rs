@@ -12,13 +12,13 @@ macro_rules! default_errors {
     (
         $(
             $(#[$docs:meta])*
-            $sname:ident, $code:expr, $name:expr, $brief:expr);
+            $s_name:ident, $code:expr, $name:expr, $brief:expr);
         +) =>
     {
         $(
             #[doc=concat!($brief,"\n ")]
             $(#[$docs])*
-            pub fn $sname() -> StatusError {
+            pub fn $s_name() -> StatusError {
                 StatusError {
                     code: $code,
                     name: $name.into(),
@@ -148,10 +148,10 @@ impl StatusError {
         too_many_requests,                  StatusCode::TOO_MANY_REQUESTS,      "Too Many Requests", "Too many requests have been received recently.";
         /// 431 Request Header Fields Too Large
         /// [[RFC6585](https://tools.ietf.org/html/rfc6585)]
-        request_header_fields_toolarge,     StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE,    "Request Header Fields Too Large", "The server is unwilling to process the request because either  an individual header field, or all the header fields collectively, are too large.";
+        request_header_fields_too_large,     StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE,    "Request Header Fields Too Large", "The server is unwilling to process the request because either  an individual header field, or all the header fields collectively, are too large.";
          /// 451 Unavailable For Legal Reasons
          /// [[RFC7725](https://tools.ietf.org/html/rfc7725)]
-        unavailable_for_legalreasons,       StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS,      "Unavailable For Legal Reasons", "The requested resource is unavailable due to a legal demand to deny access to this resource.";
+        unavailable_for_legal_reasons,       StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS,      "Unavailable For Legal Reasons", "The requested resource is unavailable due to a legal demand to deny access to this resource.";
         /// 500 Internal Server Error
         /// [[RFC7231, Section 6.6.1](https://tools.ietf.org/html/rfc7231#section-6.6.1)]
         internal_server_error,              StatusCode::INTERNAL_SERVER_ERROR,  "Internal Server Error", "The server encountered an internal error while processing this request.";
@@ -233,8 +233,8 @@ impl StatusError {
             StatusCode::UPGRADE_REQUIRED => Some(StatusError::upgrade_required()),
             StatusCode::PRECONDITION_REQUIRED => Some(StatusError::precondition_required()),
             StatusCode::TOO_MANY_REQUESTS => Some(StatusError::too_many_requests()),
-            StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE => Some(StatusError::request_header_fields_toolarge()),
-            StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS => Some(StatusError::unavailable_for_legalreasons()),
+            StatusCode::REQUEST_HEADER_FIELDS_TOO_LARGE => Some(StatusError::request_header_fields_too_large()),
+            StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS => Some(StatusError::unavailable_for_legal_reasons()),
             StatusCode::INTERNAL_SERVER_ERROR => Some(StatusError::internal_server_error()),
             StatusCode::NOT_IMPLEMENTED => Some(StatusError::not_implemented()),
             StatusCode::BAD_GATEWAY => Some(StatusError::bad_gateway()),

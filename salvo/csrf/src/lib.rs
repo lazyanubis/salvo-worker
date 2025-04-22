@@ -196,7 +196,7 @@ pub trait CsrfCipher: Send + Sync + 'static {
     }
 }
 
-/// Extesion for Depot.
+/// Extension for Depot.
 pub trait CsrfDepotExt {
     /// Get csrf token reference from depot.
     fn csrf_token(&self) -> Option<&str>;
@@ -306,6 +306,7 @@ impl<C: CsrfCipher, S: CsrfStore> Handler for Csrf<C, S> {
     }
 }
 
+#[cfg(feature = "bcrypt-cipher")]
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
 mod tests {
@@ -383,7 +384,7 @@ mod tests {
         let csrf = Csrf::new(
             BcryptCipher::new(),
             CookieStore::new(),
-            HeaderFinder::new("x-mycsrf-header"),
+            HeaderFinder::new("x-my-csrf-header"),
         );
         let router = Router::new().hoop(csrf).get(get_index).post(post_index);
         let service = Service::new(router);
@@ -398,7 +399,7 @@ mod tests {
         assert_eq!(res.status_code.unwrap(), StatusCode::FORBIDDEN);
 
         let mut res = TestClient::post("http://127.0.0.1:5801")
-            .add_header("x-mycsrf-header", csrf_token, true)
+            .add_header("x-my-csrf-header", csrf_token, true)
             .add_header("cookie", cookie.to_string(), true)
             .send(&service)
             .await;

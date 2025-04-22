@@ -81,15 +81,19 @@ impl FormData {
                 {
                     let body = body.map(|f| f.map(|f| f.into_data().unwrap_or_default()));
                     let mut multipart = Multipart::new(body, boundary);
-                    while let Some(field) = multipart.next_field().await? {
+                    #[cfg(not(target_arch = "wasm32"))]
+                    while let Some(mut field) = multipart.next_field().await? {
                         if let Some(name) = field.name().map(|s| s.to_owned()) {
-                            #[cfg(not(target_arch = "wasm32"))]
                             if field.headers().get(CONTENT_TYPE).is_some() {
                                 form_data.files.insert(name, FilePart::create(&mut field).await?);
                             } else {
                                 form_data.fields.insert(name, field.text().await?);
                             }
-                            #[cfg(target_arch = "wasm32")]
+                        }
+                    }
+                    #[cfg(target_arch = "wasm32")]
+                    while let Some(field) = multipart.next_field().await? {
+                        if let Some(name) = field.name().map(|s| s.to_owned()) {
                             form_data.fields.insert(name, field.text().await?);
                         }
                     }

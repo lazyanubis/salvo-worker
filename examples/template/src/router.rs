@@ -23,6 +23,7 @@ mod csrf;
 mod flash_cookie;
 mod flash_session;
 mod logging;
+mod open_api;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
@@ -186,7 +187,16 @@ fn init_router() -> Arc<Router> {
                 .hoop(flash::SessionStore::new().into_handler())
                 .push(Router::with_path("get").get(flash_session::get_flash))
                 .push(Router::with_path("set").get(flash_session::set_flash)),
-        );
+        )
+        // open api
+        .push(Router::with_path("open_api").push(Router::with_path("hello").get(open_api::hello)));
+
+    let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
+
+    let router = router
+        .unshift(doc.into_router("/api-doc/openapi.json"))
+        .unshift(oapi::swagger_ui::SwaggerUi::new("/api-doc/openapi.json").into_router("/swagger-ui"));
+
     Arc::new(router)
 }
 

@@ -45,11 +45,13 @@ salvo-session = { path = "salvo/session" }
 salvo-csrf = { path = "salvo/csrf" }
 salvo-flash = { path = "salvo/flash" }
 salvo-jwt-auth = { path = "salvo/jwt-auth" }
+salvo-oapi = { path = "salvo/oapi" }
 
 base64 = "0.22"
 http = "1"
 serde = "1"
 serde_json = "1"
+serde_norway = "0.9"
 futures = "0.3"
 bytes = "1"
 etag = "4"
@@ -67,6 +69,7 @@ pin-project = "1"
 tokio = { version = "1.44.2", default-features = false }
 tokio-tungstenite = { version = "0.26", default-features = false }
 tokio-util = { version = "0.7.14", default-features = false }
+tokio-stream = { version = "0.1", default-features = false }
 tower = { version = "0.5", default-features = false }
 tracing = "0.1"
 tracing-test = "0.2.1"
@@ -81,12 +84,28 @@ flate2 = { version = "1", default-features = false }
 zstd = { version = "0.13", default-features = false }
 async-session = "3"
 cookie = "0.18"
-aead = "0.5"
+aead = "0.5.2"
 aes-gcm = "0.10"
 bcrypt = "0.17"
 chacha20poly1305 = "0.10"
 hmac = "0.12"
 jsonwebtoken = "9"
 thiserror = "2"
+chrono = "0.4"
+compact_str = { version = "0.9", features = ["serde"] }
+inventory = "0.3"
+mime-infer = "4"
+parking_lot = "0.12"
+regex = "1"
+rust-embed = { version = ">= 6, <= 9" }
+ring = "0.17"
+rust_decimal = "1"
+smallvec = "1"
+url = "2"
+uuid = "1"
+nix = { version = "0.29", default-features = false }
+rand = "0.9"
+tempfile = "3"
+assert-json-diff = "2"
 
 worker = { version = "*" }

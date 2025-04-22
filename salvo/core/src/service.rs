@@ -376,14 +376,18 @@ where
             }
         }
         #[cfg(target_arch = "wasm32")]
-        let request = Request::from_hyper(req, scheme);
+        {
+            let request = Request::from_hyper(req, scheme);
+            let response = self.handle(request, None);
+            Box::pin(async move { Ok(response.await.into_hyper()) })
+        }
         #[cfg(not(target_arch = "wasm32"))]
         {
             let mut request = Request::from_hyper(req, scheme);
             request.body.set_fusewire(self.fusewire.clone());
+            let response = self.handle(request, None);
+            Box::pin(async move { Ok(response.await.into_hyper()) })
         }
-        let response = self.handle(request, None);
-        Box::pin(async move { Ok(response.await.into_hyper()) })
     }
 }
 

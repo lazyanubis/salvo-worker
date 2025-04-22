@@ -64,4 +64,21 @@ pub mod salvo {
 
     #[cfg(feature = "logging")]
     pub use salvo_extra::logging;
+
+    #[cfg(feature = "oapi")]
+    pub use salvo_oapi as oapi;
+    #[cfg(feature = "oapi")]
+    mod oapi_prelude {
+        pub use super::oapi::extract::QueryParam;
+        pub use super::oapi::rapidoc::RapiDoc;
+        pub use super::oapi::redoc::ReDoc;
+        pub use super::oapi::scalar::Scalar;
+        pub use super::oapi::swagger_ui::SwaggerUi;
+        pub use super::oapi::{
+            EndpointArgRegister, EndpointOutRegister, OpenApi, RouterExt, ToParameter, ToParameters, ToResponse,
+            ToResponses, ToSchema, endpoint,
+        };
+    }
+    #[cfg(feature = "oapi")]
+    pub use oapi_prelude::*;
 }

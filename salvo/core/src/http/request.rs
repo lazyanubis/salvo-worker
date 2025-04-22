@@ -809,13 +809,11 @@ impl Request {
     }
 
     /// Get [`FilePart`] reference from request.
-    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn file(&mut self, key: &str) -> Option<&FilePart> {
         self.try_file(key).await.ok().flatten()
     }
     /// Try to get [`FilePart`] reference from request.
-    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub async fn try_file(&mut self, key: &str) -> ParseResult<Option<&FilePart>> {
         self.form_data().await.map(|ps| ps.files.get(key))
@@ -992,9 +990,9 @@ impl Request {
     where
         T: Deserialize<'de>,
     {
-        let ctype = self.content_type();
-        if let Some(ctype) = ctype {
-            if ctype.subtype() == mime::JSON {
+        let c_type = self.content_type();
+        if let Some(c_type) = c_type {
+            if c_type.subtype() == mime::JSON {
                 return self.payload_with_max_size(max_size).await.and_then(|payload| {
                     // fix issue https://github.com/salvo-rs/salvo/issues/545
                     let payload = if payload.is_empty() {
@@ -1127,17 +1125,17 @@ mod tests {
     //         let mut req: Request = TestClient::post("http://127.0.0.1:5800/hello?q=rust")
     //             .add_header(
     //                 "content-type",
-    //                 "multipart/form-data; boundary=----WebKitFormBoundary0mkL0yrNNupCojyz",
+    //                 "multipart/form-data; boundary=----WebKitFormBoundary0mkL0yrNNupCo1yz",
     //                 true,
     //             )
     //             .body(
-    //                 "------WebKitFormBoundary0mkL0yrNNupCojyz\r\n\
+    //                 "------WebKitFormBoundary0mkL0yrNNupCo1yz\r\n\
     // Content-Disposition: form-data; name=\"money\"\r\n\r\nsh*t\r\n\
-    // ------WebKitFormBoundary0mkL0yrNNupCojyz\r\n\
+    // ------WebKitFormBoundary0mkL0yrNNupCo1yz\r\n\
     // Content-Disposition: form-data; name=\"file1\"; filename=\"err.txt\"\r\n\
     // Content-Type: text/plain\r\n\r\n\
     // file content\r\n\
-    // ------WebKitFormBoundary0mkL0yrNNupCojyz--\r\n",
+    // ------WebKitFormBoundary0mkL0yrNNupCo1yz--\r\n",
     //             )
     //             .build();
     //         assert_eq!(req.form::<String>("money").await.unwrap(), "sh*t");
