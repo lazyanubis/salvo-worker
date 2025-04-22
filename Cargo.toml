@@ -39,6 +39,7 @@ panic = "deny"
 salvo-core = { path = "salvo/core" }
 salvo-extra = { path = "salvo/extra", default-features = false }
 salvo-cache = { path = "salvo/cache", default-features = false }
+salvo-compression = { path = "salvo/compression", default-features = false }
 
 base64 = "0.22"
 http = "1"
@@ -65,5 +66,10 @@ ulid = { version = "1", default-features = false }
 moka = "0.12"
 time = "0.3"
 sha2 = "0.10"
+indexmap = "2"
+# Compress
+brotli = { version = "8", default-features = false }
+flate2 = { version = "1", default-features = false }
+zstd = { version = "0.13", default-features = false }
 
 worker = { version = "*" }

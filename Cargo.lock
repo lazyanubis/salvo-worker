@@ -1507,6 +1507,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "salvo-compression"
+version = "0.1.0"
+dependencies = [
+ "brotli",
+ "bytes",
+ "flate2",
+ "futures-util",
+ "indexmap",
+ "salvo-core",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "worker",
+ "zstd",
+]
+
+[[package]]
 name = "salvo-core"
 version = "0.1.0"
 dependencies = [
@@ -1593,6 +1610,7 @@ dependencies = [
  "futures",
  "http",
  "salvo-cache",
+ "salvo-compression",
  "salvo-core",
  "salvo-extra",
  "serde",

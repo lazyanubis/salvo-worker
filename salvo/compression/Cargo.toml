@@ -1,0 +1,44 @@
+[package]
+name = "salvo-compression"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+
+[package.metadata.release]
+release = false
+
+# https://github.com/rustwasm/wasm-pack/issues/1247
+# [package.metadata.wasm-pack.profile.release]
+# wasm-opt = false
+
+# [lib]
+# crate-type = ["cdylib"]
+
+[lints]
+workspace = true
+
+[features]
+default = ["full"]
+full = ["brotli", "gzip", "deflate", "zstd"]
+brotli = ["dep:brotli"]
+gzip = ["dep:flate2"]
+deflate = ["dep:flate2"]
+zstd = ["dep:zstd"]
+
+needless = []
+
+[dependencies]
+brotli = { workspace = true, optional = true, features = ["default"] }
+bytes = { workspace = true }
+flate2 = { workspace = true, optional = true, features = ["default"] }
+futures-util = { workspace = true }
+indexmap = { workspace = true }
+salvo-core = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true, features = ["io"] }
+tracing = { workspace = true }
+zstd = { workspace = true, optional = true, features = ["default"] }
+
+worker = { workspace = true, optional = true }
+
+[dev-dependencies]

@@ -1145,6 +1145,7 @@ dependencies = [
  "etag",
  "futures-util",
  "salvo-core",
+ "tokio",
  "tracing",
 ]
 

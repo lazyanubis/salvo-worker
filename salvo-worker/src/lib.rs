@@ -34,4 +34,10 @@ pub mod salvo {
 
     #[cfg(feature = "catch-panic")]
     pub use salvo_extra::catch_panic;
+
+    #[cfg(feature = "compression")]
+    pub use salvo_compression as compression;
+
+    #[cfg(feature = "concurrency-limiter")]
+    pub use salvo_extra::concurrency_limiter;
 }

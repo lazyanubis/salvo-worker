@@ -157,7 +157,7 @@ tokio-util = { workspace = true, default-features = false, optional = true }
 eyre = { version = "0.6", optional = true }
 anyhow = { version = "1", optional = true }
 enumflags2 = "0.7"
-indexmap = "2"
+indexmap = { workspace = true }
 multimap = { version = "0.10", features = ["serde"] }
 parking_lot = "0.12"
 futures-channel = "0.3"
@@ -172,11 +172,11 @@ cookie = { version = "0.18", features = [
     "signed",
 ], optional = true }
 encoding_rs = { version = "0.8", optional = true }
-flate2 = { version = "1", optional = true, features = ["default"] }
-zstd = { version = "0.13", optional = true, default-features = false, features = [
+flate2 = { workspace = true, optional = true, features = ["default"] }
+zstd = { workspace = true, optional = true, default-features = false, features = [
     "wasm",
 ] }
-brotli = { version = "8", optional = true, features = ["default"] }
+brotli = { workspace = true, optional = true, features = ["default"] }
 url = { version = "2", optional = true }
 
 worker = { workspace = true }

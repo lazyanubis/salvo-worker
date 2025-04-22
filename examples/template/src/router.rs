@@ -12,6 +12,7 @@ mod basic_auth;
 mod cache;
 mod caching_headers;
 mod catch_panic;
+mod concurrency_limiter;
 
 fn init_router() -> Arc<Router> {
     let config = affix_state::Config {
@@ -68,7 +69,7 @@ fn init_router() -> Arc<Router> {
         .push(
             Router::with_path("caching_headers").push(
                 Router::with_hoop(salvo::caching_headers::CachingHeaders::new())
-                    // .hoop(salvo::caching_headers::Co) // TODO compression
+                    // .hoop(salvo::compression::Compression::new().min_length(0)) // compression not supported
                     .get(caching_headers::hello),
             ),
         )
@@ -77,6 +78,12 @@ fn init_router() -> Arc<Router> {
             Router::with_path("catch_panic")
                 .hoop(salvo::catch_panic::CatchPanic::new())
                 .get(catch_panic::hello),
+        )
+        // catch panic
+        .push(
+            Router::with_path("concurrency_limiter")
+                .hoop(salvo::concurrency_limiter::max_concurrency(1))
+                .get(concurrency_limiter::index),
         );
     Arc::new(router)
 }
