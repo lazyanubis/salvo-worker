@@ -39,6 +39,7 @@ cors = ["dep:salvo-cors"]
 session = ["dep:salvo-session"]
 csrf = ["dep:salvo-csrf"]
 flash = ["dep:salvo-flash"]
+jwt-auth = ["dep:salvo-jwt-auth"]
 
 full = [
     "cookie",
@@ -53,6 +54,7 @@ full = [
     "session",
     "csrf",
     "flash",
+    # "jwt-auth", # ! ring error wasm
 ]
 
 [dependencies]
@@ -74,6 +76,7 @@ salvo-cors = { workspace = true, optional = true }
 salvo-session = { workspace = true, optional = true }
 salvo-csrf = { workspace = true, optional = true, features = ["full"] }
 salvo-flash = { workspace = true, optional = true, features = ["full"] }
+salvo-jwt-auth = { workspace = true, optional = true, features = ["full"] }
 
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

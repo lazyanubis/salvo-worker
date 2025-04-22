@@ -18,7 +18,6 @@ release = false
 workspace = true
 
 [features]
-
 default = ["cookie-store"]
 full = ["cookie-store", "session-store"]
 cookie-store = ["salvo-core/cookie", "dep:serde_json"]

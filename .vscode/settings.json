@@ -20,6 +20,7 @@
         "hyperdrive",
         "impls",
         "indexmap",
+        "jsonwebtoken",
         "moka",
         "multer",
         "multimap",

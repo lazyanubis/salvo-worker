@@ -58,4 +58,7 @@ pub mod salvo {
 
     #[cfg(feature = "flash")]
     pub use salvo_flash as flash;
+
+    #[cfg(feature = "jwt-auth")]
+    pub use salvo_jwt_auth as jwt_auth;
 }

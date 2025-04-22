@@ -125,7 +125,7 @@ hyper = { workspace = true, features = [
     # "http2",
     "server",
 ] }
-hyper-util = { version = "0.1", default-features = true, features = [
+hyper-util = { workspace = true, default-features = true, features = [
     # "client",
     # "client-legacy",
     # "server",
@@ -142,7 +142,7 @@ serde = { workspace = true }
 serde_json = { workspace = true, features = ["raw_value"] }
 serde_urlencoded = { version = "0.7", optional = true }
 serde-xml-rs = "0.7"
-thiserror = "2"
+thiserror = { workspace = true }
 multer = "3"
 mime-infer = "4"
 regex = "1"
