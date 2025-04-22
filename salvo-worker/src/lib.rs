@@ -21,6 +21,11 @@ pub mod salvo {
     pub use salvo_core::prelude::*;
     pub use salvo_core::*;
 
+    /// 导出所有 salvo 需要用到的
+    pub mod salvo {
+        pub use super::*;
+    }
+
     #[cfg(feature = "affix-state")]
     pub use salvo_extra::affix_state;
 
@@ -50,4 +55,7 @@ pub mod salvo {
 
     #[cfg(feature = "csrf")]
     pub use salvo_csrf as csrf;
+
+    #[cfg(feature = "flash")]
+    pub use salvo_flash as flash;
 }

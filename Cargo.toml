@@ -43,6 +43,7 @@ salvo-compression = { path = "salvo/compression", default-features = false }
 salvo-cors = { path = "salvo/cors" }
 salvo-session = { path = "salvo/session" }
 salvo-csrf = { path = "salvo/csrf" }
+salvo-flash = { path = "salvo/flash" }
 
 base64 = "0.22"
 http = "1"

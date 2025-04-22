@@ -1877,6 +1877,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "salvo-flash"
+version = "0.1.0"
+dependencies = [
+ "async-session",
+ "salvo-core",
+ "salvo-session",
+ "serde",
+ "serde_json",
+ "tracing",
+]
+
+[[package]]
 name = "salvo-serde-util"
 version = "0.78.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1912,6 +1924,7 @@ dependencies = [
  "salvo-cors",
  "salvo-csrf",
  "salvo-extra",
+ "salvo-flash",
  "salvo-session",
  "serde",
  "serde_json",

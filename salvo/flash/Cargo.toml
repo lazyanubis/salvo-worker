@@ -1,0 +1,37 @@
+[package]
+name = "salvo-flash"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+
+[package.metadata.release]
+release = false
+
+# https://github.com/rustwasm/wasm-pack/issues/1247
+# [package.metadata.wasm-pack.profile.release]
+# wasm-opt = false
+
+# [lib]
+# crate-type = ["cdylib"]
+
+[lints]
+workspace = true
+
+[features]
+
+default = ["cookie-store"]
+full = ["cookie-store", "session-store"]
+cookie-store = ["salvo-core/cookie", "dep:serde_json"]
+session-store = ["dep:salvo-session"]
+
+needless = []
+
+[dependencies]
+async-session = { workspace = true, optional = true }
+salvo-core = { workspace = true, default-features = false }
+salvo-session = { workspace = true, optional = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true, optional = true }
+
+[dev-dependencies]

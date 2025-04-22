@@ -20,6 +20,8 @@ mod caching_headers;
 mod catch_panic;
 mod concurrency_limiter;
 mod csrf;
+mod flash_cookie;
+mod flash_session;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
@@ -75,6 +77,13 @@ fn init_router() -> Arc<Router> {
     let aes_gcm_cookie_csrf =
         salvo::csrf::aes_gcm_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
     let ccp_cookie_csrf = salvo::csrf::ccp_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
+
+    let flash_session_handler = salvo::session::SessionHandler::builder(
+        salvo::session::MemoryStore::new(),
+        b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
+    )
+    .build()
+    .unwrap();
 
     let router = Router::new()
         .get(hello)
@@ -160,6 +169,21 @@ fn init_router() -> Arc<Router> {
                 )
                 // ChaCha20Poly1305-based CSRF protection
                 .push(Router::with_hoop(ccp_cookie_csrf).path("ccp").get(csrf::get_page)),
+        )
+        // flash cookie
+        .push(
+            Router::with_path("flash_cookie")
+                .hoop(flash::CookieStore::new().into_handler())
+                .push(Router::with_path("get").get(flash_cookie::get_flash))
+                .push(Router::with_path("set").get(flash_cookie::set_flash)),
+        )
+        // flash session
+        .push(
+            Router::with_path("flash_session")
+                .hoop(flash_session_handler)
+                .hoop(flash::SessionStore::new().into_handler())
+                .push(Router::with_path("get").get(flash_session::get_flash))
+                .push(Router::with_path("set").get(flash_session::set_flash)),
         );
     Arc::new(router)
 }
