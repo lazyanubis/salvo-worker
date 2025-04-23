@@ -241,6 +241,14 @@ fn init_router() -> Arc<Router> {
                 .hoop(salvo::timeout::Timeout::new(std::time::Duration::from_secs(5)))
                 .push(Router::with_path("slow").get(timeout::slow))
                 .push(Router::with_path("fast").get(timeout::fast)),
+        )
+        // trailing slash
+        .push(
+            Router::with_path("trailing_slash").push(
+                Router::with_hoop(trailing_slash::add_slash())
+                    .push(Router::with_path("hello").get(hello))
+                    .push(Router::with_path("hello.world").get(hello)),
+            ),
         );
 
     // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);

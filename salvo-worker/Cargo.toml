@@ -49,6 +49,7 @@ request-id = ["salvo-extra/request-id"]
 size-limiter = ["salvo-extra/size-limiter"]
 # sse = ["salvo-extra/sse"]
 timeout = ["salvo-extra/timeout"]
+trailing-slash = ["salvo-extra/trailing-slash"]
 
 full = [
     "cookie",
@@ -73,6 +74,7 @@ full = [
     "size-limiter",
     # "sse", # ! tokio time
     "timeout",
+    "trailing-slash",
 ]
 
 [dependencies]

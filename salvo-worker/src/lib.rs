@@ -102,4 +102,7 @@ pub mod salvo {
 
     #[cfg(feature = "timeout")]
     pub use salvo_extra::timeout;
+
+    #[cfg(feature = "trailing-slash")]
+    pub use salvo_extra::trailing_slash;
 }
