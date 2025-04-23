@@ -258,9 +258,11 @@ fn init_router() -> Router {
         );
 
     // let doc = oapi::OpenApi::new("template api", "0.0.1").merge_router(&router);
+    let mut router = router;
+    for ui in salvo_worker::open_api::ui_all("/api-doc/openapi.json") {
+        router = router.unshift(ui);
+    }
     router
-        // .unshift(doc.into_router("/api-doc/openapi.json"))
-        .unshift(oapi::swagger_ui::SwaggerUi::new("/api-doc/openapi.json").into_router("/swagger-ui"))
 }
 
 #[allow(unused)]
@@ -277,7 +279,7 @@ mod tests {
     /// 更新 open-api.json
     #[test]
     fn update_open_api() {
-        salvo_worker::open_api::update_open_api(init_router(), "template api", "0.0.1", OPEN_API_FILE);
+        salvo_worker::open_api::update_open_api(init_router(), "Template Api Docs", "0.0.1", OPEN_API_FILE);
     }
 
     /// 使用 endpoint

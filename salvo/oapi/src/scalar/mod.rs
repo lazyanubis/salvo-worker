@@ -7,15 +7,16 @@
 use std::borrow::Cow;
 
 use salvo_core::writing::Text;
-use salvo_core::{async_trait, Depot, FlowCtrl, Handler, Request, Response, Router};
+use salvo_core::{Depot, FlowCtrl, Handler, Request, Response, Router, async_trait};
 
-const INDEX_TMPL: &str = r#"
+const INDEX_TEMPLATE: &str = r#"
 <!DOCTYPE html>
 <html>
   <head>
     <title>{{title}}</title>
     {{keywords}}
     {{description}}
+    {{favicon_url}}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -40,6 +41,8 @@ pub struct Scalar {
     pub keywords: Option<Cow<'static, str>>,
     /// The description of the html page.
     pub description: Option<Cow<'static, str>>,
+    /// The favicon url path
+    pub favicon_url: Option<Cow<'static, str>>,
     /// Custom style for the html page.
     pub style: Option<Cow<'static, str>>,
     /// Custom header for the html page.
@@ -66,6 +69,7 @@ impl Scalar {
             title: "Scalar".into(),
             keywords: None,
             description: None,
+            favicon_url: None,
             style: Some(Cow::from(DEFAULT_STYLE)),
             header: None,
             lib_url: "https://cdn.jsdelivr.net/npm/@scalar/api-reference".into(),
@@ -91,13 +95,19 @@ impl Scalar {
         self
     }
 
+    /// Set favicon of the html page.
+    pub fn favicon_url(mut self, favicon_url: impl Into<Cow<'static, str>>) -> Self {
+        self.favicon_url = Some(favicon_url.into());
+        self
+    }
+
     /// Set the lib url path.
     pub fn lib_url(mut self, lib_url: impl Into<Cow<'static, str>>) -> Self {
         self.lib_url = lib_url.into();
         self
     }
 
-    /// Consusmes the [`Scalar`] and returns [`Router`] with the [`Scalar`] as handler.
+    /// Consumes the [`Scalar`] and returns [`Router`] with the [`Scalar`] as handler.
     pub fn into_router(self, path: impl Into<String>) -> Router {
         Router::with_path(path.into()).goal(self)
     }
@@ -120,17 +130,23 @@ impl Handler for Scalar {
             .as_ref()
             .map(|s| format!("<meta name=\"description\" content=\"{}\">", s))
             .unwrap_or_default();
+        let favicon_url = self
+            .favicon_url
+            .as_ref()
+            .map(|s| format!("<link rel=\"icon\" href=\"{}\" type=\"image/x-icon\">", s))
+            .unwrap_or_default();
         let style = self
             .style
             .as_ref()
             .map(|s| format!("<style>{}</style>", s))
             .unwrap_or_default();
-        let html = INDEX_TMPL
+        let html = INDEX_TEMPLATE
             .replacen("{{lib_url}}", &self.lib_url, 1)
             .replacen("{{spec_url}}", &self.spec_url, 1)
             .replacen("{{header}}", self.header.as_deref().unwrap_or_default(), 1)
             .replacen("{{style}}", &style, 1)
             .replacen("{{description}}", &description, 1)
+            .replacen("{{favicon_url}}", &favicon_url, 1)
             .replacen("{{keywords}}", &keywords, 1)
             .replacen("{{title}}", &self.title, 1);
         res.render(Text::Html(html));

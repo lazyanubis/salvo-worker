@@ -9,6 +9,8 @@
         "hmac",
         "hyperdrive",
         "oapi",
+        "rapidoc",
+        "redoc",
         "reqwest",
         "rustdoc",
         "serde",

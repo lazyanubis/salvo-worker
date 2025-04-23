@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use super::*;
 
 use std::fs::{self, File};
@@ -136,4 +138,71 @@ pub fn release_all_handlers(root: &str) {
     for path in paths.iter() {
         release_handler(&path).unwrap();
     }
+}
+
+/// openapi ui swagger
+pub fn ui_swagger(
+    data: &'static str,
+    path: impl Into<String>,
+    favicon: impl Into<Cow<'static, str>>,
+) -> super::salvo::Router {
+    super::salvo::oapi::swagger_ui::SwaggerUi::new(data)
+        .favicon_url(favicon)
+        .into_router(path)
+}
+
+/// openapi ui rapidoc
+pub fn ui_rapidoc(
+    data: &'static str,
+    path: impl Into<String>,
+    favicon: impl Into<Cow<'static, str>>,
+) -> super::salvo::Router {
+    super::salvo::oapi::rapidoc::RapiDoc::new(data)
+        .favicon_url(favicon)
+        .into_router(path)
+}
+
+/// openapi ui redoc
+pub fn ui_redoc(
+    data: &'static str,
+    path: impl Into<String>,
+    favicon: impl Into<Cow<'static, str>>,
+) -> super::salvo::Router {
+    super::salvo::oapi::redoc::ReDoc::new(data)
+        .favicon_url(favicon)
+        .into_router(path)
+}
+
+/// openapi ui scalar
+pub fn ui_scalar(
+    data: &'static str,
+    path: impl Into<String>,
+    favicon: impl Into<Cow<'static, str>>,
+) -> super::salvo::Router {
+    super::salvo::oapi::scalar::Scalar::new(data)
+        .favicon_url(favicon)
+        .into_router(path)
+}
+
+/// openapi ui all
+pub fn ui_all(data: &'static str) -> Vec<super::salvo::Router> {
+    vec![
+        ui_swagger(
+            data,
+            "/swagger-ui",
+            "https://static1.smartbear.co/swagger/media/assets/swagger_fav.png",
+        ),
+        ui_rapidoc(data, "/rapidoc", "https://rapidocweb.com/images/logo.png"),
+        ui_redoc(
+            data,
+            "/redoc",
+            "https://redocly.com/assets/favicon.5465de6f2fccf1152f5965257241d831a8917043c85baf743706ae2e57736946.8a5edab2.ico",
+        ),
+        ui_scalar(
+            data,
+            "/scalar",
+            // "https://docs.scalar.com/favicon.svg"
+            "https://avatars.githubusercontent.com/u/301879",
+        ),
+    ]
 }

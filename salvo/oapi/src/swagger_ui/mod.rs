@@ -12,16 +12,16 @@ pub use config::Config;
 pub use oauth::Config as OauthConfig;
 use rust_embed::RustEmbed;
 use salvo_core::http::uri::{Parts as UriParts, Uri};
-use salvo_core::http::{header, HeaderValue, ResBody, StatusError};
+use salvo_core::http::{HeaderValue, ResBody, StatusError, header};
 use salvo_core::writing::Redirect;
-use salvo_core::{async_trait, Depot, Error, FlowCtrl, Handler, Request, Response, Router};
+use salvo_core::{Depot, Error, FlowCtrl, Handler, Request, Response, Router, async_trait};
 use serde::Serialize;
 
 #[derive(RustEmbed)]
 #[folder = "src/swagger_ui/v5.18.3"]
 struct SwaggerUiDist;
 
-const INDEX_TMPL: &str = r#"
+const INDEX_TEMPLATE: &str = r#"
 <!DOCTYPE html>
 <html charset="UTF-8">
   <head>
@@ -29,6 +29,7 @@ const INDEX_TMPL: &str = r#"
     <title>{{title}}</title>
     {{keywords}}
     {{description}}
+    {{favicon_url}}
     <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
     <style>
     html {
@@ -84,6 +85,8 @@ pub struct SwaggerUi {
     pub keywords: Option<Cow<'static, str>>,
     /// The description of the html page.
     pub description: Option<Cow<'static, str>>,
+    /// The favicon url path
+    pub favicon_url: Option<Cow<'static, str>>,
 }
 impl SwaggerUi {
     /// Create a new [`SwaggerUi`] for given path.
@@ -103,6 +106,7 @@ impl SwaggerUi {
             title: "Swagger UI".into(),
             keywords: None,
             description: None,
+            favicon_url: None,
         }
     }
 
@@ -121,6 +125,12 @@ impl SwaggerUi {
     /// Set description of the html page.
     pub fn description(mut self, description: impl Into<Cow<'static, str>>) -> Self {
         self.description = Some(description.into());
+        self
+    }
+
+    /// Set favicon of the html page.
+    pub fn favicon_url(mut self, favicon_url: impl Into<Cow<'static, str>>) -> Self {
+        self.favicon_url = Some(favicon_url.into());
         self
     }
 
@@ -193,7 +203,7 @@ impl SwaggerUi {
         self
     }
 
-    /// Consusmes the [`SwaggerUi`] and returns [`Router`] with the [`SwaggerUi`] as handler.
+    /// Consumes the [`SwaggerUi`] and returns [`Router`] with the [`SwaggerUi`] as handler.
     pub fn into_router(self, path: impl Into<String>) -> Router {
         Router::with_path(format!("{}/{{**}}", path.into())).goal(self)
     }
@@ -255,10 +265,17 @@ impl Handler for SwaggerUi {
             .as_ref()
             .map(|s| format!("<meta name=\"description\" content=\"{}\">", s))
             .unwrap_or_default();
-        match serve(path, &self.title, &keywords, &description, &self.config) {
+        let favicon_url = self
+            .favicon_url
+            .as_ref()
+            .map(|s| format!("<link rel=\"icon\" href=\"{}\" type=\"image/x-icon\">", s))
+            .unwrap_or_default();
+        match serve(path, &self.title, &keywords, &description, &favicon_url, &self.config) {
             Ok(Some(file)) => {
-                res.headers_mut()
-                    .insert(header::CONTENT_TYPE, HeaderValue::from_str(&file.content_type).expect("content type parse failed"));
+                res.headers_mut().insert(
+                    header::CONTENT_TYPE,
+                    HeaderValue::from_str(&file.content_type).expect("content type parse failed"),
+                );
                 res.body(ResBody::Once(file.bytes.to_vec().into()));
             }
             Ok(None) => {
@@ -386,6 +403,7 @@ pub fn serve<'a>(
     title: &str,
     keywords: &str,
     description: &str,
+    favicon_url: &str,
     config: &Config<'a>,
 ) -> Result<Option<SwaggerFile<'a>>, Error> {
     let path = if path.is_empty() || path == "/" {
@@ -398,9 +416,10 @@ pub fn serve<'a>(
         let config_json = serde_json::to_string(&config)?;
 
         // Replace {{config}} with pretty config json and remove the curly brackets `{ }` from beginning and the end.
-        let mut index = INDEX_TMPL
+        let mut index = INDEX_TEMPLATE
             .replacen("{{config}}", &config_json, 1)
             .replacen("{{description}}", description, 1)
+            .replacen("{{favicon_url}}", favicon_url, 1)
             .replacen("{{keywords}}", keywords, 1)
             .replacen("{{title}}", title, 1);
 
