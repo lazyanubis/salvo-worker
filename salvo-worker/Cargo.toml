@@ -44,6 +44,7 @@ logging = ["salvo-extra/logging"]
 oapi = ["dep:salvo-oapi"]
 proxy = ["dep:salvo-proxy"]
 rate-limiter = ["dep:salvo-rate-limiter"]
+request-id = ["salvo-extra/request-id"]
 
 full = [
     "cookie",
@@ -63,6 +64,7 @@ full = [
     "oapi",
     "proxy",
     "rate-limiter",
+    "request-id",
 ]
 
 [dependencies]

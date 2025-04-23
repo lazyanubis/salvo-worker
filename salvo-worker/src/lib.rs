@@ -87,4 +87,7 @@ pub mod salvo {
 
     #[cfg(feature = "rate-limiter")]
     pub use salvo_rate_limiter as rate_limiter;
+
+    #[cfg(feature = "request-id")]
+    pub use salvo_extra::request_id::RequestId;
 }

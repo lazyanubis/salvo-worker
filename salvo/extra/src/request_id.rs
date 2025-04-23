@@ -20,8 +20,8 @@
 //! ```
 use ulid::Ulid;
 
-use salvo_core::http::{header::HeaderName, Request, Response};
-use salvo_core::{async_trait, Depot, FlowCtrl, Handler};
+use salvo_core::http::{Request, Response, header::HeaderName};
+use salvo_core::{Depot, FlowCtrl, Handler, async_trait};
 
 /// Key for incoming flash messages in depot.
 pub const REQUEST_ID_KEY: &str = "::salvo::request_id";
@@ -35,7 +35,7 @@ pub trait RequestIdDepotExt {
 impl RequestIdDepotExt for Depot {
     #[inline]
     fn csrf_token(&self) -> Option<&str> {
-        self.get::<String>(REQUEST_ID_KEY).map(|v|&**v).ok()
+        self.get::<String>(REQUEST_ID_KEY).map(|v| &**v).ok()
     }
 }
 
@@ -102,8 +102,8 @@ where
 
 /// A generator for generate request id with ulid.
 #[derive(Default, Debug)]
-pub struct UlidGenerator{}
-impl UlidGenerator{
+pub struct UlidGenerator {}
+impl UlidGenerator {
     /// Create new `UlidGenerator`.
     pub fn new() -> Self {
         Self {}
@@ -111,8 +111,15 @@ impl UlidGenerator{
 }
 impl IdGenerator for UlidGenerator {
     fn generate(&self, _req: &mut Request, _depot: &mut Depot) -> String {
-        Ulid::new().to_string()
+        let now = worker::js_sys::Date::now() as u64;
+        let random = get_random_u128().unwrap_or_else(|_| now as u128 * now as u128);
+        Ulid::from_parts(now, random).to_string()
     }
+}
+fn get_random_u128() -> Result<u128, getrandom::Error> {
+    let mut buf = [0u8; 16];
+    getrandom::getrandom(&mut buf).unwrap();
+    Ok(u128::from_ne_bytes(buf))
 }
 
 #[async_trait]

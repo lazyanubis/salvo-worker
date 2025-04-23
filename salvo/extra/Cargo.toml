@@ -94,9 +94,11 @@ tower = { workspace = true, optional = true, default-features = false, features 
     "util",
 ] }
 tracing = { workspace = true, optional = true }
-ulid = { workspace = true, optional = true, features = ["std"] }
+ulid = { workspace = true, default-features = false, optional = true }
+getrandom = { version = "0.2.15", features = ["js"] }
 
 worker = { workspace = true }
+
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tracing-test = { workspace = true }

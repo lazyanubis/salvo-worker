@@ -25,6 +25,7 @@ mod logging;
 mod open_api;
 mod proxy;
 mod rate_limiter;
+mod request_id;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
@@ -219,7 +220,13 @@ fn init_router() -> Arc<Router> {
                 ),
         )
         // rate limiter
-        .push(Router::with_path("rate_limiter").hoop(limiter).get(rate_limiter::hello));
+        .push(Router::with_path("rate_limiter").hoop(limiter).get(rate_limiter::hello))
+        // request id
+        .push(
+            Router::with_path("request_id")
+                .hoop(RequestId::new())
+                .get(request_id::hello),
+        );
 
     // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
 
