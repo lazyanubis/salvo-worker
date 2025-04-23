@@ -39,10 +39,10 @@ use std::time::Duration;
 
 use salvo_core::http::headers::{Connection, HeaderMapExt};
 use salvo_core::http::{Request, Response, StatusError};
-use salvo_core::{async_trait, Depot, FlowCtrl, Handler};
+use salvo_core::{Depot, FlowCtrl, Handler, async_trait};
 
 /// Middleware for controlling request timeout.
-/// 
+///
 /// View [module level documentation](index.html) for more details.
 pub struct Timeout {
     value: Duration,
@@ -77,13 +77,20 @@ impl Handler for Timeout {
     async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
         tokio::select! {
             _ = ctrl.call_next(req, depot, res) => {},
-            _ = tokio::time::sleep(self.value) => {
+            _ = sleep(self.value) => {
                 res.headers_mut().typed_insert(Connection::close());
                 res.render((self.error)());
                 ctrl.skip_rest();
             }
         }
     }
+}
+
+/// sleep
+#[worker::send]
+pub async fn sleep(value: Duration) {
+    let delay: worker::Delay = value.into();
+    delay.await;
 }
 
 #[cfg(test)]

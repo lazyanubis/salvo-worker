@@ -29,24 +29,26 @@ cookie = ["salvo-core/cookie"]
 # ! 存疑，Cloudflare 里面的路由可能随时是新的，因此存在路由里面的数据可能会被重置
 affix-state = ["salvo-extra/affix-state"] # 不同路由和处理器之间共享任何类型的数据
 # ! 存疑，Cloudflare 里面的路由可能随时是新的，因此存在路由里面的数据可能会被重置
-basic-auth = ["salvo-extra/basic-auth"]                   # 请求头中包含 Authorization 字段来传递用户名和密码
+basic-auth = ["salvo-extra/basic-auth"]           # 请求头中包含 Authorization 字段来传递用户名和密码
 cache = ["dep:salvo-cache"]
 caching-headers = ["salvo-extra/caching-headers"]
 catch-panic = ["salvo-extra/catch-panic"]
-compression = ["salvo-compression"]
+# compression = ["salvo-compression"]
 concurrency-limiter = ["salvo-extra/concurrency-limiter"]
 cors = ["dep:salvo-cors"]
 session = ["dep:salvo-session"]
 csrf = ["dep:salvo-csrf"]
 flash = ["dep:salvo-flash"]
-jwt-auth = ["dep:salvo-jwt-auth"]
+# jwt-auth = ["dep:salvo-jwt-auth"]
 logging = ["salvo-extra/logging"]
 oapi = ["dep:salvo-oapi"]
 proxy = ["dep:salvo-proxy"]
 rate-limiter = ["dep:salvo-rate-limiter"]
 request-id = ["salvo-extra/request-id"]
-serve-static = ["dep:salvo-serve-static"]
+# serve-static = ["dep:salvo-serve-static"]
 size-limiter = ["salvo-extra/size-limiter"]
+# sse = ["salvo-extra/sse"]
+timeout = ["salvo-extra/timeout"]
 
 full = [
     "cookie",
@@ -69,6 +71,8 @@ full = [
     "request-id",
     # "serve-static", # ! tokio fs
     "size-limiter",
+    # "sse", # ! tokio time
+    "timeout",
 ]
 
 [dependencies]

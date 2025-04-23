@@ -28,6 +28,7 @@ mod proxy;
 mod rate_limiter;
 mod request_id;
 mod session;
+mod timeout;
 
 fn init_service() -> Arc<WorkerService> {
     let service: WorkerService = init_router().into();
@@ -233,6 +234,13 @@ fn init_router() -> Arc<Router> {
             Router::with_path("size_limiter")
                 .hoop(max_size(100))
                 .post(rate_limiter::hello),
+        )
+        // timeout
+        .push(
+            Router::with_path("timeout")
+                .hoop(salvo::timeout::Timeout::new(std::time::Duration::from_secs(5)))
+                .push(Router::with_path("slow").get(timeout::slow))
+                .push(Router::with_path("fast").get(timeout::fast)),
         );
 
     // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);

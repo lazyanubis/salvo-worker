@@ -41,8 +41,8 @@ pub mod salvo {
     #[cfg(feature = "catch-panic")]
     pub use salvo_extra::catch_panic;
 
-    #[cfg(feature = "compression")]
-    pub use salvo_compression as compression;
+    // #[cfg(feature = "compression")]
+    // pub use salvo_compression as compression;
 
     #[cfg(feature = "concurrency-limiter")]
     pub use salvo_extra::concurrency_limiter;
@@ -59,8 +59,8 @@ pub mod salvo {
     #[cfg(feature = "flash")]
     pub use salvo_flash as flash;
 
-    #[cfg(feature = "jwt-auth")]
-    pub use salvo_jwt_auth as jwt_auth;
+    // #[cfg(feature = "jwt-auth")]
+    // pub use salvo_jwt_auth as jwt_auth;
 
     #[cfg(feature = "logging")]
     pub use salvo_extra::logging;
@@ -91,9 +91,15 @@ pub mod salvo {
     #[cfg(feature = "request-id")]
     pub use salvo_extra::request_id::RequestId;
 
-    #[cfg(feature = "serve-static")]
-    pub use salvo_serve_static::{StaticDir, StaticFile};
+    // #[cfg(feature = "serve-static")]
+    // pub use salvo_serve_static::{StaticDir, StaticFile};
 
     #[cfg(feature = "size-limiter")]
     pub use salvo_extra::size_limiter;
+
+    // #[cfg(feature = "sse")]
+    // pub use salvo_extra::sse;
+
+    #[cfg(feature = "timeout")]
+    pub use salvo_extra::timeout;
 }
