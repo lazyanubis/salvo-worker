@@ -2330,7 +2330,7 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 
 [[package]]
 name = "salvo-cache"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "ciborium",
@@ -2347,7 +2347,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-compression"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "brotli",
  "bytes",
@@ -2364,7 +2364,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2415,7 +2415,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-cors"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "salvo-core",
@@ -2426,7 +2426,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-csrf"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "aead",
  "aes-gcm",
@@ -2447,7 +2447,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-extra"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "etag",
@@ -2472,7 +2472,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-flash"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "async-session",
  "salvo-core",
@@ -2485,7 +2485,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-jwt-auth"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -2504,7 +2504,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-oapi"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "assert-json-diff",
  "base64 0.22.1",
@@ -2552,7 +2552,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-proxy"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "fastrand",
@@ -2571,7 +2571,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-rate-limiter"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "ciborium",
  "moka",
@@ -2596,7 +2596,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-serve-static"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "hex",
  "mime",
@@ -2615,7 +2615,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-session"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "async-session",
  "cookie",
@@ -2628,7 +2628,7 @@ dependencies = [
 
 [[package]]
 name = "salvo-worker"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytes",
  "futures",
