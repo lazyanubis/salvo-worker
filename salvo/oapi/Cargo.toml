@@ -20,7 +20,7 @@ workspace = true
 [features]
 default = []
 full = [
-    # "swagger-ui",
+    "swagger-ui",
     # "scalar",
     # "rapidoc",
     # "redoc",
