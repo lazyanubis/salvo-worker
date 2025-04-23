@@ -135,7 +135,7 @@ hyper-util = { workspace = true, default-features = true, features = [
     # "tokio",
     # "tracing",
 ] }
-mime = "0.3"
+mime = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true, features = ["raw_value"] }
 serde_urlencoded = { version = "0.7", optional = true }

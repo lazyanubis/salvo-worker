@@ -1,0 +1,45 @@
+[package]
+name = "salvo-serve-static"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+
+[package.metadata.release]
+release = false
+
+# https://github.com/rustwasm/wasm-pack/issues/1247
+# [package.metadata.wasm-pack.profile.release]
+# wasm-opt = false
+
+# [lib]
+# crate-type = ["cdylib"]
+
+[lints]
+workspace = true
+
+[features]
+default = []
+full = ["embed"]
+embed = ["dep:rust-embed", "dep:hex"]
+
+[dependencies]
+hex = { workspace = true, optional = true }
+mime = { workspace = true }
+mime-infer = { workspace = true }
+path-slash = { workspace = true }
+percent-encoding = { workspace = true }
+rust-embed = { workspace = true, optional = true }
+salvo-core = { workspace = true, default-features = false }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+time = { workspace = true, features = ["formatting", "macros", "serde"] }
+tracing = { workspace = true }
+tokio = { workspace = true }
+
+worker = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+
+[dev-dependencies]
+salvo-core = { workspace = true, features = ["test"] }
+tokio = { workspace = true, features = ["fs", "macros", "rt-multi-thread"] }

@@ -45,6 +45,8 @@ oapi = ["dep:salvo-oapi"]
 proxy = ["dep:salvo-proxy"]
 rate-limiter = ["dep:salvo-rate-limiter"]
 request-id = ["salvo-extra/request-id"]
+serve-static = ["dep:salvo-serve-static"]
+size-limiter = ["salvo-extra/size-limiter"]
 
 full = [
     "cookie",
@@ -65,6 +67,8 @@ full = [
     "proxy",
     "rate-limiter",
     "request-id",
+    # "serve-static", # ! tokio fs
+    "size-limiter",
 ]
 
 [dependencies]
@@ -90,6 +94,7 @@ salvo-jwt-auth = { workspace = true, optional = true, features = ["full"] }
 salvo-oapi = { workspace = true, optional = true, features = ["full"] }
 salvo-proxy = { workspace = true, optional = true, features = ["full"] }
 salvo-rate-limiter = { workspace = true, optional = true, features = ["full"] }
+salvo-serve-static = { workspace = true, optional = true, features = ["full"] }
 
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

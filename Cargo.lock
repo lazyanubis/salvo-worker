@@ -1070,6 +1070,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "hex"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+
+[[package]]
 name = "hmac"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1727,6 +1733,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "path-slash"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e91099d4268b0e11973f036e885d652fb0b21fedcf69738c627f94db6a44f42"
+
+[[package]]
 name = "pem"
 version = "3.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1926,7 +1938,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2583,6 +2595,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "salvo-serve-static"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "mime",
+ "mime-infer",
+ "path-slash",
+ "percent-encoding",
+ "rust-embed",
+ "salvo-core",
+ "serde",
+ "serde_json",
+ "time",
+ "tokio",
+ "tracing",
+ "worker",
+]
+
+[[package]]
 name = "salvo-session"
 version = "0.1.0"
 dependencies = [
@@ -2613,6 +2644,7 @@ dependencies = [
  "salvo-oapi",
  "salvo-proxy",
  "salvo-rate-limiter",
+ "salvo-serve-static",
  "salvo-session",
  "serde",
  "serde_json",

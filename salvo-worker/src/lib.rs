@@ -90,4 +90,10 @@ pub mod salvo {
 
     #[cfg(feature = "request-id")]
     pub use salvo_extra::request_id::RequestId;
+
+    #[cfg(feature = "serve-static")]
+    pub use salvo_serve_static::{StaticDir, StaticFile};
+
+    #[cfg(feature = "size-limiter")]
+    pub use salvo_extra::size_limiter;
 }

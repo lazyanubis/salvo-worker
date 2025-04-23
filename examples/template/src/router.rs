@@ -1,5 +1,6 @@
 use once_cell::sync::Lazy;
 use salvo_worker::WorkerService;
+use salvo_worker::salvo::size_limiter::max_size;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -226,6 +227,12 @@ fn init_router() -> Arc<Router> {
             Router::with_path("request_id")
                 .hoop(RequestId::new())
                 .get(request_id::hello),
+        )
+        // size limiter
+        .push(
+            Router::with_path("size_limiter")
+                .hoop(max_size(100))
+                .post(rate_limiter::hello),
         );
 
     // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
