@@ -251,7 +251,7 @@ fn init_router() -> Arc<Router> {
             ),
         );
 
-    let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
+    let doc = oapi::OpenApi::new("template api", "0.0.1").merge_router(&router);
 
     let router = router
         .unshift(doc.into_router("/api-doc/openapi.json"))
