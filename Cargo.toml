@@ -46,6 +46,7 @@ salvo-csrf = { path = "salvo/csrf" }
 salvo-flash = { path = "salvo/flash" }
 salvo-jwt-auth = { path = "salvo/jwt-auth" }
 salvo-oapi = { path = "salvo/oapi" }
+salvo-proxy = { path = "salvo/proxy" }
 
 base64 = "0.22"
 http = "1"
@@ -107,5 +108,18 @@ nix = { version = "0.29", default-features = false }
 rand = "0.9"
 tempfile = "3"
 assert-json-diff = "2"
+fastrand = "2"
+percent-encoding = "2"
+reqwest = { version = "0.12", default-features = false, features = [
+    "rustls-tls",
+    "charset",
+    "http2",
+    "macos-system-configuration",
+    "json",
+    "blocking",
+    "multipart",
+    "stream",
+] }
+
 
 worker = { version = "*" }

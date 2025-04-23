@@ -81,4 +81,7 @@ pub mod salvo {
     }
     #[cfg(feature = "oapi")]
     pub use oapi_prelude::*;
+
+    #[cfg(feature = "proxy")]
+    pub use salvo_proxy as proxy;
 }

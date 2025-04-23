@@ -146,7 +146,7 @@ mime-infer = "4"
 regex = { workspace = true }
 futures-util = { workspace = true, default-features = false }
 form_urlencoded = "1"
-percent-encoding = "2"
+percent-encoding = { workspace = true }
 bytes = { workspace = true }
 async-trait = "0.1"
 tracing = "0.1"
@@ -197,4 +197,4 @@ tokio = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
-fastrand = "2"
+fastrand = { workspace = true }

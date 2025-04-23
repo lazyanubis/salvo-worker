@@ -1,0 +1,84 @@
+[package]
+name = "salvo-proxy"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+
+[package.metadata.release]
+release = false
+
+# https://github.com/rustwasm/wasm-pack/issues/1247
+# [package.metadata.wasm-pack.profile.release]
+# wasm-opt = false
+
+# [lib]
+# crate-type = ["cdylib"]
+
+[lints]
+workspace = true
+
+[features]
+default = [
+    # "ring",
+    # "hyper-client",
+    "reqwest-client",
+]
+full = [
+    # "ring",
+    # "hyper-client",
+    "reqwest-client",
+]
+# aws-lc-rs = ["hyper-rustls/aws-lc-rs"]
+ring = ["hyper-rustls/ring"]
+hyper-client = ["dep:hyper-util", "dep:hyper-rustls"]
+reqwest-client = ["dep:reqwest"]
+worker-client = []
+
+[dependencies]
+futures-util = { workspace = true, default-features = false }
+salvo-core = { workspace = true, default-features = false }
+tracing = { workspace = true }
+tokio = { workspace = true }
+fastrand = { workspace = true }
+hyper = { workspace = true, features = [
+    "server",
+    "http1",
+    # "http2"
+] }
+hyper-rustls = { workspace = true, optional = true, features = [
+    # "native-tokio",
+    # "rustls-native-certs",
+    # "ring",
+    "http1",
+    # "http2",
+    # "tls12",
+    "logging",
+] }
+hyper-util = { workspace = true, optional = true, features = [
+    # "tokio",
+    "http1",
+    # "http2",
+    "client-legacy",
+] }
+percent-encoding = { workspace = true }
+bytes = { workspace = true }
+futures = { workspace = true }
+reqwest = { workspace = true, default-features = false, optional = true, features = [
+    "stream",
+    "multipart",
+] }
+
+worker = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+reqwest = { workspace = true, default-features = false, optional = true, features = [
+    "rustls-tls",
+    "charset",
+    "http2",
+    "macos-system-configuration",
+] }
+
+
+[dev-dependencies]
+salvo-core = { workspace = true, features = ["http1", "server", "test"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

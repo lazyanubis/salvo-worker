@@ -24,6 +24,7 @@ mod flash_cookie;
 mod flash_session;
 mod logging;
 mod open_api;
+mod proxy;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
@@ -189,7 +190,26 @@ fn init_router() -> Arc<Router> {
                 .push(Router::with_path("set").get(flash_session::set_flash)),
         )
         // open api
-        .push(Router::with_path("open_api").push(Router::with_path("hello").get(open_api::hello)));
+        .push(Router::with_path("open_api").push(Router::with_path("hello").get(open_api::hello)))
+        // proxy
+        .push(
+            Router::with_path("proxy")
+                .push(Router::new().path("google/{**rest}").goal(salvo::proxy::Proxy::<
+                    Vec<&str>,
+                    salvo::proxy::ReqwestClient,
+                >::new(
+                    vec!["https://www.google.com"],
+                    salvo::proxy::ReqwestClient::default(),
+                )))
+                .push(
+                    Router::new()
+                        .path("baidu/{**rest}")
+                        .goal(salvo::proxy::Proxy::<Vec<&str>, _>::new(
+                            vec!["https://www.baidu.com"],
+                            salvo::proxy::ReqwestClient::default(),
+                        )),
+                ),
+        );
 
     // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
 

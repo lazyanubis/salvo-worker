@@ -45,6 +45,7 @@
         "thiserror",
         "tungstenite",
         "typeless",
+        "unshift",
         "zstd"
     ]
 }
