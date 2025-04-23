@@ -191,11 +191,12 @@ fn init_router() -> Arc<Router> {
         // open api
         .push(Router::with_path("open_api").push(Router::with_path("hello").get(open_api::hello)));
 
-    let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
+    // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
 
-    let router = router
-        .unshift(doc.into_router("/api-doc/openapi.json"))
-        .unshift(oapi::swagger_ui::SwaggerUi::new("/api-doc/openapi.json").into_router("/swagger-ui"));
+    // let router = router
+    //     .unshift(doc.into_router("/api-doc/openapi.json"))
+    //     // .unshift(oapi::swagger_ui::SwaggerUi::new("/api-doc/openapi.json").into_router("/swagger-ui"))
+    //     ;
 
     Arc::new(router)
 }

@@ -20,21 +20,21 @@ workspace = true
 [features]
 default = []
 full = [
-    "swagger-ui",
-    "scalar",
-    "rapidoc",
-    "redoc",
-    "chrono",
-    "decimal",
-    "url",
-    "ulid",
-    "uuid",
-    "time",
-    "smallvec",
-    "indexmap",
-    "yaml",
-    "non-strict-integers",
-    "compact_str",
+    # "swagger-ui",
+    # "scalar",
+    # "rapidoc",
+    # "redoc",
+    # "chrono",
+    # "decimal",
+    # "url",
+    # "ulid",
+    # "uuid",
+    # "time",
+    # "smallvec",
+    # "indexmap",
+    # "yaml",
+    # "non-strict-integers",
+    # "compact_str",
 ]
 swagger-ui = ["dep:rust-embed"]
 scalar = []
