@@ -6,7 +6,9 @@ use session::{Session, SessionDepotExt};
 pub(crate) async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response) {
     if req.method() == salvo::http::Method::POST {
         let mut session = Session::new();
+        #[allow(clippy::unwrap_used)]
         let username = req.form::<String>("username").await.unwrap();
+        #[allow(clippy::unwrap_used)]
         session.insert("username", username).unwrap();
         depot.set_session(session);
         res.render(Redirect::other("/session"));

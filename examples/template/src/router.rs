@@ -31,22 +31,21 @@ mod session;
 mod timeout;
 
 fn init_service() -> Arc<WorkerService> {
-    let service: WorkerService = init_router().into();
+    let service: WorkerService = Arc::new(init_router()).into();
     let service = service.cors(init_cors());
     let service = service.hoop(salvo::logging::Logger::new());
     Arc::new(service)
 }
 
 fn init_cors() -> CorsHandler {
-    let cors = Cors::new()
+    Cors::new()
         .allow_origin(["http://127.0.0.1:5800", "http://localhost:5800"])
         .allow_methods(vec![Method::GET, Method::POST, Method::DELETE])
         .allow_headers("authorization")
-        .into_handler();
-    cors
+        .into_handler()
 }
 
-fn init_router() -> Arc<Router> {
+fn init_router() -> Router {
     let config = affix_state::Config {
         username: "root".to_string(),
         password: "pwd".to_string(),
@@ -68,6 +67,7 @@ fn init_router() -> Arc<Router> {
         RequestIssuer::default(),
     );
 
+    #[allow(clippy::unwrap_used)]
     let session_handler = salvo::session::SessionHandler::builder(
         salvo::session::CookieStore::new(),
         b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
@@ -85,6 +85,7 @@ fn init_router() -> Arc<Router> {
         salvo::csrf::aes_gcm_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
     let ccp_cookie_csrf = salvo::csrf::ccp_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
 
+    #[allow(clippy::unwrap_used)]
     let flash_session_handler = salvo::session::SessionHandler::builder(
         salvo::session::MemoryStore::new(),
         b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
@@ -101,9 +102,8 @@ fn init_router() -> Arc<Router> {
     );
 
     let router = Router::new()
-        .get(hello)
-        .push(Router::with_path("json").get(json))
-        .push(Router::with_path("hello").get(json))
+        .push(Router::with_path("/api-doc/openapi.json").get(open_api_handler))
+        .get(rate_limiter::hello)
         // affix_state
         .push(
             Router::with_path("affix_state")
@@ -246,29 +246,165 @@ fn init_router() -> Arc<Router> {
         .push(
             Router::with_path("trailing_slash").push(
                 Router::with_hoop(trailing_slash::add_slash())
-                    .push(Router::with_path("hello").get(hello))
-                    .push(Router::with_path("hello.world").get(hello)),
+                    .push(Router::with_path("hello").get(rate_limiter::hello))
+                    .push(Router::with_path("hello.world").get(rate_limiter::hello)),
             ),
         );
 
-    let doc = oapi::OpenApi::new("template api", "0.0.1").merge_router(&router);
-
-    let router = router
-        .unshift(doc.into_router("/api-doc/openapi.json"))
-        .unshift(oapi::swagger_ui::SwaggerUi::new("/api-doc/openapi.json").into_router("/swagger-ui"));
-
-    Arc::new(router)
+    // let doc = oapi::OpenApi::new("template api", "0.0.1").merge_router(&router);
+    router
+        // .unshift(doc.into_router("/api-doc/openapi.json"))
+        .unshift(oapi::swagger_ui::SwaggerUi::new("/api-doc/openapi.json").into_router("/swagger-ui"))
 }
 
+#[allow(unused)]
+const OPEN_API_FILE: &str = "docs/open-api.json"; // 子项目根目录
+const OPEN_API_CONTENT: &str = include_str!("../docs/open-api.json"); // 当前文件目录起始
 #[handler]
-async fn hello() -> Result<&'static str, ()> {
-    Ok("Hello World")
+async fn open_api_handler() -> &'static str {
+    OPEN_API_CONTENT
 }
-#[handler]
-async fn json(res: &mut Response) {
-    #[derive(Serialize, Debug)]
-    struct User {
-        name: String,
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::fs::{self, File};
+    use std::io::{BufRead, BufReader, Write};
+    use std::path::Path;
+
+    /// 更新 open-api.json
+    #[test]
+    fn update_open_api() {
+        let router = init_router();
+        let doc = oapi::OpenApi::new("template api", "0.0.1").merge_router(&router);
+        let open_api = doc.to_json().unwrap();
+        // println!("{}", open_api);
+
+        let _ = fs::remove_file(OPEN_API_FILE);
+        File::create(OPEN_API_FILE)
+            .expect("create open-api.json file failed")
+            .write_all(open_api.as_bytes())
+            .expect("write open-api.json failed");
     }
-    res.render(Json(User { name: "jobs".into() }));
+
+    /// 遍历所有文件
+    fn traverse_dir(path: &Path) -> Vec<String> {
+        let mut files = Vec::new();
+        if let Ok(entries) = fs::read_dir(path) {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let path = entry.path();
+                    if path.is_dir() {
+                        files.extend_from_slice(&traverse_dir(&path));
+                    } else {
+                        if let Some(path) = path.to_str() {
+                            if path.ends_with(".rs") {
+                                files.push(path.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        files
+    }
+
+    // 替换单个文件
+    fn release_endpoint(path: &str) -> Result<(), std::io::Error> {
+        let mut lines = Vec::new();
+
+        let file = File::open(path)?;
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            lines.push(line?);
+        }
+
+        let mut replaced = false;
+
+        for i in 0..lines.len() {
+            if lines[i].starts_with("// #[endpoint]") {
+                lines[i] = lines[i].trim_start_matches("// ").to_string();
+                lines[i + 1] = format!("// {}", lines[i + 1]);
+                replaced = true;
+            }
+            if lines[i].starts_with("// #[endpoint(") {
+                let mut j = i;
+                loop {
+                    lines[j] = lines[j].trim_start_matches("// ").to_string();
+                    if lines[j].ends_with(")]") {
+                        lines[j + 1] = format!("// {}", lines[j + 1]);
+                        break;
+                    }
+                    j += 1;
+                    if lines.len() <= j {
+                        panic!("error: {}:{}", path, j);
+                    }
+                }
+                replaced = true;
+            }
+        }
+        if replaced {
+            let _ = fs::remove_file(path);
+            File::create(path)?.write_all(lines.join("\n").as_bytes())?;
+        }
+        Ok(())
+    }
+
+    // 替换单个文件
+    fn release_handler(path: &str) -> Result<(), std::io::Error> {
+        let mut lines = Vec::new();
+
+        let file = File::open(path)?;
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            lines.push(line?);
+        }
+
+        let mut replaced = false;
+        for i in 0..lines.len() {
+            if lines[i].starts_with("#[endpoint]") {
+                lines[i + 1] = lines[i + 1].trim_start_matches("// ").to_string();
+                lines[i] = format!("// {}", lines[i]);
+                replaced = true;
+            }
+            if lines[i].starts_with("#[endpoint(") {
+                let mut j = i;
+                loop {
+                    lines[j] = format!("// {}", lines[j]);
+                    if lines[j].ends_with("// )]") {
+                        lines[j + 1] = lines[j + 1].trim_start_matches("// ").to_string();
+                        break;
+                    }
+                    j += 1;
+                    if lines.len() <= j {
+                        panic!("error: {}:{}", path, j);
+                    }
+                }
+                replaced = true;
+            }
+        }
+        if replaced {
+            let _ = fs::remove_file(path);
+            File::create(path)?.write_all(lines.join("\n").as_bytes())?;
+        }
+        Ok(())
+    }
+
+    /// 使用 endpoint
+    #[test]
+    fn release_all_endpoints() {
+        let paths = traverse_dir(Path::new("src"));
+        for path in paths.iter() {
+            release_endpoint(&path).unwrap();
+        }
+    }
+
+    /// 使用 handler
+    #[test]
+    fn release_all_handlers() {
+        let paths = traverse_dir(Path::new("src"));
+        for path in paths.iter() {
+            release_handler(&path).unwrap();
+        }
+    }
 }

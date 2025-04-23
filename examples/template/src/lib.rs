@@ -26,21 +26,26 @@ fn start() {
     let _ = router::WORKER_SERVICE.clone();
 }
 
-/// 定时任务
-#[event(scheduled)]
-pub async fn scheduled(_event: ScheduledEvent, _env: Env, _ctx: ScheduleContext) {
-    // // console_error_panic_hook::set_once();
-    // initial::do_init(&env).await; // 初始化
+#[allow(clippy::future_not_send)]
+mod future_warning {
+    use super::*;
 
-    // 执行任务
-    // handlers::triggers::cron_trigger_handler(_event, env, _ctx).await;
-}
+    /// 定时任务
+    #[event(scheduled)]
+    async fn scheduled(_event: ScheduledEvent, _env: Env, _ctx: ScheduleContext) {
+        // // console_error_panic_hook::set_once();
+        // initial::do_init(&env).await; // 初始化
 
-/// 请求
-#[event(fetch)]
-async fn fetch(req: Request, env: Env, ctx: Context) -> Result<Response> {
-    // // console_error_panic_hook::set_once();
-    // initial::do_init(&env).await; // 初始化
+        // 执行任务
+        // handlers::triggers::cron_trigger_handler(_event, env, _ctx).await;
+    }
 
-    router::WORKER_SERVICE.handle(req, env, ctx).await
+    /// 请求
+    #[event(fetch)]
+    async fn fetch(req: Request, env: Env, ctx: Context) -> Result<Response> {
+        // // console_error_panic_hook::set_once();
+        // initial::do_init(&env).await; // 初始化
+
+        router::WORKER_SERVICE.handle(req, env, ctx).await
+    }
 }

@@ -970,110 +970,110 @@ mod tests {
                 r#"{
                     "openapi": "3.1.0",
                     "info": {
-                       "title": "my application",
-                       "version": "0.1.0"
+                        "title": "my application",
+                        "version": "0.1.0"
                     },
                     "servers": [
-                       {
-                          "url": "/api/bar/",
-                          "description": "this is description of the server",
-                          "variables": {
-                             "username": {
-                                "default": "the_user",
-                                "description": "this is user"
-                             }
-                          }
-                       }
+                        {
+                            "url": "/api/bar/",
+                            "description": "this is description of the server",
+                            "variables": {
+                                "username": {
+                                    "default": "the_user",
+                                    "description": "this is user"
+                                }
+                            }
+                        }
                     ],
                     "paths": {
-                       "/pets/{id}": {
-                          "get": {
-                             "summary": "Get pet by id",
-                             "description": "Get pet from database by pet database id",
-                             "operationId": "salvo_oapi.openapi.tests.test_simple_document_with_security.get_pet_by_id",
-                             "parameters": [
-                                {
-                                   "name": "pet_id",
-                                   "in": "path",
-                                   "description": "Get parameter `pet_id` from request url path.",
-                                   "required": true,
-                                   "schema": {
-                                      "type": "integer",
-                                      "format": "uint64",
-                                      "minimum": 0.0
-                                   }
+                        "/pets/{id}": {
+                            "get": {
+                                "summary": "Get pet by id",
+                                "description": "Get pet from database by pet database id",
+                                "operationId": "salvo_oapi.openapi.tests.test_simple_document_with_security.get_pet_by_id",
+                                "parameters": [
+                                    {
+                                    "name": "pet_id",
+                                    "in": "path",
+                                    "description": "Get parameter `pet_id` from request url path.",
+                                    "required": true,
+                                    "schema": {
+                                        "type": "integer",
+                                        "format": "uint64",
+                                        "minimum": 0.0
+                                    }
+                                    },
+                                    {
+                                    "name": "id",
+                                    "in": "path",
+                                    "description": "Pet database id to get Pet for",
+                                    "required": false
+                                    }
+                                ],
+                                "responses": {
+                                    "200": {
+                                    "description": "Pet found successfully"
+                                    },
+                                    "404": {
+                                    "description": "Pet was not found"
+                                    }
                                 },
-                                {
-                                   "name": "id",
-                                   "in": "path",
-                                   "description": "Pet database id to get Pet for",
-                                   "required": false
-                                }
-                             ],
-                             "responses": {
-                                "200": {
-                                   "description": "Pet found successfully"
-                                },
-                                "404": {
-                                   "description": "Pet was not found"
-                                }
-                             },
-                             "security": [
-                                {},
-                                {
-                                   "my_auth": [
-                                      "read:items",
-                                      "edit:items"
-                                   ]
-                                },
-                                {
-                                   "token_jwt": []
-                                },
-                                {
-                                    "api_key1": [],
-                                    "api_key2": []
-                                }
-                             ]
-                          }
-                       }
+                                "security": [
+                                    {},
+                                    {
+                                    "my_auth": [
+                                        "read:items",
+                                        "edit:items"
+                                    ]
+                                    },
+                                    {
+                                    "token_jwt": []
+                                    },
+                                    {
+                                        "api_key1": [],
+                                        "api_key2": []
+                                    }
+                                ]
+                            }
+                        }
                     },
                     "components": {
-                       "schemas": {
-                          "salvo_oapi.openapi.tests.test_simple_document_with_security.Pet": {
-                             "type": "object",
-                             "required": [
-                                "id",
-                                "name"
-                             ],
-                             "properties": {
-                                "age": {
-                                   "type": ["integer", "null"],
-                                   "format": "int32"
+                        "schemas": {
+                            "salvo_oapi.openapi.tests.test_simple_document_with_security.Pet": {
+                                "type": "object",
+                                "required": [
+                                    "id",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "age": {
+                                    "type": ["integer", "null"],
+                                    "format": "int32"
+                                    },
+                                    "id": {
+                                    "type": "integer",
+                                    "format": "uint64",
+                                    "minimum": 0.0
+                                    },
+                                    "name": {
+                                    "type": "string"
+                                    }
                                 },
-                                "id": {
-                                   "type": "integer",
-                                   "format": "uint64",
-                                   "minimum": 0.0
-                                },
-                                "name": {
-                                   "type": "string"
-                                }
-                             },
-                             "examples": [{
-                                "id": 1,
-                                "name": "bob the cat"
-                             }]
-                          }
-                       },
-                       "securitySchemes": {
-                          "token_jwt": {
-                             "type": "http",
-                             "scheme": "bearer",
-                             "bearerFormat": "JWT"
-                          }
-                       }
+                                "examples": [{
+                                    "id": 1,
+                                    "name": "bob the cat"
+                                }]
+                            }
+                        },
+                        "securitySchemes": {
+                            "token_jwt": {
+                                "type": "http",
+                                "scheme": "bearer",
+                                "bearerFormat": "JWT"
+                            }
+                        }
                     }
-                 }"#
+                }"#
             )
             .unwrap(),
             Value::from_str(&doc.to_json().unwrap()).unwrap()

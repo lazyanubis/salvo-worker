@@ -21,20 +21,20 @@ workspace = true
 default = []
 full = [
     "swagger-ui",
-    # "scalar",
-    # "rapidoc",
-    # "redoc",
-    # "chrono",
-    # "decimal",
-    # "url",
-    # "ulid",
-    # "uuid",
-    # "time",
-    # "smallvec",
-    # "indexmap",
-    # "yaml",
-    # "non-strict-integers",
-    # "compact_str",
+    "scalar",
+    "rapidoc",
+    "redoc",
+    "chrono",
+    "decimal",
+    "url",
+    "ulid",
+    "uuid",
+    "time",
+    "smallvec",
+    "indexmap",
+    "yaml",
+    "non-strict-integers",
+    "compact_str",
 ]
 swagger-ui = ["dep:rust-embed"]
 scalar = []
@@ -92,3 +92,7 @@ compact_str = { workspace = true, optional = true }
 
 [dev-dependencies]
 assert-json-diff = { workspace = true }
+salvo-core = { workspace = true, default-features = false, features = [
+    "cookie",
+    "test",
+] }
