@@ -683,6 +683,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c9e6a11ca8224451684bc0d7d5a7adbf8f2fd6887261a1cfc3c0432f9d4068e"
 dependencies = [
  "powerfmt",
+ "serde",
 ]
 
 [[package]]
@@ -2556,6 +2557,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "salvo-rate-limiter"
+version = "0.1.0"
+dependencies = [
+ "ciborium",
+ "moka",
+ "salvo-core",
+ "serde",
+ "time",
+ "tokio",
+ "tracing",
+ "worker",
+]
+
+[[package]]
 name = "salvo-serde-util"
 version = "0.78.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2596,6 +2611,7 @@ dependencies = [
  "salvo-jwt-auth",
  "salvo-oapi",
  "salvo-proxy",
+ "salvo-rate-limiter",
  "salvo-session",
  "serde",
  "serde_json",

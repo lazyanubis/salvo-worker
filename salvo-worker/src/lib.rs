@@ -84,4 +84,7 @@ pub mod salvo {
 
     #[cfg(feature = "proxy")]
     pub use salvo_proxy as proxy;
+
+    #[cfg(feature = "rate-limiter")]
+    pub use salvo_rate_limiter as rate_limiter;
 }

@@ -47,6 +47,7 @@ salvo-flash = { path = "salvo/flash" }
 salvo-jwt-auth = { path = "salvo/jwt-auth" }
 salvo-oapi = { path = "salvo/oapi" }
 salvo-proxy = { path = "salvo/proxy" }
+salvo-rate-limiter = { path = "salvo/rate-limiter" }
 
 base64 = "0.22"
 http = "1"
@@ -120,6 +121,7 @@ reqwest = { version = "0.12", default-features = false, features = [
     "multipart",
     "stream",
 ] }
+ciborium = "0.2"
 
 
 worker = { version = "*" }

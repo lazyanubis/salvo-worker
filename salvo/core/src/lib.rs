@@ -38,7 +38,7 @@ extern crate self as salvo_core;
 mod cfg;
 
 pub mod catcher;
-#[cfg(not(target_arch = "wasm32"))]
+
 pub mod conn;
 mod depot;
 mod error;

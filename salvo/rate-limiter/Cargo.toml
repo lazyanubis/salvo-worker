@@ -1,5 +1,5 @@
 [package]
-name = "salvo-cache"
+name = "salvo-rate-limiter"
 version.workspace = true
 edition.workspace = true
 license = "MIT"
@@ -18,25 +18,27 @@ release = false
 workspace = true
 
 [features]
-default = ["worker-store"]
-full = ["moka-store"]
+default = ["worker-store", "fixed-guard", "sliding-guard"]
+full = ["worker-store", "fixed-guard", "sliding-guard"]
 moka-store = ["dep:moka"]
-worker-store = ["dep:worker"]
+worker-store = []
+fixed-guard = []
+sliding-guard = []
 
 [dependencies]
-bytes = { workspace = true }
 moka = { workspace = true, optional = true, features = ["future"] }
-salvo-core = { workspace = true, features = ["http1"] }
+salvo-core = { workspace = true, default-features = false }
+serde = { workspace = true }
+time = { workspace = true, features = ["serde"] }
 tracing = { workspace = true }
-time = { workspace = true }
-tokio = { workspace = true, default-features = false }
-sha2 = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
+tokio = { workspace = true }
 ciborium = { workspace = true }
 
-worker = { workspace = true, optional = true }
+worker = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 
+
 [dev-dependencies]
+salvo-core = { workspace = true, features = ["test"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

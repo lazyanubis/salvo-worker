@@ -2,7 +2,6 @@ use once_cell::sync::Lazy;
 use salvo_worker::WorkerService;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::time::Duration;
 
 use salvo_worker::salvo::{
     self,
@@ -25,6 +24,7 @@ mod flash_session;
 mod logging;
 mod open_api;
 mod proxy;
+mod rate_limiter;
 mod session;
 
 fn init_service() -> Arc<WorkerService> {
@@ -54,13 +54,13 @@ fn init_router() -> Arc<Router> {
     use salvo::cache::{Cache, RequestIssuer, WorkerStore};
     let short_cache = salvo::cache::Cache::new(
         WorkerStore::builder("KV_TEST".into())
-            .time_to_live(Duration::from_secs(60))
+            .time_to_live(std::time::Duration::from_secs(60))
             .build(),
         RequestIssuer::default(),
     );
     let long_cache = Cache::new(
         WorkerStore::builder("KV_TEST".into())
-            .time_to_live(Duration::from_secs(120))
+            .time_to_live(std::time::Duration::from_secs(120))
             .build(),
         RequestIssuer::default(),
     );
@@ -88,6 +88,14 @@ fn init_router() -> Arc<Router> {
     )
     .build()
     .unwrap();
+
+    use salvo::rate_limiter::{BasicQuota, FixedGuard, RateLimiter, RemoteIpIssuer};
+    let limiter = RateLimiter::new(
+        FixedGuard::new(),
+        salvo::rate_limiter::WorkerStore::new("KV_TEST".into()),
+        RemoteIpIssuer,
+        BasicQuota::new(1, time::Duration::seconds(10)),
+    );
 
     let router = Router::new()
         .get(hello)
@@ -209,7 +217,9 @@ fn init_router() -> Arc<Router> {
                             salvo::proxy::ReqwestClient::default(),
                         )),
                 ),
-        );
+        )
+        // rate limiter
+        .push(Router::with_path("rate_limiter").hoop(limiter).get(rate_limiter::hello));
 
     // let doc = oapi::OpenApi::new("test api", "0.0.1").merge_router(&router);
 

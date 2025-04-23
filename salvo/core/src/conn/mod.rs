@@ -4,17 +4,24 @@
 //! The module also provides support for HTTP versions 1 and 2, as well as the QUIC protocol.
 //! Additionally, it includes implementations for Unix domain sockets.
 use std::fmt::{self, Display, Formatter};
+#[allow(unused)]
 use std::io::Result as IoResult;
 
 use http::uri::Scheme;
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::io::{AsyncRead, AsyncWrite};
 
+#[cfg(not(target_arch = "wasm32"))]
 use crate::fuse::ArcFuseFactory;
 use crate::http::{HttpConnection, Version};
 
+#[cfg(not(target_arch = "wasm32"))]
 mod proto;
+#[cfg(not(target_arch = "wasm32"))]
 pub use proto::HttpBuilder;
+#[cfg(not(target_arch = "wasm32"))]
 mod stream;
+#[cfg(not(target_arch = "wasm32"))]
 pub use stream::*;
 
 cfg_feature! {
@@ -57,10 +64,14 @@ cfg_feature! {
 pub mod addr;
 pub use addr::SocketAddr;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub mod tcp;
+#[cfg(not(target_arch = "wasm32"))]
 pub use tcp::TcpListener;
 
+#[cfg(not(target_arch = "wasm32"))]
 mod joined;
+#[cfg(not(target_arch = "wasm32"))]
 pub use joined::JoinedListener;
 
 cfg_feature! {
@@ -97,6 +108,7 @@ where
     pub http_scheme: Scheme,
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl<C> Accepted<C>
 where
     C: HttpConnection + AsyncRead + AsyncWrite + Unpin + Send + 'static,
@@ -123,6 +135,7 @@ where
 }
 
 /// `Acceptor` represents an acceptor that can accept incoming connections.
+#[cfg(not(target_arch = "wasm32"))]
 pub trait Acceptor {
     /// Conn type
     type Conn: HttpConnection + AsyncRead + AsyncWrite + Send + Unpin + 'static;
@@ -161,6 +174,7 @@ impl Display for Holding {
 }
 
 /// `Listener` represents a listener that can bind to a specific address and port and return an acceptor.
+#[cfg(not(target_arch = "wasm32"))]
 pub trait Listener {
     /// Acceptor type.
     type Acceptor: Acceptor;

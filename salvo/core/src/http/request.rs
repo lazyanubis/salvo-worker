@@ -1,6 +1,7 @@
 //! HTTP request.
 use std::error::Error as StdError;
 use std::fmt::{self, Debug, Formatter};
+use std::str::FromStr;
 #[cfg(feature = "quinn")]
 use std::sync::Arc;
 use std::sync::OnceLock;
@@ -20,7 +21,6 @@ use multimap::MultiMap;
 use parking_lot::RwLock;
 use serde::de::Deserialize;
 
-#[cfg(not(target_arch = "wasm32"))]
 use crate::conn::SocketAddr;
 use crate::extract::{Extractible, Metadata};
 #[cfg(not(target_arch = "wasm32"))]
@@ -107,7 +107,6 @@ pub struct Request {
     pub(crate) scheme: Scheme,
     #[cfg(not(target_arch = "wasm32"))]
     pub(crate) local_addr: SocketAddr,
-    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) remote_addr: SocketAddr,
 
     pub(crate) secure_max_size: Option<usize>,
@@ -161,7 +160,6 @@ impl Request {
             scheme: Scheme::HTTP,
             #[cfg(not(target_arch = "wasm32"))]
             local_addr: SocketAddr::Unknown,
-            #[cfg(not(target_arch = "wasm32"))]
             remote_addr: SocketAddr::Unknown,
             secure_max_size: None,
             #[cfg(feature = "matched-path")]
@@ -210,6 +208,27 @@ impl Request {
             cookie_jar
         };
 
+        let remote_address = headers
+            .iter()
+            .find(|(name, _)| name.as_str() == "cf-connecting-ip")
+            .map(|(_, value)| {
+                let ip = match value.to_str() {
+                    Ok(ip) => ip,
+                    Err(_) => return SocketAddr::Unknown,
+                };
+                // ! FIXME: 哪里能找到端口？
+                use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+                if let Ok(ipv4) = Ipv4Addr::from_str(ip) {
+                    let ip = IpAddr::V4(ipv4);
+                    return SocketAddr::from(std::net::SocketAddr::new(ip, 8080));
+                }
+                if let Ok(ipv6) = Ipv6Addr::from_str(ip) {
+                    let ip = IpAddr::V6(ipv6);
+                    return SocketAddr::from(std::net::SocketAddr::new(ip, 8080));
+                }
+                SocketAddr::Unknown
+            });
+
         Request {
             queries: OnceLock::new(),
             uri,
@@ -226,8 +245,7 @@ impl Request {
             // multipart: OnceLock::new(),
             #[cfg(not(target_arch = "wasm32"))]
             local_addr: SocketAddr::Unknown,
-            #[cfg(not(target_arch = "wasm32"))]
-            remote_addr: SocketAddr::Unknown,
+            remote_addr: remote_address.unwrap_or(SocketAddr::Unknown),
             version,
             scheme,
             secure_max_size: None,
@@ -375,13 +393,11 @@ impl Request {
     }
 
     /// Get request remote address.
-    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn remote_addr(&self) -> &SocketAddr {
         &self.remote_addr
     }
     /// Get request remote address.
-    #[cfg(not(target_arch = "wasm32"))]
     #[inline]
     pub fn remote_addr_mut(&mut self) -> &mut SocketAddr {
         &mut self.remote_addr

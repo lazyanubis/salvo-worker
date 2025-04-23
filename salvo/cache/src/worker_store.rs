@@ -61,6 +61,7 @@ impl CacheStore for WorkerStore {
     {
         let env = depot.obtain::<worker::Env>().ok()?;
         let kv = env.kv(&self.key).ok()?;
+
         let name = key.as_ref();
         let builder = kv.get(name);
         let bytes = builder.bytes().await.ok()??;
@@ -76,7 +77,6 @@ impl CacheStore for WorkerStore {
         let env = depot
             .obtain::<worker::Env>()
             .map_err(|_| worker::Error::Json(("obtain Env failed".to_string(), 1)))?;
-
         let kv = env.kv(&self.key)?;
 
         let name = key.as_ref();
