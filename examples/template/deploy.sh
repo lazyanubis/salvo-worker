@@ -14,10 +14,6 @@ end_time=$(date +%H:%M:%S)
 end_time_s=$(date +%s)
 spend=$(($end_time_s - $start_time_s))
 spend_minutes=$(($spend / 60))
-echo "✅ $start_time -> $end_time" "Total: $spend seconds ($spend_minutes mins) 🎉🎉🎉\n"
-
-echo ''
-echo '========= deploy successful. ========='
-echo ''
-
-say "部署完成。耗时: $spend 秒。"
+echo "✅ $start_time -> $end_time" "Total: $spend seconds ($spend_minutes mins) 🎉🎉🎉"
+say "Deploy Successful. Spend: $spend seconds."
+echo '\n========= deploy successful. =========\n'
