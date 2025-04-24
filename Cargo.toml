@@ -30,7 +30,7 @@ missing_docs = "warn"
 broken_intra_doc_links = "warn"
 
 [workspace.lints.clippy]
-future_not_send = "warn"
+future_not_send = "allow"
 unwrap_used = "deny"
 expect_used = "deny"
 panic = "deny"

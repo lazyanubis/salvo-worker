@@ -2,6 +2,8 @@ use worker::*;
 
 use salvo_worker::common::response::MessageResponse;
 
+mod web_socket;
+
 const ENABLED: &str = "enabled";
 
 #[durable_object]

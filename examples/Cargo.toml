@@ -22,7 +22,8 @@ missing_docs = "warn"
 broken_intra_doc_links = "warn"
 
 [workspace.lints.clippy]
-future_not_send = "warn"
+arc_with_non_send_sync = "allow"
+future_not_send = "allow"
 unwrap_used = "deny"
 expect_used = "deny"
 panic = "deny"
