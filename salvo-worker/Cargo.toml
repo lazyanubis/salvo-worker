@@ -23,7 +23,7 @@ release = false
 workspace = true
 
 [features]
-default = []
+default = ["cache", "cors", "oapi"]
 
 cookie = ["salvo-core/cookie"]
 # ! 存疑，Cloudflare 里面的路由可能随时是新的，因此存在路由里面的数据可能会被重置

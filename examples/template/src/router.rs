@@ -1,11 +1,9 @@
 use once_cell::sync::Lazy;
 use salvo_worker::WorkerService;
-use salvo_worker::salvo::size_limiter::max_size;
 use std::sync::Arc;
 use std::sync::Mutex;
 
 use salvo_worker::salvo::{
-    self,
     cors::{Cors, CorsHandler},
     http::Method,
     *,
@@ -238,7 +236,7 @@ fn init_router() -> Router {
         // size limiter
         .push(
             Router::with_path("size_limiter")
-                .hoop(max_size(100))
+                .hoop(size_limiter::max_size(100))
                 .post(rate_limiter::hello),
         )
         // timeout
