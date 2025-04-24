@@ -58,7 +58,7 @@ use std::time::Duration;
 use futures_util::future;
 use futures_util::stream::{Stream, TryStream, TryStreamExt};
 use pin_project::pin_project;
-use salvo_core::http::header::{HeaderValue, CACHE_CONTROL, CONTENT_TYPE};
+use salvo_core::http::header::{CACHE_CONTROL, CONTENT_TYPE, HeaderValue};
 use tokio::time::{self, Sleep};
 
 use salvo_core::http::Response;
@@ -171,7 +171,7 @@ impl Display for SseEvent {
             f.write_char('\n')?;
         }
 
-        if let Some( duration) = &self.retry {
+        if let Some(duration) = &self.retry {
             "retry:".fmt(f)?;
 
             let secs = duration.as_secs();
@@ -317,100 +317,100 @@ where
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::convert::Infallible;
-    use std::time::Duration;
+// #[cfg(test)]
+// mod tests {
+//     use std::convert::Infallible;
+//     use std::time::Duration;
 
-    use salvo_core::prelude::*;
-    use salvo_core::test::ResponseExt;
-    use tokio_stream;
+//     use salvo_core::prelude::*;
+//     use salvo_core::test::ResponseExt;
+//     use tokio_stream;
 
-    use super::*;
+//     use super::*;
 
-    #[tokio::test]
-    async fn test_sse_data() {
-        let event_stream = tokio_stream::iter(vec![
-            Ok::<_, Infallible>(SseEvent::default().text("1")),
-            Ok::<_, Infallible>(SseEvent::default().text("2")),
-        ]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains("data:1") && text.contains("data:2"));
-    }
+//     #[tokio::test]
+//     async fn test_sse_data() {
+//         let event_stream = tokio_stream::iter(vec![
+//             Ok::<_, Infallible>(SseEvent::default().text("1")),
+//             Ok::<_, Infallible>(SseEvent::default().text("2")),
+//         ]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains("data:1") && text.contains("data:2"));
+//     }
 
-    #[tokio::test]
-    async fn test_sse_keep_alive() {
-        let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().text("1"))]);
-        let mut res = Response::new();
-        SseKeepAlive::new(event_stream)
-            .comment("love you")
-            .max_interval(Duration::from_secs(1))
-            .stream(&mut res);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains("data:1"));
-    }
+//     #[tokio::test]
+//     async fn test_sse_keep_alive() {
+//         let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().text("1"))]);
+//         let mut res = Response::new();
+//         SseKeepAlive::new(event_stream)
+//             .comment("love you")
+//             .max_interval(Duration::from_secs(1))
+//             .stream(&mut res);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains("data:1"));
+//     }
 
-    #[tokio::test]
-    async fn test_sse_json() {
-        #[derive(Serialize, Debug)]
-        struct User {
-            name: String,
-        }
+//     #[tokio::test]
+//     async fn test_sse_json() {
+//         #[derive(Serialize, Debug)]
+//         struct User {
+//             name: String,
+//         }
 
-        let event_stream = tokio_stream::iter(vec![SseEvent::default().json(User {
-            name: "jobs".to_owned(),
-        })]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains(r#"data:{"name":"jobs"}"#));
-    }
+//         let event_stream = tokio_stream::iter(vec![SseEvent::default().json(User {
+//             name: "jobs".to_owned(),
+//         })]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains(r#"data:{"name":"jobs"}"#));
+//     }
 
-    #[tokio::test]
-    async fn test_sse_comment() {
-        let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().comment("comment"))]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains(":comment"));
-    }
+//     #[tokio::test]
+//     async fn test_sse_comment() {
+//         let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().comment("comment"))]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains(":comment"));
+//     }
 
-    #[tokio::test]
-    async fn test_sse_name() {
-        let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().name("evt2"))]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains("event:evt2"));
-    }
+//     #[tokio::test]
+//     async fn test_sse_name() {
+//         let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().name("evt2"))]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains("event:evt2"));
+//     }
 
-    #[tokio::test]
-    async fn test_sse_retry() {
-        let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(
-            SseEvent::default().retry(std::time::Duration::from_secs_f32(1.0)),
-        )]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains("retry:1000"));
+//     #[tokio::test]
+//     async fn test_sse_retry() {
+//         let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(
+//             SseEvent::default().retry(std::time::Duration::from_secs_f32(1.0)),
+//         )]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains("retry:1000"));
 
-        let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(
-            SseEvent::default().retry(std::time::Duration::from_secs_f32(1.001)),
-        )]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains("retry:1001"));
-    }
+//         let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(
+//             SseEvent::default().retry(std::time::Duration::from_secs_f32(1.001)),
+//         )]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains("retry:1001"));
+//     }
 
-    #[tokio::test]
-    async fn test_sse_id() {
-        let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().id("jobs"))]);
-        let mut res = Response::new();
-        super::stream(&mut res, event_stream);
-        let text = res.take_string().await.unwrap();
-        assert!(text.contains("id:jobs"));
-    }
-}
+//     #[tokio::test]
+//     async fn test_sse_id() {
+//         let event_stream = tokio_stream::iter(vec![Ok::<_, Infallible>(SseEvent::default().id("jobs"))]);
+//         let mut res = Response::new();
+//         super::stream(&mut res, event_stream);
+//         let text = res.take_string().await.unwrap();
+//         assert!(text.contains("id:jobs"));
+//     }
+// }

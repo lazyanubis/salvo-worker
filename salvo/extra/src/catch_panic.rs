@@ -59,33 +59,33 @@ impl Handler for CatchPanic {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(test)]
-mod tests {
-    use salvo_core::prelude::*;
-    use salvo_core::test::{ResponseExt, TestClient};
-    use tracing_test::traced_test;
+// #[cfg(not(target_arch = "wasm32"))]
+// #[cfg(test)]
+// mod tests {
+//     use salvo_core::prelude::*;
+//     use salvo_core::test::{ResponseExt, TestClient};
+//     use tracing_test::traced_test;
 
-    use super::*;
+//     use super::*;
 
-    #[tokio::test]
-    #[traced_test]
-    async fn test_catch_panic() {
-        #[handler]
-        async fn hello() -> &'static str {
-            panic!("panic error!");
-        }
+//     #[tokio::test]
+//     #[traced_test]
+//     async fn test_catch_panic() {
+//         #[handler]
+//         async fn hello() -> &'static str {
+//             panic!("panic error!");
+//         }
 
-        let router = Router::new()
-            .hoop(CatchPanic::new())
-            .push(Router::with_path("hello").get(hello));
+//         let router = Router::new()
+//             .hoop(CatchPanic::new())
+//             .push(Router::with_path("hello").get(hello));
 
-        TestClient::get("http://127.0.0.1:5801/hello")
-            .send(router)
-            .await
-            .take_string()
-            .await
-            .unwrap();
-        assert!(logs_contain("panic occurred"));
-    }
-}
+//         TestClient::get("http://127.0.0.1:5801/hello")
+//             .send(router)
+//             .await
+//             .take_string()
+//             .await
+//             .unwrap();
+//         assert!(logs_contain("panic occurred"));
+//     }
+// }

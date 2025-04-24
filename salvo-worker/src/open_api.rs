@@ -188,22 +188,27 @@ pub fn ui_scalar(
 }
 
 /// openapi ui all
-pub fn ui_all(data: &'static str) -> Vec<super::salvo::Router> {
+pub fn ui_all(data: &'static str, secret: Option<String>) -> Vec<super::salvo::Router> {
+    let secret = secret.map(|s| format!("/{s}")).unwrap_or_default();
     vec![
         ui_swagger(
             data,
-            "/swagger-ui",
+            format!("{secret}/swagger-ui"),
             "https://static1.smartbear.co/swagger/media/assets/swagger_fav.png",
         ),
-        ui_rapidoc(data, "/rapidoc", "https://rapidocweb.com/images/logo.png"),
+        ui_rapidoc(
+            data,
+            format!("{secret}/rapidoc"),
+            "https://rapidocweb.com/images/logo.png",
+        ),
         ui_redoc(
             data,
-            "/redoc",
+            format!("{secret}/redoc"),
             "https://redocly.com/assets/favicon.5465de6f2fccf1152f5965257241d831a8917043c85baf743706ae2e57736946.8a5edab2.ico",
         ),
         ui_scalar(
             data,
-            "/scalar",
+            format!("{secret}/scalar"),
             // "https://docs.scalar.com/favicon.svg"
             "https://avatars.githubusercontent.com/u/301879",
         ),

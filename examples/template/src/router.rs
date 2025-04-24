@@ -259,7 +259,7 @@ fn init_router() -> Router {
 
     // let doc = oapi::OpenApi::new("template api", "0.0.1").merge_router(&router);
     let mut router = router;
-    for ui in salvo_worker::open_api::ui_all("/api-doc/openapi.json") {
+    for ui in salvo_worker::open_api::ui_all("/api-doc/openapi.json", None) {
         router = router.unshift(ui);
     }
     router
