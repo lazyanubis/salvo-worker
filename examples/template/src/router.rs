@@ -272,23 +272,27 @@ const OPEN_API_CONTENT: &str = include_str!("../docs/open-api.json"); // 当前�
 async fn open_api_handler() -> &'static str {
     OPEN_API_CONTENT
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     /// 更新 open-api.json
+    #[ignore]
     #[test]
     fn update_open_api() {
         salvo_worker::open_api::update_open_api(init_router(), "Template Api Docs", "0.0.1", OPEN_API_FILE);
     }
 
     /// 使用 endpoint
+    #[ignore]
     #[test]
     fn release_all_endpoints() {
         salvo_worker::open_api::release_all_endpoints("src");
     }
 
     /// 使用 handler
+    #[ignore]
     #[test]
     fn release_all_handlers() {
         salvo_worker::open_api::release_all_handlers("src");

@@ -4,9 +4,9 @@ start_time_s=$(date +%s)
 
 cargo clippy
 
-cargo test release_all_endpoints
-cargo test update_open_api
-cargo test release_all_handlers
+cargo test release_all_endpoints -- --ignored
+cargo test update_open_api -- --ignored
+cargo test release_all_handlers -- --ignored
 
 npx wrangler deploy
 
