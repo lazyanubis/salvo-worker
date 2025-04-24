@@ -8,6 +8,12 @@
 #![deny(clippy::expect_used)] // 不许用 expect
 #![deny(clippy::panic)] // 不许用 panic
 
+/// common
+pub mod common;
+
+/// durable
+pub mod durable;
+
 /// response
 mod response;
 

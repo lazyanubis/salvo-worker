@@ -2360,7 +2360,9 @@ version = "0.2.0"
 dependencies = [
  "bytes",
  "futures",
+ "getrandom 0.2.15",
  "http",
+ "reqwest",
  "salvo-cache",
  "salvo-core",
  "salvo-cors",
@@ -2373,6 +2375,9 @@ dependencies = [
  "salvo-session",
  "serde",
  "serde_json",
+ "thiserror 2.0.12",
+ "time",
+ "tracing",
  "worker",
 ]
 

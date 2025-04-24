@@ -2,6 +2,7 @@
 
 use worker::*;
 
+mod durable;
 mod router;
 
 // 初始化任务
@@ -45,6 +46,13 @@ mod future_warning {
     async fn fetch(req: Request, env: Env, ctx: Context) -> Result<Response> {
         // // console_error_panic_hook::set_once();
         // initial::do_init(&env).await; // 初始化
+
+        let path = req.path();
+        if path.starts_with("/durable") {
+            return salvo_worker::durable::get_do_binding(&env, "MY_DURABLE_OBJECT", "durable")?
+                .fetch_with_request(req)
+                .await;
+        }
 
         router::WORKER_SERVICE.handle(req, env, ctx).await
     }
