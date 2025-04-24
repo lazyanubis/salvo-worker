@@ -8,6 +8,7 @@ use std::time::Duration;
 use moka::future::Cache as MokaCache;
 use moka::future::CacheBuilder as MokaCacheBuilder;
 use moka::notification::RemovalCause;
+use salvo_core::Depot;
 
 use super::{CacheStore, CachedEntry};
 
@@ -120,7 +121,7 @@ where
     type Error = Infallible;
     type Key = K;
 
-    async fn load_entry<Q>(&self, key: &Q) -> Option<CachedEntry>
+    async fn load_entry<Q>(&self, _depot: &Depot, key: &Q) -> Option<CachedEntry>
     where
         Self::Key: Borrow<Q>,
         Q: Hash + Eq + Sync,
@@ -128,7 +129,7 @@ where
         self.inner.get(key).await
     }
 
-    async fn save_entry(&self, key: Self::Key, entry: CachedEntry) -> Result<(), Self::Error> {
+    async fn save_entry(&self, _depot: &Depot, key: Self::Key, entry: CachedEntry) -> Result<(), Self::Error> {
         self.inner.insert(key, entry).await;
         Ok(())
     }

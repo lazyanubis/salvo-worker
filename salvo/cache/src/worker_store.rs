@@ -84,12 +84,12 @@ impl CacheStore for WorkerStore {
         let mut bytes = vec![];
         ciborium::ser::into_writer(&entry, &mut bytes).map_err(|err| worker::Error::Json((format!("{err:?}"), 1)))?;
 
-        let mut builder = kv.put_bytes(name, &bytes).map_err(|err| worker::Error::from(err))?;
+        let mut builder = kv.put_bytes(name, &bytes).map_err(worker::Error::from)?;
         if let Some(live) = self.live {
             builder = builder.expiration_ttl(live.as_secs());
         }
 
-        builder.execute().await.map_err(|err| worker::Error::from(err))
+        builder.execute().await.map_err(worker::Error::from)
     }
 }
 
@@ -137,7 +137,7 @@ impl TryFrom<InnerCachedEntry> for CachedEntry {
     type Error = worker::Error;
 
     fn try_from(entry: InnerCachedEntry) -> Result<Self, Self::Error> {
-        let status = entry.status.map(|s| StatusCode::from_u16(s)).transpose()?;
+        let status = entry.status.map(StatusCode::from_u16).transpose()?;
         let mut headers = HeaderMap::with_capacity(entry.headers.len());
         for (name, value) in entry.headers {
             headers.insert(http::HeaderName::from_bytes(name.as_bytes())?, value.parse()?);

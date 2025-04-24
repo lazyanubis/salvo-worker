@@ -360,6 +360,7 @@ impl Debug for Router {
                 for filter in &router.filters {
                     let info = format!("{filter:?}");
                     if info.starts_with("path:") {
+                        #[allow(clippy::expect_used)]
                         info.split_once(':')
                             .expect("`split_once` get `None`")
                             .1
@@ -367,6 +368,7 @@ impl Debug for Router {
                     } else {
                         let mut parts = info.splitn(2, ':').collect::<Vec<_>>();
                         if !parts.is_empty() {
+                            #[allow(clippy::expect_used)]
                             others.push(parts.pop().expect("part should exists.").to_owned());
                         }
                     }
@@ -409,8 +411,8 @@ mod tests {
     use super::{PathState, Router};
     use crate::Response;
     use crate::handler;
-    use crate::test::TestClient;
     use crate::prelude::*;
+    use crate::test::TestClient;
 
     #[handler]
     async fn fake_handler(_res: &mut Response) {}

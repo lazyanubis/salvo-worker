@@ -172,6 +172,7 @@ impl FilePart {
 
     /// Create a new temporary FilePart (when created this way, the file will be
     /// deleted once the FilePart object goes out of scope).
+    #[allow(clippy::expect_used)]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn create(field: &mut Field<'_>) -> Result<FilePart, ParseError> {
         // Setup a file to capture the contents.
@@ -225,6 +226,7 @@ fn text_nonce() -> String {
     let mut raw: Vec<u8> = vec![0; BYTE_LEN];
 
     // Get the first 12 bytes from the current time
+    #[allow(clippy::expect_used)]
     if let Ok(now) = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
         let secs: u64 = now.as_secs();
         let ns: u32 = now.subsec_nanos();
@@ -234,10 +236,12 @@ fn text_nonce() -> String {
         Write::write_all(&mut cursor, &secs.to_le_bytes()).expect("write_all failed");
 
         // Get the last bytes from random data
+        #[allow(clippy::expect_used)]
         OsRng
             .try_fill_bytes(&mut raw[12..BYTE_LEN])
             .expect("OsRng.try_fill_bytes failed");
     } else {
+        #[allow(clippy::expect_used)]
         OsRng.try_fill_bytes(&mut raw[..]).expect("OsRng.try_fill_bytes failed");
     }
 

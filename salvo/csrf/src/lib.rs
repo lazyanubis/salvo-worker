@@ -181,6 +181,7 @@ pub trait CsrfStore: Send + Sync + 'static {
 }
 
 /// Generate token and proof and valid token.
+#[allow(clippy::unwrap_used)]
 pub trait CsrfCipher: Send + Sync + 'static {
     /// Verify token is valid.
     fn verify(&self, token: &str, proof: &str) -> bool;

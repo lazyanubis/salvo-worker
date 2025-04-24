@@ -16,8 +16,8 @@ use super::{Any, WILDCARD};
 #[must_use]
 pub struct AllowOrigin(OriginInner);
 
-type JudgeFn =
-    Arc<dyn for<'a> Fn(&'a HeaderValue, &'a Request, &'a Depot) -> bool + Send + Sync + 'static>;
+type JudgeFn = Arc<dyn for<'a> Fn(&'a HeaderValue, &'a Request, &'a Depot) -> bool + Send + Sync + 'static>;
+#[allow(clippy::panic)]
 impl AllowOrigin {
     /// Allow any origin by sending a wildcard (`*`)
     ///
@@ -52,9 +52,7 @@ impl AllowOrigin {
     {
         let origins = origins.into_iter().collect::<Vec<_>>();
         if origins.contains(&WILDCARD) {
-            panic!(
-                "Wildcard origin (`*`) cannot be passed to `AllowOrigin::list`. Use `AllowOrigin::any()` instead"
-            );
+            panic!("Wildcard origin (`*`) cannot be passed to `AllowOrigin::list`. Use `AllowOrigin::any()` instead");
         } else {
             Self(OriginInner::List(origins))
         }
@@ -135,18 +133,21 @@ impl From<Vec<HeaderValue>> for AllowOrigin {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<&str> for AllowOrigin {
     fn from(val: &str) -> Self {
         Self::exact(HeaderValue::from_str(val).expect("invalid `HeaderValue`"))
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<&String> for AllowOrigin {
     fn from(val: &String) -> Self {
         Self::exact(HeaderValue::from_str(val).expect("invalid `HeaderValue`"))
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<Vec<&str>> for AllowOrigin {
     fn from(vals: Vec<&str>) -> Self {
         Self::list(
@@ -156,6 +157,7 @@ impl From<Vec<&str>> for AllowOrigin {
         )
     }
 }
+#[allow(clippy::expect_used)]
 impl<const N: usize> From<[&str; N]> for AllowOrigin {
     fn from(vals: [&str; N]) -> Self {
         Self::list(
@@ -165,6 +167,7 @@ impl<const N: usize> From<[&str; N]> for AllowOrigin {
         )
     }
 }
+#[allow(clippy::expect_used)]
 impl From<&Vec<String>> for AllowOrigin {
     fn from(vals: &Vec<String>) -> Self {
         Self::list(

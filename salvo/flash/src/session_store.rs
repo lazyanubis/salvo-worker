@@ -40,6 +40,7 @@ impl FlashStore for SessionStore {
     async fn load_flash(&self, _req: &mut Request, depot: &mut Depot) -> Option<Flash> {
         depot.session().and_then(|s| s.get::<Flash>(&self.name))
     }
+    #[allow(clippy::expect_used)]
     async fn save_flash(&self, _req: &mut Request, depot: &mut Depot, _res: &mut Response, flash: Flash) {
         if let Err(e) = depot
             .session_mut()
@@ -49,6 +50,7 @@ impl FlashStore for SessionStore {
             tracing::error!(error = ?e, "save flash to session failed");
         }
     }
+    #[allow(clippy::expect_used)]
     async fn clear_flash(&self, depot: &mut Depot, _res: &mut Response) {
         depot.session_mut().expect("session must exist").remove(&self.name);
     }

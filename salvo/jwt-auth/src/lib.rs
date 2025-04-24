@@ -11,106 +11,6 @@
 //! - OpenID Connect support (behind the `oidc` feature flag)
 //! - Seamless integration with Salvo's middleware system
 //!
-//! # Example:
-//!
-//! ```no_run
-//! use jsonwebtoken::{self, EncodingKey};
-//! use salvo::http::{Method, StatusError};
-//! use salvo::jwt_auth::{ConstDecoder, QueryFinder};
-//! use salvo::prelude::*;
-//! use serde::{Deserialize, Serialize};
-//! use time::{Duration, OffsetDateTime};
-//!
-//! const SECRET_KEY: &str = "YOUR_SECRET_KEY"; // In production, use a secure key management solution
-//!
-//! #[derive(Debug, Serialize, Deserialize)]
-//! pub struct JwtClaims {
-//!     username: String,
-//!     exp: i64,
-//! }
-//!
-//! #[tokio::main]
-//! async fn main() {
-//!     let auth_handler: JwtAuth<JwtClaims, _> = JwtAuth::new(ConstDecoder::from_secret(SECRET_KEY.as_bytes()))
-//!         .finders(vec![
-//!             // Box::new(HeaderFinder::new()),
-//!             Box::new(QueryFinder::new("jwt_token")),
-//!             // Box::new(CookieFinder::new("jwt_token")),
-//!         ])
-//!         .force_passed(true);
-//!
-//!     let acceptor = TcpListener::new("0.0.0.0:5800").bind().await;
-//!     Server::new(acceptor)
-//!         .serve(Router::with_hoop(auth_handler).goal(index))
-//!         .await;
-//! }
-//! #[handler]
-//! async fn index(req: &mut Request, depot: &mut Depot, res: &mut Response) -> anyhow::Result<()> {
-//!     if req.method() == Method::POST {
-//!         let (username, password) = (
-//!             req.form::<String>("username").await.unwrap_or_default(),
-//!             req.form::<String>("password").await.unwrap_or_default(),
-//!         );
-//!         if !validate(&username, &password) {
-//!             res.render(Text::Html(LOGIN_HTML));
-//!             return Ok(());
-//!         }
-//!         let exp = OffsetDateTime::now_utc() + Duration::days(14);
-//!         let claim = JwtClaims {
-//!             username,
-//!             exp: exp.unix_timestamp(),
-//!         };
-//!         let token = jsonwebtoken::encode(
-//!             &jsonwebtoken::Header::default(),
-//!             &claim,
-//!             &EncodingKey::from_secret(SECRET_KEY.as_bytes()),
-//!         )?;
-//!         res.render(Redirect::other(format!("/?jwt_token={token}")));
-//!     } else {
-//!         match depot.jwt_auth_state() {
-//!             JwtAuthState::Authorized => {
-//!                 let data = depot.jwt_auth_data::<JwtClaims>().unwrap();
-//!                 res.render(Text::Plain(format!(
-//!                     "Hi {}, you have logged in successfully!",
-//!                     data.claims.username
-//!                 )));
-//!             }
-//!             JwtAuthState::Unauthorized => {
-//!                 res.render(Text::Html(LOGIN_HTML));
-//!             }
-//!             JwtAuthState::Forbidden => {
-//!                 res.render(StatusError::forbidden());
-//!             }
-//!         }
-//!     }
-//!     Ok(())
-//! }
-//!
-//! fn validate(username: &str, password: &str) -> bool {
-//!     // In a real application, use secure password verification
-//!     username == "root" && password == "pwd"
-//! }
-//!
-//! static LOGIN_HTML: &str = r#"<!DOCTYPE html>
-//! <html>
-//!     <head>
-//!         <title>JWT Auth Demo</title>
-//!     </head>
-//!     <body>
-//!         <h1>JWT Auth</h1>
-//!         <form action="/" method="post">
-//!         <label for="username"><b>Username</b></label>
-//!         <input type="text" placeholder="Enter Username" name="username" required>
-//!
-//!         <label for="password"><b>Password</b></label>
-//!         <input type="password" placeholder="Enter Password" name="password" required>
-//!
-//!         <button type="submit">Login</button>
-//!     </form>
-//!     </body>
-//! </html>
-//! "#;
-//! ```
 
 #![doc(html_favicon_url = "https://salvo.rs/favicon-32x32.png")]
 #![doc(html_logo_url = "https://salvo.rs/images/logo.svg")]
@@ -119,9 +19,7 @@
 use std::marker::PhantomData;
 
 #[doc(no_inline)]
-pub use jsonwebtoken::{
-    Algorithm, DecodingKey, TokenData, Validation, decode, errors::Error as JwtError,
-};
+pub use jsonwebtoken::{Algorithm, DecodingKey, TokenData, Validation, decode, errors::Error as JwtError};
 use serde::de::DeserializeOwned;
 use thiserror::Error;
 
@@ -360,13 +258,7 @@ where
     C: DeserializeOwned + Send + Sync + 'static,
     D: JwtAuthDecoder + Send + Sync + 'static,
 {
-    async fn handle(
-        &self,
-        req: &mut Request,
-        depot: &mut Depot,
-        res: &mut Response,
-        ctrl: &mut FlowCtrl,
-    ) {
+    async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
         let token = self.find_token(req).await;
         if let Some(token) = token {
             match self.decoder.decode::<C>(&token, depot).await {
@@ -412,8 +304,8 @@ mod tests {
     }
     #[tokio::test]
     async fn test_jwt_auth() {
-        let auth_handler: JwtAuth<JwtClaims, ConstDecoder> =
-            JwtAuth::new(ConstDecoder::from_secret(b"ABCDEF")).finders(vec![
+        let auth_handler: JwtAuth<JwtClaims, ConstDecoder> = JwtAuth::new(ConstDecoder::from_secret(b"ABCDEF"))
+            .finders(vec![
                 Box::new(HeaderFinder::new()),
                 Box::new(QueryFinder::new("jwt_token")),
                 Box::new(CookieFinder::new("jwt_token")),

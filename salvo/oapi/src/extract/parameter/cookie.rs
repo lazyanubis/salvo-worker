@@ -11,6 +11,7 @@ use crate::{Components, Operation, Parameter, ParameterIn, ToSchema};
 
 /// Represents the parameters passed by Cookie.
 pub struct CookieParam<T, const REQUIRED: bool = true>(Option<T>);
+#[allow(clippy::expect_used)]
 impl<T> CookieParam<T, true> {
     /// Consumes self and returns the value of the parameter.
     pub fn into_inner(self) -> T {
@@ -24,6 +25,7 @@ impl<T> CookieParam<T, false> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T> Deref for CookieParam<T, true> {
     type Target = T;
 
@@ -39,6 +41,7 @@ impl<T> Deref for CookieParam<T, false> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T> DerefMut for CookieParam<T, true> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0.as_mut().expect("`CookieParam<T, true>` deref_mut get `None`")
@@ -68,6 +71,7 @@ impl<T: Debug, const R: bool> fmt::Debug for CookieParam<T, R> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T: Display> Display for CookieParam<T, true> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.0

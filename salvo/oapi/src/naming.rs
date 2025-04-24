@@ -15,10 +15,8 @@ pub enum NameRule {
     Force(&'static str),
 }
 
-static GLOBAL_NAMER: LazyLock<RwLock<Box<dyn Namer>>> =
-    LazyLock::new(|| RwLock::new(Box::new(FlexNamer::new())));
-static NAME_TYPES: LazyLock<RwLock<BTreeMap<String, (TypeId, &'static str)>>> =
-    LazyLock::new(Default::default);
+static GLOBAL_NAMER: LazyLock<RwLock<Box<dyn Namer>>> = LazyLock::new(|| RwLock::new(Box::new(FlexNamer::new())));
+static NAME_TYPES: LazyLock<RwLock<BTreeMap<String, (TypeId, &'static str)>>> = LazyLock::new(Default::default);
 
 /// Set global namer.
 ///
@@ -51,14 +49,8 @@ pub fn type_info_by_name(name: &str) -> Option<(TypeId, &'static str)> {
 }
 
 /// Set type info by name.
-pub fn set_name_type_info(
-    name: String,
-    type_id: TypeId,
-    type_name: &'static str,
-) -> Option<(TypeId, &'static str)> {
-    NAME_TYPES
-        .write()
-        .insert(name.clone(), (type_id, type_name))
+pub fn set_name_type_info(name: String, type_id: TypeId, type_name: &'static str) -> Option<(TypeId, &'static str)> {
+    NAME_TYPES.write().insert(name.clone(), (type_id, type_name))
 }
 
 /// Assign name to type and returns the name.
@@ -76,6 +68,7 @@ pub fn assign_name<T: 'static>(rule: NameRule) -> String {
 }
 
 /// Get the name of the type. Panic if the name is not exist.
+#[allow(clippy::panic)]
 pub fn get_name<T: 'static>() -> String {
     let type_id = TypeId::of::<T>();
     for (name, (exist_id, _)) in NAME_TYPES.read().iter() {
@@ -83,12 +76,10 @@ pub fn get_name<T: 'static>() -> String {
             return name.clone();
         }
     }
-    panic!(
-        "Type not found in the name registry: {:?}",
-        std::any::type_name::<T>()
-    );
+    panic!("Type not found in the name registry: {:?}", std::any::type_name::<T>());
 }
 
+#[allow(clippy::expect_used)]
 fn type_generic_part(type_name: &str) -> String {
     let re = Regex::new(r"^[^<]+").expect("Invalid regex");
     let result = re.replace_all(type_name, "");
@@ -129,6 +120,7 @@ impl Namer for FlexNamer {
         let name = match rule {
             NameRule::Auto => {
                 let mut base = if self.short_mode {
+                    #[allow(clippy::expect_used)]
                     let re = Regex::new(r"([^<>]*::)+").expect("Invalid regex");
                     re.replace_all(type_name, "").to_string()
                 } else {
@@ -151,6 +143,7 @@ impl Namer for FlexNamer {
             }
             NameRule::Force(force_name) => {
                 let mut base = if self.short_mode {
+                    #[allow(clippy::expect_used)]
                     let re = Regex::new(r"([^<>]*::)+").expect("Invalid regex");
                     re.replace_all(type_name, "").to_string()
                 } else {

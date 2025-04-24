@@ -61,6 +61,7 @@ pub trait ResponseExt {
     fn take_bytes(&mut self, content_type: Option<&Mime>) -> impl Future<Output = crate::Result<Bytes>> + Send;
 }
 
+#[allow(clippy::expect_used)]
 impl ResponseExt for Response {
     async fn take_string(&mut self) -> crate::Result<String> {
         let content_type = self

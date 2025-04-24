@@ -72,6 +72,7 @@ impl FormFile {
     }
 }
 
+#[allow(clippy::panic)]
 impl<'ex> Extractible<'ex> for FormFile {
     fn metadata() -> &'ex Metadata {
         static METADATA: Metadata = Metadata::new("");
@@ -139,6 +140,7 @@ impl DerefMut for FormFiles {
     }
 }
 
+#[allow(clippy::panic)]
 #[cfg(not(target_arch = "wasm32"))]
 impl<'ex> Extractible<'ex> for FormFiles {
     fn metadata() -> &'ex Metadata {

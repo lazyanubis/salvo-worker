@@ -12,7 +12,10 @@ OpenAPI. OpenAPI has only a boolean flag to determine deprecation. While it is t
 Doc comment at decorated function will be used for _`description`_ and _`summary`_ of the path.
 First line of the doc comment will be used as the _`summary`_ while the remaining lines will be
 used as _`description`_.
+
 ```
+use salvo_core::prelude::salvo;
+use salvo_core::http;
 /// This is a summary of the operation
 ///
 /// The rest of the doc comment will be included to operation description.
@@ -62,6 +65,8 @@ And, accordingly, when using the `endpoint` macro, specify the scheme:
 
 ```rust
 use salvo_oapi::endpoint;
+use salvo_core::prelude::salvo;
+use salvo_core::http;
 
 #[endpoint(security(["bearer" = ["bearer"]]))]
 pub async fn authenticated_action() {}
@@ -70,6 +75,7 @@ pub async fn authenticated_action() {}
 # Request Body Attributes
 
 **Simple format definition by `request_body = ...`**
+
 * _`request_body = Type`_, _`request_body = inline(Type)`_ or _`request_body = ref("...")`_.
   The given _`Type`_ can be any Rust type that is JSON parseable. It can be Option, Vec or Map etc.
   With _`inline(...)`_ the schema will be inlined instead of a referenced which is the default for
@@ -77,6 +83,7 @@ pub async fn authenticated_action() {}
   json file for body schema.
 
 **Advanced format definition by `request_body(...)`**
+
 * `content = ...` Can be _`content = Type`_, _`content = inline(Type)`_ or _`content = ref("...")`_. The
   given _`Type`_ can be any Rust type that is JSON parseable. It can be Option, Vec
   or Map etc. With _`inline(...)`_ the schema will be inlined instead of a referenced
@@ -100,6 +107,7 @@ pub async fn authenticated_action() {}
   _examples(...)_
 
 _**Example request body definitions.**_
+
 ```text
  request_body(content = String, description = "Xml as string request", content_type = "text/xml"),
  request_body = Pet,
@@ -146,24 +154,6 @@ _**Example request body definitions.**_
 
 * `examples(...)` Define multiple examples for single response. This attribute is mutually
   exclusive to the _`example`_ attribute and if both are defined this will override the _`example`_.
-  
-* `links(...)` Define a map of operations links that can be followed from the response.
-  
-   ## Response `examples(...)` syntax
-  
-   * `name = ...` This is first attribute and value must be literal string.
-   * `summary = ...` Short description of example. Value must be literal string.
-   * `description = ...` Long description of example. Attribute supports markdown for rich text
-     representation. Value must be literal string.
-   * `value = ...` Example value. It must be _`json!(...)`_. _`json!(...)`_ should be something that
-     _`serde_json::json!`_ can parse as a _`serde_json::Value`_.
-   * `external_value = ...` Define URI to literal example value. This is mutually exclusive to
-     the _`value`_ attribute. Value must be literal string.
-  
-     _**Example of example definition.**_
-    ```text
-     ("John" = (summary = "This is John", value = json!({"name": "John"})))
-    ```
 
 ## Response `links(...)` syntax
 
@@ -177,22 +167,6 @@ _**Example request body definitions.**_
   Value can be be [`str`] or an expression such as [`include_str!`][include_str] or static
   [`const`][const] reference.
 
-* `parameters(...)` A map representing parameters to pass to an operation as specified with _`operation_id`_
-  or identified by _`operation_ref`_. The key is parameter name to be used and value can
-  be any value supported by JSON or an [expression][expression] e.g. `$path.id`
-    * `name = ...` Define name for the parameter.
-      Value can be be [`str`] or an expression such as [`include_str!`][include_str] or static
-      [`const`][const] reference.
-    * `value` = Any value that can be supported by JSON or an [expression][expression].
-
-    _**Example of parameters syntax:**_
-    ```text
-    parameters(
-         ("name" = value),
-         ("name" = value)
-    ),
-    ```
-
 * `request_body = ...` Define a literal value or an [expression][expression] to be used as request body when
   operation is called
 
@@ -203,6 +177,7 @@ _**Example request body definitions.**_
   [server syntax][server_derive_syntax]
 
 **Links syntax example:** See the full example below in [examples](#examples).
+
 ```text
 responses(
     (status = 200, description = "success response",
@@ -229,6 +204,7 @@ responses(
 ```
 
 **More complete Response:**
+
 ```text
 responses(
     (status_code = 200, description = "Success response", body = Pet, content_type = "application/json",
@@ -239,6 +215,7 @@ responses(
 ```
 
 **Response with multiple response content types:**
+
 ```text
 responses(
     (status_code = 200, description = "Success response", body = Pet, content_type = ["application/json", "text/xml"])
@@ -248,6 +225,7 @@ responses(
 **Multiple response return types with _`content(...)`_ attribute:**
 
 _**Define multiple response return types for single response status code with their own example.**_
+
 ```text
 responses(
    (status_code = 200, content(
@@ -261,6 +239,7 @@ responses(
 ### Using `ToResponse` for reusable responses
 
 _**`ReusableResponse` must be a type that implements [`ToResponse`][to_response_trait].**_
+
 ```text
 responses(
     (status_code = 200, response = ReusableResponse)
@@ -268,6 +247,7 @@ responses(
 ```
 
 _**[`ToResponse`][to_response_trait] can also be inlined to the responses map.**_
+
 ```text
 responses(
     (status_code = 200, response = inline(ReusableResponse))
@@ -278,6 +258,7 @@ responses(
 
 _**Responses for a path can be specified with one or more types that implement
 [`ToResponses`][to_responses_trait].**_
+
 ```text
 responses(MyResponse)
 ```
@@ -347,9 +328,9 @@ enabled.
   an open value as a string. By default the format is derived from the type of the property
   according OpenApi spec.
 
-* `write_only` Defines property is only used in **write** operations *POST,PUT,PATCH* but not in *GET*
+* `write_only` Defines property is only used in **write** operations _POST,PUT,PATCH_ but not in _GET_
 
-* `read_only` Defines property is only used in **read** operations *GET* but not in *POST,PUT,PATCH*
+* `read_only` Defines property is only used in **read** operations _GET_ but not in _POST,PUT,PATCH_
 
 * `nullable` Defines property is nullable (note this is different to non-required).
 
@@ -377,6 +358,7 @@ enabled.
   be non-negative integer.
 
 ##### Parameter Formats
+
 ```test
 ("name" = ParameterType, ParameterIn, ...)
 ("name", ParameterIn, ...)
@@ -417,6 +399,7 @@ parameters(MyParameters)
 
 **Note!** that `MyParameters` can also be used in combination with the [tuples
 representation](#tuples) or other structs.
+
 ```text
 parameters(
     MyParameters1,
@@ -425,8 +408,8 @@ parameters(
 )
 ```
 
-
 _**More minimal example with the defaults.**_
+
 ```
 # use salvo_core::prelude::*;
 # use salvo_oapi::ToSchema;
@@ -458,6 +441,7 @@ fn post_pet(res: &mut Response) {
 ```
 
 _**Use of Rust's own `#[deprecated]` attribute will reflect to the generated OpenAPI spec and mark this operation as deprecated.**_
+
 ```
 # use serde_json::json;
 # use salvo_core::prelude::*;
@@ -478,6 +462,7 @@ async fn get_pet_by_id(id: PathParam<i32>, res: &mut Response) {
 ```
 
 _**Example with multiple return types**_
+
 ```
 # use salvo_core::prelude::*;
 # use salvo_oapi::ToSchema;
@@ -505,6 +490,7 @@ async fn get_user() {
 ````
 
 _**Example with multiple examples on single response.**_
+
 ```rust
 # use salvo_core::prelude::*;
 # use salvo_oapi::ToSchema;
@@ -531,16 +517,12 @@ async fn get_user() -> Json<User> {
 
 [handler]: ../salvo_core/attr.handler.html
 [in_enum]: enum.ParameterIn.html
-[path]: trait.Path.html
 [to_schema]: trait.ToSchema.html
 [openapi]: derive.OpenApi.html
 [security]: security/struct.SecurityRequirement.html
-[security_scheme]: security/struct.SecuritySchema.html
 [primitive]: https://doc.rust-lang.org/std/primitive/index.html
 [to_parameters]: trait.ToParameters.html
 [style]: enum.ParameterStyle.html
 [to_responses_trait]: trait.ToResponses.html
-[to_parameters_derive]: derive.ToParameters.html
 [to_response_trait]: trait.ToResponse.html
 [known_format]: enum.KnownFormat.html
-[xml]: struct.Xml.html

@@ -16,13 +16,6 @@ While it is totally okay to declare deprecated with reason
 `#[deprecated  = "There is better way to do this"]` the reason would not render in OpenAPI spec.
 
 Doc comment on struct fields will be used as description for the generated parameters.
-```
-#[derive(salvo_oapi::ToParameters, serde::Deserialize)]
-struct Query {
-    /// Query todo items by name.
-    name: String
-}
-```
 
 # ToParameters Container Attributes for `#[salvo(parameters(...))]`
 
@@ -38,22 +31,8 @@ deriving `ToParameters`:
 * `rename_all = ...` Can be provided to alternatively to the serde's `rename_all` attribute. Effectively provides same functionality.
 
 Use `names` to define name for single unnamed argument.
-```
-# use salvo_oapi::ToParameters;
-#
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(names("id")))]
-struct Id(u64);
-```
 
 Use `names` to define names for multiple unnamed arguments.
-```
-# use salvo_oapi::ToParameters;
-#
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(names("id", "name")))]
-struct IdAndName(u64, String);
-```
 
 # ToParameters Field Attributes for `#[salvo(parameter(...))]`
 
@@ -86,9 +65,9 @@ The following attributes are available for use in the `#[salvo(parameter(...))]`
   an open value as a string. By default the format is derived from the type of the property
   according OpenApi spec.
 
-* `write_only` Defines property is only used in **write** operations *POST,PUT,PATCH* but not in *GET*
+* `write_only` Defines property is only used in __write__ operations _POST,PUT,PATCH_ but not in _GET_
 
-* `read_only` Defines property is only used in **read** operations *GET* but not in *POST,PUT,PATCH*
+* `read_only` Defines property is only used in __read__ operations _GET_ but not in _POST,PUT,PATCH_
 
 * `nullable` Defines property is nullable (note this is different to non-required).
 
@@ -140,13 +119,13 @@ ToParameters derive has partial support for [serde attributes]. These supported 
 generated OpenAPI doc. The following attributes are currently supported:
 
 * `rename_all = "..."` Supported at the container level.
-* `rename = "..."` Supported **only** at the field level.
+* `rename = "..."` Supported __only__ at the field level.
 * `default` Supported at the container level and field level according to [serde attributes].
-* `skip_serializing_if = "..."` Supported  **only** at the field level.
-* `with = ...` Supported **only** at field level.
-* `skip_serializing = "..."` Supported  **only** at the field or variant level.
-* `skip_deserializing = "..."` Supported  **only** at the field or variant level.
-* `skip = "..."` Supported  **only** at the field level.
+* `skip_serializing_if = "..."` Supported  __only__ at the field level.
+* `with = ...` Supported __only__ at field level.
+* `skip_serializing = "..."` Supported  __only__ at the field or variant level.
+* `skip_deserializing = "..."` Supported  __only__ at the field or variant level.
+* `skip = "..."` Supported  __only__ at the field level.
 
 Other _`serde`_ attributes will impact the serialization but will not be reflected on the generated OpenAPI doc.
 
@@ -155,141 +134,22 @@ Other _`serde`_ attributes will impact the serialization but will not be reflect
 _**Demonstrate [`ToParameters`][to_parameters] usage with the `#[salvo(parameters(...))]` container attribute to
 be used as a path query, and inlining a schema query field:**_
 
-```
-use serde::Deserialize;
-use salvo_core::prelude::*;
-use salvo_oapi::{ToParameters, ToSchema};
-
-#[derive(Deserialize, ToSchema)]
-#[serde(rename_all = "snake_case")]
-enum PetKind {
-    Dog,
-    Cat,
-}
-
-#[derive(Deserialize, ToParameters)]
-struct PetQuery {
-    /// Name of pet
-    name: Option<String>,
-    /// Age of pet
-    age: Option<i32>,
-    /// Kind of pet
-    #[salvo(parameter(inline))]
-    kind: PetKind
-}
-
-#[salvo_oapi::endpoint(
-    parameters(PetQuery),
-    responses(
-        (status_code = 200, description = "success response")
-    )
-)]
-async fn get_pet(query: PetQuery) {
-    // ...
-}
-```
-
 _**Override `String` with `i64` using `value_type` attribute.**_
-```
-# use salvo_oapi::ToParameters;
-#
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(default_parameter_in = Query))]
-struct Filter {
-    #[salvo(parameter(value_type = i64))]
-    id: String,
-}
-```
 
 _**Override `String` with `Object` using `value_type` attribute. _`Object`_ will render as `type: object` in OpenAPI spec.**_
-```
-# use salvo_oapi::ToParameters;
-#
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(default_parameter_in = Query))]
-struct Filter {
-    #[salvo(parameter(value_type = Object))]
-    id: String,
-}
-```
 
 _**You can use a generic type to override the default type of the field.**_
-```
-# use salvo_oapi::ToParameters;
-#
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(default_parameter_in = Query))]
-struct Filter {
-    #[salvo(parameter(value_type = Option<String>))]
-    id: String
-}
-```
 
 _**You can even override a [`Vec`] with another one.**_
-```
-# use salvo_oapi::ToParameters;
-#
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(default_parameter_in = Query))]
-struct Filter {
-    #[salvo(parameter(value_type = Vec<i32>))]
-    id: Vec<String>
-}
-```
 
 _**We can override value with another [`ToSchema`][to_schema].**_
-```
-# use salvo_oapi::{ToParameters, ToSchema};
-#
-#[derive(ToSchema)]
-struct Id {
-    value: i64,
-}
-
-#[derive(ToParameters, serde::Deserialize)]
-#[salvo(parameters(default_parameter_in = Query))]
-struct Filter {
-    #[salvo(parameter(value_type = Id))]
-    id: String
-}
-```
 
 _**Example with validation attributes.**_
-```
-#[derive(salvo_oapi::ToParameters, serde::Deserialize)]
-struct Item {
-    #[salvo(parameter(maximum = 10, minimum = 5, multiple_of = 2.5))]
-    id: i32,
-    #[salvo(parameter(max_length = 10, min_length = 5, pattern = "[a-z]*"))]
-    value: String,
-    #[salvo(parameter(max_items = 5, min_items = 1))]
-    items: Vec<String>,
-}
-````
 
 _**Use `schema_with` to manually implement schema for a field.**_
-```
-# use salvo_oapi::schema::Object;
-fn custom_type() -> Object {
-    Object::new()
-        .schema_type(salvo_oapi::BasicType::String)
-        .format(salvo_oapi::SchemaFormat::Custom(
-            "email".to_string(),
-        ))
-        .description("this is the description")
-}
-
-#[derive(salvo_oapi::ToParameters, serde::Deserialize)]
-#[salvo(parameters(default_parameter_in = Query))]
-struct Query {
-    #[salvo(parameter(schema_with = custom_type))]
-    email: String,
-}
-```
 
 [to_schema]: trait.ToSchema.html
 [known_format]: openapi/schema/enum.KnownFormat.html
-[xml]: openapi/xml/struct.Xml.html
 [to_parameters]: trait.ToParameters.html
 [struct]: https://doc.rust-lang.org/std/keyword.struct.html
 [style]: openapi/path/enum.ParameterStyle.html

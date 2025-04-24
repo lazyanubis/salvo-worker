@@ -192,6 +192,7 @@ impl FlexFactory {
         self
     }
     /// Add a guard.
+    #[allow(clippy::expect_used)]
     pub fn add_guard(mut self, guard: impl Guard) -> Self {
         Arc::get_mut(&mut self.guards)
             .expect("guards get mut failed")

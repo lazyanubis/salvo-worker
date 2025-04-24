@@ -4,36 +4,6 @@
 //! supporting both HTTP and HTTPS protocols. It's useful for creating API gateways,
 //! load balancers, and reverse proxies.
 //!
-//! # Example
-//!
-//! In this example, requests to different hosts are proxied to different upstream servers:
-//! - Requests to http://127.0.0.1:5800/ are proxied to https://www.rust-lang.org
-//! - Requests to http://localhost:5800/ are proxied to https://crates.io
-//!
-//! ```no_run
-//! use salvo_core::prelude::*;
-//! use salvo_proxy::Proxy;
-//!
-//! #[tokio::main]
-//! async fn main() {
-//!     let router = Router::new()
-//!         .push(
-//!             Router::new()
-//!                 .host("127.0.0.1")
-//!                 .path("{**rest}")
-//!                 .goal(Proxy::use_hyper_client("https://www.rust-lang.org")),
-//!         )
-//!         .push(
-//!             Router::new()
-//!                 .host("localhost")
-//!                 .path("{**rest}")
-//!                 .goal(Proxy::use_hyper_client("https://crates.io")),
-//!         );
-//!
-//!     let acceptor = TcpListener::new("0.0.0.0:5800").bind().await;
-//!     Server::new(acceptor).serve(router).await;
-//! }
-//! ```
 #![doc(html_favicon_url = "https://salvo.rs/favicon-32x32.png")]
 #![doc(html_logo_url = "https://salvo.rs/images/logo.svg")]
 #![cfg_attr(docsrs, feature(doc_cfg))]

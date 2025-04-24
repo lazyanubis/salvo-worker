@@ -103,6 +103,7 @@ impl Filter for HostFilter {
         });
         host.map(|h| {
             if h.contains(':') {
+                #[allow(clippy::expect_used)]
                 h.rsplit_once(':')
                     .expect("rsplit_once by ':' should not returns `None`")
                     .0
@@ -159,6 +160,7 @@ impl Filter for PortFilter {
         });
         host.map(|h| {
             if h.contains(':') {
+                #[allow(clippy::expect_used)]
                 h.rsplit_once(':')
                     .expect("rsplit_once by ':' should not returns `None`")
                     .1

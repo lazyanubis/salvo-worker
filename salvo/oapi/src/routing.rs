@@ -18,6 +18,7 @@ pub(crate) struct NormNode {
     pub(crate) metadata: Metadata,
 }
 
+#[allow(clippy::expect_used)]
 impl NormNode {
     pub(crate) fn new(router: &Router, inherted_metadata: Metadata) -> Self {
         let mut node = NormNode {
@@ -30,9 +31,7 @@ impl NormNode {
             .expect("failed to lock METADATA_REGISTRY for read");
         if let Some(metadata) = registry.get(&router.id) {
             node.metadata.tags.extend(metadata.tags.iter().cloned());
-            node.metadata
-                .securities
-                .extend(metadata.securities.iter().cloned());
+            node.metadata.securities.extend(metadata.securities.iter().cloned());
         }
 
         let regex = Regex::new(r#"<([^/:>]+)(:[^>]*)?>"#).expect("invalid regex");
@@ -68,8 +67,7 @@ impl NormNode {
         let routers = router.routers();
         if !routers.is_empty() {
             for router in routers {
-                node.children
-                    .push(NormNode::new(router, node.metadata.clone()));
+                node.children.push(NormNode::new(router, node.metadata.clone()));
             }
         }
         node
@@ -108,6 +106,7 @@ pub trait RouterExt {
         V: Into<String>;
 }
 
+#[allow(clippy::expect_used)]
 impl RouterExt for Router {
     fn oapi_security(self, security: SecurityRequirement) -> Self {
         let mut guard = METADATA_REGISTRY
@@ -117,6 +116,7 @@ impl RouterExt for Router {
         metadata.securities.push(security);
         self
     }
+    #[allow(clippy::expect_used)]
     fn oapi_securities<I>(self, iter: I) -> Self
     where
         I: IntoIterator<Item = SecurityRequirement>,
@@ -128,6 +128,7 @@ impl RouterExt for Router {
         metadata.securities.extend(iter);
         self
     }
+    #[allow(clippy::expect_used)]
     fn oapi_tag(self, tag: impl Into<String>) -> Self {
         let mut guard = METADATA_REGISTRY
             .write()
@@ -136,6 +137,7 @@ impl RouterExt for Router {
         metadata.tags.insert(tag.into());
         self
     }
+    #[allow(clippy::expect_used)]
     fn oapi_tags<I, V>(self, iter: I) -> Self
     where
         I: IntoIterator<Item = V>,

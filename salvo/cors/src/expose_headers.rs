@@ -17,9 +17,7 @@ use super::{Any, WILDCARD, separated_by_commas};
 #[must_use]
 pub struct ExposeHeaders(ExposeHeadersInner);
 
-type JudgeFn = Arc<
-    dyn for<'a> Fn(&'a HeaderValue, &'a Request, &'a Depot) -> HeaderValue + Send + Sync + 'static,
->;
+type JudgeFn = Arc<dyn for<'a> Fn(&'a HeaderValue, &'a Request, &'a Depot) -> HeaderValue + Send + Sync + 'static>;
 impl ExposeHeaders {
     /// Expose any / all headers by sending a wildcard (`*`)
     ///
@@ -105,18 +103,21 @@ impl From<Vec<HeaderName>> for ExposeHeaders {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<&str> for ExposeHeaders {
     fn from(val: &str) -> Self {
         Self::list([HeaderName::from_str(val).expect("Invalid header name.")])
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<&String> for ExposeHeaders {
     fn from(val: &String) -> Self {
         Self::list([HeaderName::from_str(val).expect("Invalid header name.")])
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<Vec<&str>> for ExposeHeaders {
     fn from(vals: Vec<&str>) -> Self {
         Self::list(
@@ -126,6 +127,7 @@ impl From<Vec<&str>> for ExposeHeaders {
         )
     }
 }
+#[allow(clippy::expect_used)]
 impl From<&Vec<String>> for ExposeHeaders {
     fn from(vals: &Vec<String>) -> Self {
         Self::list(

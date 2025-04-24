@@ -81,6 +81,7 @@ impl CompressionLevel {
         GzEncoder::new(Writer::new(), compression)
     }
 
+    #[allow(clippy::expect_used)]
     #[cfg(feature = "zstd")]
     fn into_zstd(self) -> ZstdEncoder<'static, Writer> {
         let quality = match self {

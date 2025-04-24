@@ -1,7 +1,7 @@
 use aead::generic_array::GenericArray;
 use aead::{Aead, KeyInit};
-use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use chacha20poly1305::ChaCha20Poly1305;
 
 use super::CsrfCipher;
@@ -54,6 +54,7 @@ impl CsrfCipher for CcpCipher {
             false
         }
     }
+    #[allow(clippy::expect_used)]
     fn generate(&self) -> (String, String) {
         let token = self.random_bytes(self.token_size);
         let aead = self.aead();

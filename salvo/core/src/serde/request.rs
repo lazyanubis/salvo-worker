@@ -148,6 +148,7 @@ impl<'de> RequestDeserializer<'de> {
     where
         T: de::DeserializeSeed<'de>,
     {
+        #[allow(clippy::expect_used)]
         if self.field_flatten {
             let field = self
                 .metadata
@@ -304,6 +305,7 @@ impl<'de> RequestDeserializer<'de> {
                 }
                 SourceFrom::Body => {
                     let parser = self.real_parser(source);
+                    #[allow(clippy::panic)]
                     match parser {
                         SourceParser::Json => {
                             if let Some(payload) = &self.payload {

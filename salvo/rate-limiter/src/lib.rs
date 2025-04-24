@@ -214,6 +214,7 @@ where
         };
         let verified = guard.verify(&quota).await;
 
+        #[allow(clippy::expect_used)]
         if self.add_headers {
             res.headers_mut().insert(
                 "X-RateLimit-Limit",

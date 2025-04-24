@@ -369,6 +369,7 @@ impl NamedFile {
                 }
             };
 
+            #[allow(clippy::expect_used)]
             let dur = mtime
                 .duration_since(UNIX_EPOCH)
                 .expect("modification time must be after epoch");

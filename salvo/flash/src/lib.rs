@@ -210,12 +210,14 @@ impl FlashDepotExt for Depot {
         self.get::<Flash>(INCOMING_FLASH_KEY).ok()
     }
 
+    #[allow(clippy::expect_used)]
     #[inline]
     fn outgoing_flash(&self) -> &Flash {
         self.get::<Flash>(OUTGOING_FLASH_KEY)
             .expect("Flash should be initialized")
     }
 
+    #[allow(clippy::expect_used)]
     #[inline]
     fn outgoing_flash_mut(&mut self) -> &mut Flash {
         self.get_mut::<Flash>(OUTGOING_FLASH_KEY)

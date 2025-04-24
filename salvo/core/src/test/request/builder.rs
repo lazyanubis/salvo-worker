@@ -26,6 +26,7 @@ pub struct RequestBuilder {
     body: ReqBody,
 }
 
+#[allow(clippy::expect_used)]
 impl RequestBuilder {
     /// Create a new `RequestBuilder` with the base URL and the given method.
     ///
@@ -46,6 +47,7 @@ impl RequestBuilder {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl RequestBuilder {
     /// Associate a query string parameter to the given value.
     ///

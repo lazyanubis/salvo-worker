@@ -310,6 +310,7 @@ impl CombWisp {
         let mut is_greedy = false;
         let mut wild_start = None;
         let mut wild_regex = None;
+        #[allow(clippy::expect_used)]
         let any_chars_regex = Regex::new(".*").expect("regex should worked");
         for wisp in wisps {
             match wisp {
@@ -491,6 +492,7 @@ impl PathWisp for NamedWisp {
             if picked.is_none() {
                 return false;
             }
+            #[allow(clippy::expect_used)]
             let picked = picked.expect("picked should not be `None`").to_owned();
             state.forward(picked.len());
             state.params.insert(&self.0, picked);
@@ -941,6 +943,7 @@ impl PathParser {
                 self.path.iter().collect::<String>()
             ));
         } else if let Some(wild_name) = wild_names.first() {
+            #[allow(clippy::expect_used)]
             if wild_name != all_names.last().expect("all_names should not be empty") {
                 return Err(format!(
                     "wildcard name: `{}` should be the last one in url: `{}`",
@@ -982,6 +985,7 @@ impl PathFilter {
             tracing::warn!("you should not add '/' as path filter");
         }
         let mut parser = PathParser::new(&raw_value);
+        #[allow(clippy::panic)]
         let path_wisps = match parser.parse() {
             Ok(path_wisps) => path_wisps,
             Err(e) => {

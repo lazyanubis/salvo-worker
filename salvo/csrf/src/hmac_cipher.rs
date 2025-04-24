@@ -30,6 +30,7 @@ impl HmacCipher {
     }
 
     #[inline]
+    #[allow(clippy::expect_used)]
     fn hmac(&self) -> Hmac<Sha256> {
         Hmac::<Sha256>::new_from_slice(&self.hmac_key).expect("HMAC can take key of any size")
     }

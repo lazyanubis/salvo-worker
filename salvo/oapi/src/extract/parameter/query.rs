@@ -11,6 +11,7 @@ use crate::{Components, Operation, Parameter, ParameterIn, ToSchema};
 
 /// Represents the parameters passed by the URI path.
 pub struct QueryParam<T, const REQUIRED: bool = true>(Option<T>);
+#[allow(clippy::expect_used)]
 impl<T> QueryParam<T, true> {
     /// Consumes self and returns the value of the parameter.
     pub fn into_inner(self) -> T {
@@ -24,6 +25,7 @@ impl<T> QueryParam<T, false> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T> Deref for QueryParam<T, true> {
     type Target = T;
 
@@ -39,6 +41,7 @@ impl<T> Deref for QueryParam<T, false> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T> DerefMut for QueryParam<T, true> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0.as_mut().expect("`QueryParam<T, true>` deref_mut get `None`")
@@ -68,12 +71,14 @@ impl<T: Debug, const R: bool> Debug for QueryParam<T, R> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T: Display> Display for QueryParam<T, true> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.0.as_ref().expect("`QueryParam<T, true>` as_ref get `None`").fmt(f)
     }
 }
 
+#[allow(clippy::panic)]
 impl<'ex, T> Extractible<'ex> for QueryParam<T, true>
 where
     T: Deserialize<'ex>,
@@ -94,6 +99,7 @@ where
         Ok(Self(value))
     }
 }
+#[allow(clippy::panic)]
 impl<'ex, T> Extractible<'ex> for QueryParam<T, false>
 where
     T: Deserialize<'ex>,

@@ -7,6 +7,9 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 
 /// 更新 open-api.json
+#[allow(clippy::expect_used)]
+#[allow(clippy::unwrap_used)]
+#[allow(clippy::panic)]
 pub fn update_open_api(router: salvo::Router, title: &str, version: &str, path: &str) {
     let doc = super::salvo::oapi::OpenApi::new(title, version).merge_router(&router);
     let open_api = doc.to_json().unwrap();
@@ -14,26 +17,22 @@ pub fn update_open_api(router: salvo::Router, title: &str, version: &str, path: 
 
     let _ = fs::remove_file(path);
     File::create(path)
-        .expect(&format!("create {path} file failed"))
+        .unwrap_or_else(|_| panic!("create {path} file failed"))
         .write_all(open_api.as_bytes())
-        .expect(&format!("write {path} failed"));
+        .unwrap_or_else(|_| panic!("write {path} failed"));
 }
 
 /// 遍历所有文件
 fn traverse_dir(path: &Path) -> Vec<String> {
     let mut files = Vec::new();
     if let Ok(entries) = fs::read_dir(path) {
-        for entry in entries {
-            if let Ok(entry) = entry {
-                let path = entry.path();
-                if path.is_dir() {
-                    files.extend_from_slice(&traverse_dir(&path));
-                } else {
-                    if let Some(path) = path.to_str() {
-                        if path.ends_with(".rs") {
-                            files.push(path.to_string());
-                        }
-                    }
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                files.extend_from_slice(&traverse_dir(&path));
+            } else if let Some(path) = path.to_str() {
+                if path.ends_with(".rs") {
+                    files.push(path.to_string());
                 }
             }
         }
@@ -42,6 +41,7 @@ fn traverse_dir(path: &Path) -> Vec<String> {
 }
 
 // 替换单个文件
+#[allow(clippy::panic)]
 fn release_endpoint(path: &str) -> Result<(), std::io::Error> {
     let mut lines = Vec::new();
 
@@ -71,7 +71,7 @@ fn release_endpoint(path: &str) -> Result<(), std::io::Error> {
                 }
                 j += 1;
                 if lines.len() <= j {
-                    panic!("error: {}:{}", path, j);
+                    panic!("error: {path}:{j}");
                 }
             }
             replaced = true;
@@ -85,6 +85,7 @@ fn release_endpoint(path: &str) -> Result<(), std::io::Error> {
 }
 
 // 替换单个文件
+#[allow(clippy::panic)]
 fn release_handler(path: &str) -> Result<(), std::io::Error> {
     let mut lines = Vec::new();
 
@@ -111,7 +112,7 @@ fn release_handler(path: &str) -> Result<(), std::io::Error> {
                 }
                 j += 1;
                 if lines.len() <= j {
-                    panic!("error: {}:{}", path, j);
+                    panic!("error: {path}:{j}");
                 }
             }
             replaced = true;
@@ -125,18 +126,20 @@ fn release_handler(path: &str) -> Result<(), std::io::Error> {
 }
 
 /// 使用 endpoint
+#[allow(clippy::unwrap_used)]
 pub fn release_all_endpoints(root: &str) {
     let paths = traverse_dir(Path::new(root));
     for path in paths.iter() {
-        release_endpoint(&path).unwrap();
+        release_endpoint(path).unwrap();
     }
 }
 
 /// 使用 handler
+#[allow(clippy::unwrap_used)]
 pub fn release_all_handlers(root: &str) {
     let paths = traverse_dir(Path::new(root));
     for path in paths.iter() {
-        release_handler(&path).unwrap();
+        release_handler(path).unwrap();
     }
 }
 

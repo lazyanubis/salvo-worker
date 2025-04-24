@@ -15,7 +15,7 @@
 //!         username == "root" && password == "pwd"
 //!     }
 //! }
-//! 
+//!
 //! #[handler]
 //! async fn hello() -> &'static str {
 //!     "Hello"
@@ -30,10 +30,10 @@
 //!     Server::new(acceptor).serve(router).await;
 //! }
 //! ```
-use base64::engine::{general_purpose, Engine};
-use salvo_core::http::header::{HeaderName, AUTHORIZATION, PROXY_AUTHORIZATION};
+use base64::engine::{Engine, general_purpose};
+use salvo_core::http::header::{AUTHORIZATION, HeaderName, PROXY_AUTHORIZATION};
 use salvo_core::http::{Request, Response, StatusCode};
-use salvo_core::{async_trait, Depot, Error, FlowCtrl, Handler};
+use salvo_core::{Depot, Error, FlowCtrl, Handler, async_trait};
 
 /// key used when insert into depot.
 pub const USERNAME_KEY: &str = "::salvo::basic_auth::username";
@@ -41,7 +41,7 @@ pub const USERNAME_KEY: &str = "::salvo::basic_auth::username";
 /// Validator for Basic Authentication credentials.
 pub trait BasicAuthValidator: Send + Sync {
     /// Validates whether the provided username and password are correct.
-    /// 
+    ///
     /// Implement this method to check credentials against your authentication system.
     /// Return `true` if authentication succeeds, `false` otherwise.
     fn validate(&self, username: &str, password: &str, depot: &mut Depot) -> impl Future<Output = bool> + Send;
@@ -55,7 +55,7 @@ pub trait BasicAuthDepotExt {
 
 impl BasicAuthDepotExt for Depot {
     fn basic_auth_username(&self) -> Option<&str> {
-        self.get::<String>(USERNAME_KEY).map(|v|&**v).ok()
+        self.get::<String>(USERNAME_KEY).map(|v| &**v).ok()
     }
 }
 
@@ -111,6 +111,7 @@ where
     }
 }
 
+#[allow(clippy::expect_used)]
 #[doc(hidden)]
 #[inline]
 pub fn ask_credentials(res: &mut Response, realm: impl AsRef<str>) {

@@ -2402,6 +2402,7 @@ dependencies = [
  "serde-xml-rs",
  "serde_json",
  "serde_urlencoded",
+ "socket2",
  "sync_wrapper",
  "tempfile",
  "thiserror 2.0.12",

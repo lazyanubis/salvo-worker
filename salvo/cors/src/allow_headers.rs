@@ -16,9 +16,7 @@ use salvo_core::{Depot, Request};
 #[must_use]
 pub struct AllowHeaders(AllowHeadersInner);
 
-type JudgeFn = Arc<
-    dyn for<'a> Fn(&'a HeaderValue, &'a Request, &'a Depot) -> HeaderValue + Send + Sync + 'static,
->;
+type JudgeFn = Arc<dyn for<'a> Fn(&'a HeaderValue, &'a Request, &'a Depot) -> HeaderValue + Send + Sync + 'static>;
 impl AllowHeaders {
     /// Allow any headers by sending a wildcard (`*`)
     ///
@@ -83,10 +81,7 @@ impl AllowHeaders {
             AllowHeadersInner::None => return None,
             AllowHeadersInner::Exact(v) => v.clone(),
             AllowHeadersInner::Judge(f) => f(origin?, req, depot),
-            AllowHeadersInner::MirrorRequest => req
-                .headers()
-                .get(header::ACCESS_CONTROL_REQUEST_HEADERS)?
-                .clone(),
+            AllowHeadersInner::MirrorRequest => req.headers().get(header::ACCESS_CONTROL_REQUEST_HEADERS)?.clone(),
         };
 
         Some((header::ACCESS_CONTROL_ALLOW_HEADERS, allow_headers))
@@ -122,18 +117,21 @@ impl From<Vec<HeaderName>> for AllowHeaders {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<&str> for AllowHeaders {
     fn from(val: &str) -> Self {
         Self::list([HeaderName::from_str(val).expect("Invalid header name.")])
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<&String> for AllowHeaders {
     fn from(val: &String) -> Self {
         Self::list([HeaderName::from_str(val).expect("Invalid header name.")])
     }
 }
 
+#[allow(clippy::expect_used)]
 impl From<Vec<&str>> for AllowHeaders {
     fn from(vals: Vec<&str>) -> Self {
         Self::list(
@@ -143,6 +141,7 @@ impl From<Vec<&str>> for AllowHeaders {
         )
     }
 }
+#[allow(clippy::expect_used)]
 impl From<&Vec<String>> for AllowHeaders {
     fn from(vals: &Vec<String>) -> Self {
         Self::list(

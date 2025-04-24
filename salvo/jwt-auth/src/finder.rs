@@ -26,19 +26,6 @@ pub trait JwtTokenFinder: Send + Sync {
 /// By default, this finder looks for Bearer tokens in the `Authorization`
 /// and `Proxy-Authorization` headers for all HTTP methods.
 ///
-/// # Example
-///
-/// ```
-/// use salvo::jwt_auth::HeaderFinder;
-/// use salvo::http::Method;
-///
-/// // Default configuration
-/// let finder = HeaderFinder::new();
-///
-/// // Custom configuration for specific methods
-/// let get_only = HeaderFinder::new()
-///     .cared_methods(vec![Method::GET]);
-/// ```
 #[derive(Eq, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct HeaderFinder {
@@ -105,19 +92,6 @@ impl JwtTokenFinder for HeaderFinder {
 ///
 /// This finder looks for a token in the request's form data using a specified field name.
 ///
-/// # Example
-///
-/// ```
-/// use salvo::jwt_auth::FormFinder;
-/// use salvo::http::Method;
-///
-/// // Create finder that looks for a form field named "access_token"
-/// let finder = FormFinder::new("access_token");
-///
-/// // Limit to POST requests only
-/// let post_only = FormFinder::new("access_token")
-///     .cared_methods(vec![Method::POST]);
-/// ```
 #[derive(Eq, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct FormFinder {
@@ -164,19 +138,6 @@ impl JwtTokenFinder for FormFinder {
 ///
 /// This finder looks for a token in the request's query string using a specified parameter name.
 ///
-/// # Example
-///
-/// ```
-/// use salvo::jwt_auth::QueryFinder;
-/// use salvo::http::Method;
-///
-/// // Create finder that looks for query parameter "token"
-/// let finder = QueryFinder::new("token");
-///
-/// // Limit to GET requests only
-/// let get_only = QueryFinder::new("token")
-///     .cared_methods(vec![Method::GET]);
-/// ```
 #[derive(Eq, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct QueryFinder {
@@ -224,19 +185,6 @@ impl JwtTokenFinder for QueryFinder {
 ///
 /// This finder looks for a token in the request's cookies using a specified cookie name.
 ///
-/// # Example
-///
-/// ```
-/// use salvo::jwt_auth::CookieFinder;
-/// use salvo::http::Method;
-///
-/// // Create finder that looks for cookie named "jwt"
-/// let finder = CookieFinder::new("jwt");
-///
-/// // Limit to specific methods
-/// let restricted = CookieFinder::new("jwt")
-///     .cared_methods(vec![Method::GET, Method::POST]);
-/// ```
 #[derive(Eq, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct CookieFinder {

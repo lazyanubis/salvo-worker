@@ -39,6 +39,7 @@ impl PathParams {
     pub fn insert(&mut self, name: &str, value: String) {
         #[cfg(debug_assertions)]
         {
+            #[allow(clippy::panic)]
             if self.greedy {
                 panic!("only one wildcard param is allowed and it must be the last one.");
             }

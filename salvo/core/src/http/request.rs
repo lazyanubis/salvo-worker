@@ -730,6 +730,7 @@ impl Request {
     /// Get mutable queries reference.
     pub fn queries_mut(&mut self) -> &mut MultiMap<String, String> {
         let _ = self.queries();
+        #[allow(clippy::expect_used)]
         self.queries.get_mut().expect("queries should be initialized")
     }
 

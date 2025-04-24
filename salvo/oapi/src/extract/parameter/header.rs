@@ -10,11 +10,11 @@ use crate::{Components, Operation, Parameter, ParameterIn, ToSchema};
 
 /// Represents the parameters passed by header.
 pub struct HeaderParam<T, const REQUIRED: bool = true>(Option<T>);
+#[allow(clippy::expect_used)]
 impl<T> HeaderParam<T, true> {
     /// Consumes self and returns the value of the parameter.
     pub fn into_inner(self) -> T {
-        self.0
-            .expect("`HeaderParam<T, true>` into_inner get `None`")
+        self.0.expect("`HeaderParam<T, true>` into_inner get `None`")
     }
 }
 impl<T> HeaderParam<T, false> {
@@ -24,13 +24,12 @@ impl<T> HeaderParam<T, false> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T> Deref for HeaderParam<T, true> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-        self.0
-            .as_ref()
-            .expect("`HeaderParam<T, true>` defref get `None`")
+        self.0.as_ref().expect("`HeaderParam<T, true>` deref get `None`")
     }
 }
 impl<T> Deref for HeaderParam<T, false> {
@@ -41,11 +40,10 @@ impl<T> Deref for HeaderParam<T, false> {
     }
 }
 
+#[allow(clippy::expect_used)]
 impl<T> DerefMut for HeaderParam<T, true> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
-            .as_mut()
-            .expect("`HeaderParam<T, true>` defref_mut get `None`")
+        self.0.as_mut().expect("`HeaderParam<T, true>` deref_mut get `None`")
     }
 }
 impl<T> DerefMut for HeaderParam<T, false> {
@@ -85,12 +83,10 @@ where
         self.0.fmt(f)
     }
 }
+#[allow(clippy::expect_used)]
 impl<T: Display> Display for HeaderParam<T, true> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.0
-            .as_ref()
-            .expect("HeaderParam value should not None.")
-            .fmt(f)
+        self.0.as_ref().expect("HeaderParam value should not None.").fmt(f)
     }
 }
 
@@ -109,10 +105,7 @@ where
     #[allow(refining_impl_trait)]
     async fn extract_with_arg(req: &'ex mut Request, arg: &str) -> Result<Self, ParseError> {
         let value = req.header(arg).ok_or_else(|| {
-            ParseError::other(format!(
-                "header parameter {} not found or convert to type failed",
-                arg
-            ))
+            ParseError::other(format!("header parameter {} not found or convert to type failed", arg))
         })?;
         Ok(Self(value))
     }
@@ -229,8 +222,7 @@ mod tests {
     #[tokio::test]
     async fn test_required_header_prarm_extract_with_value() {
         let mut req = TestClient::get("http://127.0.0.1:5801").build_hyper();
-        req.headers_mut()
-            .append("param", HeaderValue::from_static("param"));
+        req.headers_mut().append("param", HeaderValue::from_static("param"));
         let schema = req.uri().scheme().cloned().unwrap();
         let mut req = Request::from_hyper(req, schema);
         let result = HeaderParam::<String, true>::extract_with_arg(&mut req, "param").await;
@@ -263,8 +255,7 @@ mod tests {
     #[tokio::test]
     async fn test_header_prarm_extract_with_value() {
         let mut req = TestClient::get("http://127.0.0.1:5801").build_hyper();
-        req.headers_mut()
-            .append("param", HeaderValue::from_static("param"));
+        req.headers_mut().append("param", HeaderValue::from_static("param"));
         let schema = req.uri().scheme().cloned().unwrap();
         let mut req = Request::from_hyper(req, schema);
         let result = HeaderParam::<String, false>::extract_with_arg(&mut req, "param").await;

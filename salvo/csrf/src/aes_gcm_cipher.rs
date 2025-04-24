@@ -1,8 +1,8 @@
 use aead::generic_array::GenericArray;
 use aead::{Aead, KeyInit};
 use aes_gcm::Aes256Gcm;
-use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 
 use super::CsrfCipher;
 
@@ -54,6 +54,7 @@ impl CsrfCipher for AesGcmCipher {
             false
         }
     }
+    #[allow(clippy::expect_used)]
     fn generate(&self) -> (String, String) {
         let token = self.random_bytes(self.token_size);
         let aead = self.aead();
@@ -66,8 +67,8 @@ impl CsrfCipher for AesGcmCipher {
 
 #[cfg(test)]
 mod tests {
-    use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use base64::Engine;
+    use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 
     use super::AesGcmCipher;
     use super::CsrfCipher;

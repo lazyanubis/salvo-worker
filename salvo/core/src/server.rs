@@ -123,6 +123,7 @@ pub struct Server<A> {
     rx_cmd: UnboundedReceiver<ServerCommand>,
 }
 
+#[allow(clippy::expect_used)]
 #[cfg(not(target_arch = "wasm32"))]
 impl<A: Acceptor + Send> Server<A> {
     /// Create new `Server` with [`Acceptor`].

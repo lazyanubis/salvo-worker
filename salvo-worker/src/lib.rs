@@ -26,6 +26,7 @@ pub mod salvo {
     pub use salvo_core::*;
 
     /// 导出所有 salvo 需要用到的
+    #[allow(clippy::module_inception)]
     pub mod salvo {
         pub use super::*;
     }

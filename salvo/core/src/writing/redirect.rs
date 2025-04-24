@@ -22,6 +22,7 @@ pub struct Redirect {
     location: HeaderValue,
 }
 
+#[allow(clippy::expect_used)]
 impl Redirect {
     /// Create a new [`Redirect`] that uses a [`303 See Other`][mdn] status code.
     ///

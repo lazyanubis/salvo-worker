@@ -79,24 +79,22 @@
 
 use std::fmt::{self, Debug, Formatter};
 use std::pin::Pin;
-use std::task::{ready, Context, Poll};
+use std::task::{Context, Poll, ready};
 
 use futures_util::sink::{Sink, SinkExt};
 use futures_util::stream::{Stream, StreamExt};
-use futures_util::{future, FutureExt, TryFutureExt};
+use futures_util::{FutureExt, TryFutureExt, future};
 use hyper::upgrade::OnUpgrade;
 use salvo_core::http::header::{SEC_WEBSOCKET_VERSION, UPGRADE};
-use salvo_core::http::headers::{
-    Connection, HeaderMapExt, SecWebsocketAccept, SecWebsocketKey, Upgrade,
-};
+use salvo_core::http::headers::{Connection, HeaderMapExt, SecWebsocketAccept, SecWebsocketKey, Upgrade};
 use salvo_core::http::{StatusCode, StatusError};
 use salvo_core::rt::tokio::TokioIo;
 use salvo_core::{Error, Request, Response};
+use tokio_tungstenite::WebSocketStream;
+use tokio_tungstenite::tungstenite::Bytes;
 use tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode;
 use tokio_tungstenite::tungstenite::protocol::frame::{CloseFrame, Utf8Bytes};
 use tokio_tungstenite::tungstenite::protocol::{self, WebSocketConfig};
-use tokio_tungstenite::tungstenite::Bytes;
-use tokio_tungstenite::WebSocketStream;
 
 /// Creates a WebSocket Handler.
 /// Request:
@@ -133,9 +131,7 @@ impl WebSocketUpgrade {
     /// Create new `WebSocketUpgrade` with config.
     #[inline]
     pub fn with_config(config: WebSocketConfig) -> Self {
-        WebSocketUpgrade {
-            config: Some(config),
-        }
+        WebSocketUpgrade { config: Some(config) }
     }
 
     /// The target minimum size of the write buffer to reach before writing the data
@@ -187,9 +183,7 @@ impl WebSocketUpgrade {
     /// by a malicious user.
     #[inline]
     pub fn max_frame_size(mut self, max: usize) -> Self {
-        self.config
-            .get_or_insert_with(WebSocketConfig::default)
-            .max_frame_size = Some(max);
+        self.config.get_or_insert_with(WebSocketConfig::default).max_frame_size = Some(max);
         self
     }
 
@@ -207,12 +201,7 @@ impl WebSocketUpgrade {
     }
 
     /// Upgrade websocket request.
-    pub async fn upgrade<F, Fut>(
-        &self,
-        req: &mut Request,
-        res: &mut Response,
-        callback: F,
-    ) -> Result<(), StatusError>
+    pub async fn upgrade<F, Fut>(&self, req: &mut Request, res: &mut Response, callback: F) -> Result<(), StatusError>
     where
         F: FnOnce(WebSocket) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
@@ -233,8 +222,7 @@ impl WebSocketUpgrade {
             .unwrap_or(false);
         if !matched {
             tracing::debug!("missing upgrade header or it is not equal websocket");
-            return Err(StatusError::bad_request()
-                .brief("Missing upgrade header or it is not equal websocket."));
+            return Err(StatusError::bad_request().brief("Missing upgrade header or it is not equal websocket."));
         }
         let matched = !req_headers
             .get(SEC_WEBSOCKET_VERSION)
@@ -249,17 +237,16 @@ impl WebSocketUpgrade {
             key
         } else {
             tracing::debug!("sec_websocket_key is not exist in request headers");
-            return Err(StatusError::bad_request()
-                .brief("sec_websocket_key is not exist in request headers."));
+            return Err(StatusError::bad_request().brief("sec_websocket_key is not exist in request headers."));
         };
 
         res.status_code(StatusCode::SWITCHING_PROTOCOLS);
 
         res.headers_mut().typed_insert(Connection::upgrade());
         res.headers_mut().typed_insert(Upgrade::websocket());
-        res.headers_mut()
-            .typed_insert(SecWebsocketAccept::from(sec_ws_key));
+        res.headers_mut().typed_insert(SecWebsocketAccept::from(sec_ws_key));
 
+        #[allow(clippy::expect_used)]
         if let Some(on_upgrade) = req.extensions_mut().remove::<OnUpgrade>() {
             let config = self.config;
             tokio::spawn(async move {
@@ -275,8 +262,7 @@ impl WebSocketUpgrade {
             Ok(())
         } else {
             tracing::debug!("websocket couldn't be upgraded since no upgrade state was present");
-            Err(StatusError::bad_request()
-                .brief("Websocket couldn't be upgraded since no upgrade state was present."))
+            Err(StatusError::bad_request().brief("Websocket couldn't be upgraded since no upgrade state was present."))
         }
     }
 }
@@ -345,30 +331,22 @@ impl Sink<Message> for WebSocket {
 
     #[inline]
     fn poll_ready(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
-        Pin::new(&mut self.inner)
-            .poll_ready(cx)
-            .map_err(Error::other)
+        Pin::new(&mut self.inner).poll_ready(cx).map_err(Error::other)
     }
 
     #[inline]
     fn start_send(mut self: Pin<&mut Self>, item: Message) -> Result<(), Self::Error> {
-        Pin::new(&mut self.inner)
-            .start_send(item.inner)
-            .map_err(Error::other)
+        Pin::new(&mut self.inner).start_send(item.inner).map_err(Error::other)
     }
 
     #[inline]
     fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
-        Pin::new(&mut self.inner)
-            .poll_flush(cx)
-            .map_err(Error::other)
+        Pin::new(&mut self.inner).poll_flush(cx).map_err(Error::other)
     }
 
     #[inline]
     fn poll_close(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
-        Pin::new(&mut self.inner)
-            .poll_close(cx)
-            .map_err(Error::other)
+        Pin::new(&mut self.inner).poll_close(cx).map_err(Error::other)
     }
 }
 
@@ -550,11 +528,7 @@ mod tests {
     async fn test_websocket() {
         let router = Router::new().goal(connect);
         let acceptor = TcpListener::new("127.0.0.1:0").bind().await;
-        let addr = acceptor.holdings()[0]
-            .local_addr
-            .clone()
-            .into_std()
-            .unwrap();
+        let addr = acceptor.holdings()[0].local_addr.clone().into_std().unwrap();
 
         tokio::spawn(async move {
             Server::new(acceptor).serve(router).await;

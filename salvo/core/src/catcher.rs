@@ -307,6 +307,7 @@ pub fn write_error_default(req: &Request, res: &mut Response, footer: Option<&st
     };
     res.headers_mut().insert(
         header::CONTENT_TYPE,
+        #[allow(clippy::expect_used)]
         format.to_string().parse().expect("invalid `Content-Type`"),
     );
     let _ = res.write_body(data);

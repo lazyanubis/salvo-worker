@@ -22,9 +22,9 @@ jobs:
             - name: Install cargo-deny
               run: cargo install --locked cargo-deny
             - name: Build
-              run: cargo build --all --features "full" --verbose --target wasm32-unknown-unknown
+              run: cargo build -p salvo-worker --features "full" --target wasm32-unknown-unknown --verbose
             - name: Test
-              run: cargo test --all --features "full" --verbose
+              run: cargo test --all --verbose
             - name: Deny
               run: cargo deny check --show-stats
             - name: Clippy

@@ -64,9 +64,9 @@ where
         let mut bytes = vec![];
         ciborium::ser::into_writer(&guard, &mut bytes).map_err(|err| worker::Error::Json((format!("{err:?}"), 1)))?;
 
-        let builder = kv.put_bytes(name, &bytes).map_err(|err| worker::Error::from(err))?;
+        let builder = kv.put_bytes(name, &bytes).map_err(worker::Error::from)?;
 
-        builder.execute().await.map_err(|err| worker::Error::from(err))
+        builder.execute().await.map_err(worker::Error::from)
     }
 }
 

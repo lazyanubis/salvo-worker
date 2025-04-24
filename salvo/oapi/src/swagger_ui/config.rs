@@ -201,6 +201,7 @@ impl<'a> Config<'a> {
     }
 
     fn new_config_with_single_url(mut urls: Vec<Url<'a>>) -> Self {
+        #[allow(clippy::expect_used)]
         let url = urls.get_mut(0).map(std::mem::take).expect("urls should not be empty");
         let primary_name = if url.primary { Some(url.name.to_string()) } else { None };
 

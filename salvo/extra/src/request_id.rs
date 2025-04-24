@@ -118,6 +118,7 @@ impl IdGenerator for UlidGenerator {
 }
 fn get_random_u128() -> Result<u128, getrandom::Error> {
     let mut buf = [0u8; 16];
+    #[allow(clippy::unwrap_used)]
     getrandom::getrandom(&mut buf).unwrap();
     Ok(u128::from_ne_bytes(buf))
 }

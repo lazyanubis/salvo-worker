@@ -145,6 +145,7 @@ impl Depot {
     ) -> Result<&mut V, Option<&mut Box<dyn Any + Send + Sync>>> {
         if let Some(value) = self.map.get_mut(key) {
             if value.downcast_mut::<V>().is_some() {
+                #[allow(clippy::expect_used)]
                 Ok(value.downcast_mut::<V>().expect("downcast_mut should not be failed"))
             } else {
                 Err(Some(value))

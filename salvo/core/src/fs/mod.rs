@@ -49,6 +49,7 @@ where
         }
 
         match self.state {
+            #[allow(clippy::expect_used)]
             ChunkedState::File(ref mut file) => {
                 let mut file = file.take().expect("`ChunkedFile` polled after completion");
                 let max_bytes = cmp::min(self.total_size.saturating_sub(self.read_size), self.buffer_size) as usize;

@@ -274,6 +274,7 @@ impl Handler for SwaggerUi {
             Ok(Some(file)) => {
                 res.headers_mut().insert(
                     header::CONTENT_TYPE,
+                    #[allow(clippy::expect_used)]
                     HeaderValue::from_str(&file.content_type).expect("content type parse failed"),
                 );
                 res.body(ResBody::Once(file.bytes.to_vec().into()));

@@ -180,6 +180,7 @@ pub trait Listener {
     type Acceptor: Acceptor;
 
     /// Bind and returns acceptor.
+    #[allow(clippy::expect_used)]
     fn bind(self) -> impl Future<Output = Self::Acceptor> + Send
     where
         Self: Sized + Send,
