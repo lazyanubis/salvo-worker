@@ -55,13 +55,12 @@ fn release_endpoint(path: &str) -> Result<(), std::io::Error> {
 
     for i in 0..lines.len() {
         if lines[i].starts_with("// #[endpoint]")
-            || (lines[i].starts_with("// #[endpoint(") && lines[i].starts_with(")]"))
+            || (lines[i].starts_with("// #[endpoint(") && lines[i].ends_with(")]"))
         {
             lines[i] = lines[i].trim_start_matches("// ").to_string();
             lines[i + 1] = format!("// {}", lines[i + 1]);
             replaced = true;
-        }
-        if lines[i].starts_with("// #[endpoint(") {
+        } else if lines[i].starts_with("// #[endpoint(") {
             let mut j = i;
             loop {
                 lines[j] = lines[j].trim_start_matches("// ").to_string();
@@ -97,12 +96,11 @@ fn release_handler(path: &str) -> Result<(), std::io::Error> {
 
     let mut replaced = false;
     for i in 0..lines.len() {
-        if lines[i].starts_with("#[endpoint]") || (lines[i].starts_with("#[endpoint(") && lines[i].starts_with(")]")) {
+        if lines[i].starts_with("#[endpoint]") || (lines[i].starts_with("#[endpoint(") && lines[i].ends_with(")]")) {
             lines[i + 1] = lines[i + 1].trim_start_matches("// ").to_string();
             lines[i] = format!("// {}", lines[i]);
             replaced = true;
-        }
-        if lines[i].starts_with("#[endpoint(") {
+        } else if lines[i].starts_with("#[endpoint(") {
             let mut j = i;
             loop {
                 lines[j] = format!("// {}", lines[j]);
@@ -189,7 +187,7 @@ pub fn ui_scalar(
 
 /// openapi ui all
 pub fn ui_all(data: &'static str, secret: Option<String>) -> Vec<super::salvo::Router> {
-    let secret = secret.map(|s| format!("/{s}")).unwrap_or_default();
+    let secret = secret.map(|secret| format!("/{secret}")).unwrap_or_default();
     vec![
         ui_swagger(
             data,

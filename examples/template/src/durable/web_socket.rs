@@ -1,6 +1,7 @@
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 use futures::StreamExt;
+use tokio::sync::RwLock;
 use worker::*;
 
 struct InnerState {
@@ -36,7 +37,7 @@ impl DurableObject for TestTemplateWebSocketDurableObject {
 
         server.accept()?;
         server.send_with_str("Hello, world!")?;
-        self.inner.write().unwrap().currently_connected_web_sockets += 1;
+        self.inner.write().await.currently_connected_web_sockets += 1;
 
         let mut this = Self {
             inner: self.inner.clone(),
@@ -61,11 +62,11 @@ impl TestTemplateWebSocketDurableObject {
                     let got = message.text().unwrap_or_default();
                     server.send_with_str(format!(
                         "got: {got} send: {}",
-                        self.inner.read().unwrap().currently_connected_web_sockets
+                        self.inner.read().await.currently_connected_web_sockets
                     ))?;
                 }
                 WebsocketEvent::Close(event) => {
-                    self.inner.write().unwrap().currently_connected_web_sockets -= 1;
+                    self.inner.write().await.currently_connected_web_sockets -= 1;
                     server.close(Some(event.code()), Some("Durable Object is closing WebSocket"))?;
                     break;
                 }

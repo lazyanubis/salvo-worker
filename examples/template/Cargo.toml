@@ -26,6 +26,7 @@ salvo-worker = { workspace = true }
 console_error_panic_hook = { workspace = true }
 worker = { workspace = true, features = ["http", "d1"] }
 worker-macros = { workspace = true, features = ["http"] }
+tokio = { workspace = true, default-features = false }
 
 # 日志
 tracing = { workspace = true }

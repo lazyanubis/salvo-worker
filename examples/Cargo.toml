@@ -40,6 +40,7 @@ console_error_panic_hook = { version = "0.1.1" }
 # 绑定 Rust 到 Cloudflare Workers 环境。用 Rust 编写 Worker!
 worker = { version = "0.5.0", features = ["http", "axum", "d1"] }
 worker-macros = { version = "0.5.0", features = ["http"] }
+tokio = { version = "1.44", default-features = false }
 
 # axum = { version = "0.8.3", default-features = false } # web 框架
 # tower-service = { version = "0.3.3" }                  # 提供 Tower 所需的 Service Trait
