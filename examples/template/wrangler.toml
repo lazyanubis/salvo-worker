@@ -56,6 +56,9 @@ class_name = "TestTemplateDurableObject"
 [[durable_objects.bindings]]
 name = "MY_DURABLE_OBJECT_WEB_SOCKET"
 class_name = "TestTemplateWebSocketDurableObject"
+[[durable_objects.bindings]]
+name = "MY_DURABLE_OBJECT_WEB_SOCKET2"
+class_name = "TestTemplateWebSocket2DurableObject"
 
 # Durable Object migrations.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#migrations
@@ -65,6 +68,9 @@ new_classes = ["TestTemplateDurableObject"]
 [[migrations]]
 tag = "v2"
 new_classes = ["TestTemplateWebSocketDurableObject"]
+[[migrations]]
+tag = "v3"
+new_classes = ["TestTemplateWebSocket2DurableObject"]
 
 # Bind a Hyperdrive configuration. Use to accelerate access to your existing databases from Cloudflare Workers.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#hyperdrive

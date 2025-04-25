@@ -3,6 +3,7 @@ use worker::*;
 use salvo_worker::common::response::MessageResponse;
 
 mod web_socket;
+mod web_socket2;
 
 const ENABLED: &str = "enabled";
 
@@ -41,7 +42,7 @@ impl DurableObject for TestTemplateDurableObject {
     async fn alarm(&mut self) -> Result<Response> {
         console_debug!("Durable Object Alarm");
         self.assure_alarm(10000).await?;
-        return Response::from_json(&MessageResponse::<()>::success());
+        Response::from_json(&MessageResponse::<()>::success())
     }
 }
 

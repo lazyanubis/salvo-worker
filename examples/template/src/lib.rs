@@ -48,6 +48,17 @@ mod future_warning {
         // initial::do_init(&env).await; // 初始化
 
         let path = req.path();
+        if path.starts_with("/durable/websocket2") {
+            let upgrade_header = req.headers().get("Upgrade")?;
+            if upgrade_header.is_none_or(|upgrade_header| upgrade_header != "websocket") {
+                return Response::from_bytes("Durable Object expected Upgrade: websocket".into())
+                    .map(|r| r.with_status(426));
+            }
+
+            return salvo_worker::durable::get_do_binding(&env, "MY_DURABLE_OBJECT_WEB_SOCKET2", "socket")?
+                .fetch_with_request(req)
+                .await;
+        }
         if path.starts_with("/durable/websocket") {
             let upgrade_header = req.headers().get("Upgrade")?;
             if upgrade_header.is_none_or(|upgrade_header| upgrade_header != "websocket") {
