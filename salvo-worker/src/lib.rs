@@ -11,6 +11,9 @@
 /// common
 pub mod common;
 
+/// catch
+mod catch;
+
 /// durable
 pub mod durable;
 

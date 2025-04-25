@@ -27,7 +27,7 @@
 
 /// Re-export `async_trait`.
 pub use async_trait::async_trait;
-pub use hyper;
+// pub use hyper;
 pub use salvo_macros::handler;
 
 pub use salvo_macros as macros;

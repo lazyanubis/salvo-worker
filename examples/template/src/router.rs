@@ -30,8 +30,10 @@ mod timeout;
 
 fn init_service() -> Arc<WorkerService> {
     let service: WorkerService = Arc::new(init_router()).into();
-    let service = service.cors(init_cors());
-    let service = service.hoop(salvo::logging::Logger::new());
+    let service = service
+        .cors(init_cors())
+        .hoop(salvo::logging::Logger::new())
+        .catch_bad_request_and_not_found();
     Arc::new(service)
 }
 

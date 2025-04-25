@@ -35,6 +35,20 @@ impl WorkerService {
             service: self.service.hoop(cors),
         }
     }
+
+    /// cors
+    #[cfg(feature = "cors")]
+    pub fn catch_bad_request_and_not_found(self) -> Self {
+        use salvo_core::catcher::Catcher;
+
+        Self {
+            service: self.service.catcher(
+                Catcher::default()
+                    .hoop(super::catch::bad_request)
+                    .hoop(super::catch::not_found),
+            ),
+        }
+    }
 }
 
 impl From<Arc<salvo_core::Router>> for WorkerService {

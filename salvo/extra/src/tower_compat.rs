@@ -14,8 +14,9 @@ use hyper::body::{Body, Bytes};
 use tower::buffer::Buffer;
 use tower::{Layer, Service, ServiceExt};
 
+use hyper;
 use salvo_core::http::{ReqBody, ResBody, StatusError};
-use salvo_core::{Depot, FlowCtrl, Handler, Request, Response, async_trait, hyper};
+use salvo_core::{Depot, FlowCtrl, Handler, Request, Response, async_trait};
 
 /// Trait for tower service compat.
 pub trait TowerServiceCompat<QB, SB, E, Fut> {
