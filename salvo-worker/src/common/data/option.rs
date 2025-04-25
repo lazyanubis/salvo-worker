@@ -20,6 +20,6 @@ pub trait DisplayOptionBy<T> {
 
 impl<T> DisplayOptionBy<T> for Option<T> {
     fn display_by<F: Fn(&T) -> String>(&self, f: F) -> String {
-        self.as_ref().map(|v| f(v)).unwrap_or_else(|| "None".into())
+        self.as_ref().map(f).unwrap_or_else(|| "None".into())
     }
 }
