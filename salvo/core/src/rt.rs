@@ -4,10 +4,12 @@
 //! More runtimes support may be added in future releases.
 
 #[doc(hidden)]
-pub use hyper::rt::*;
+#[allow(unused)]
+pub(crate) use hyper::rt::*;
 
 /// Tokio runtimes
+#[allow(unused)]
 #[cfg(not(target_arch = "wasm32"))]
-pub mod tokio {
-    pub use hyper_util::rt::{TokioExecutor, TokioIo};
+pub(crate) mod tokio {
+    pub(crate) use hyper_util::rt::{TokioExecutor, TokioIo};
 }

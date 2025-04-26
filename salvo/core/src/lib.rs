@@ -50,7 +50,7 @@ pub mod handler;
 pub mod http;
 pub mod proto;
 pub mod routing;
-pub mod rt;
+pub(crate) mod rt;
 #[doc(hidden)]
 pub mod serde;
 cfg_feature! {

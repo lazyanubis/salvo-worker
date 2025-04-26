@@ -57,10 +57,10 @@ cfg_feature! {
     #![feature = "sse"]
     pub mod sse;
 }
-cfg_feature! {
-    #![feature = "websocket"]
-    pub mod websocket;
-}
+// cfg_feature! {
+//     #![feature = "websocket"]
+//     pub mod websocket;
+// }
 cfg_feature! {
     #![feature = "concurrency-limiter"]
     pub mod concurrency_limiter;
