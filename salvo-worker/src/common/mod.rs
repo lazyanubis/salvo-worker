@@ -15,3 +15,6 @@ pub mod random;
 
 /// 数据
 pub mod data;
+
+/// 错误
+pub mod error;
