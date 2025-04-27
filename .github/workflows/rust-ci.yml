@@ -28,6 +28,6 @@ jobs:
             - name: Deny
               run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo deny check --show-stats
             - name: Clippy
-              run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo clippy --all --features "full" --verbose -- -D warnings
+              run: cargo clippy --all --features "full" --verbose -- -D warnings
             - name: Audit
               run: cargo audit
