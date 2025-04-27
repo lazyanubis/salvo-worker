@@ -24,7 +24,7 @@ jobs:
             - name: Build
               run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo build -p salvo-worker --features "full" --target wasm32-unknown-unknown --verbose
             - name: Test
-              run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo test --all --verbose
+              run: cargo test --all --verbose
             - name: Deny
               run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo deny check --show-stats
             - name: Clippy

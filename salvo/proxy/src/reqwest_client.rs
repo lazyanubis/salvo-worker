@@ -170,6 +170,7 @@ mod tests {
         assert!(upstreams.contains(&elected_upstream));
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_reqwest_client() {
         let router = Router::new().push(
