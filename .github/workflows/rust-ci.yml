@@ -22,12 +22,12 @@ jobs:
             - name: Install cargo-deny
               run: cargo install --locked cargo-deny
             - name: Build
-              run: cargo build -p salvo-worker --features "full" --target wasm32-unknown-unknown --verbose
+              run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo build -p salvo-worker --features "full" --target wasm32-unknown-unknown --verbose
             - name: Test
-              run: cargo test --all --verbose
+              run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo test --all --verbose
             - name: Deny
-              run: cargo deny check --show-stats
+              run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo deny check --show-stats
             - name: Clippy
-              run: cargo clippy --all --features "full" --verbose -- -D warnings
+              run: RUSTFLAGS='--cfg getrandom_backend="wasm_js"' cargo clippy --all --features "full" --verbose -- -D warnings
             - name: Audit
               run: cargo audit
