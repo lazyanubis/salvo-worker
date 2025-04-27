@@ -26,7 +26,7 @@ full = [
     "catch-panic",
     "force-https",
     "logging",
-    "sse",
+    # "sse", # ! tokio/time
     "concurrency-limiter",
     "size-limiter",
     "trailing-slash",
@@ -95,10 +95,11 @@ tower = { workspace = true, optional = true, default-features = false, features 
 ] }
 tracing = { workspace = true, optional = true }
 ulid = { workspace = true, default-features = false, optional = true }
-getrandom = { version = "0.2.15", features = ["js"] }
+getrandom = { version = "0.3.2", features = [
+    "wasm_js",
+] } # ! build with -> RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 
 worker = { workspace = true }
-
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tracing-test = { workspace = true }

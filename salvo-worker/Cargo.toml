@@ -70,9 +70,9 @@ full = [
     "proxy",
     "rate-limiter",
     "request-id",
-    # "serve-static", # ! tokio fs
+    # "serve-static", # ! tokio/fs
     "size-limiter",
-    # "sse", # ! tokio time
+    # "sse", # ! tokio/time
     "timeout",
     "trailing-slash",
 ]
@@ -115,6 +115,10 @@ reqwest = { workspace = true, default-features = false, features = [
     "stream",
     "multipart",
 ] }
-getrandom = { version = "0.2.15", features = ["js"] }
+# ! reqwest 间接引入了 getrandom 0.2.16
+# getrandom = {}
+getrandom = { version = "0.3.2", features = [
+    "wasm_js",
+] } # ! build with -> RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 
 worker = { workspace = true, features = ["http"] }

@@ -18,9 +18,11 @@ release = false
 workspace = true
 
 [features]
+full = []
 
 [dependencies]
 async-session = { workspace = true }
+getrandom = { version = "0.2.16", features = ["js"] }                  # ! async-session 间接使用了
 cookie = { workspace = true, features = ["percent-encode", "signed"] }
 salvo-core = { workspace = true, features = ["cookie"] }
 tracing = { workspace = true }

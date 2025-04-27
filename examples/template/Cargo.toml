@@ -41,7 +41,7 @@ http = { workspace = true }
 once_cell = { workspace = true }
 lazy_static = { workspace = true }
 futures = { workspace = true }
-# getrandom = { workspace = true, features = ["js"] }
+getrandom = { workspace = true, features = ["wasm_js"] }
 regex = { workspace = true }
 
 # 序列化

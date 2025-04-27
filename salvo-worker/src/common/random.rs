@@ -22,9 +22,15 @@ where
 
 /// 随机数
 #[inline]
+pub fn random_fill(dest: &mut [u8]) -> Result<(), getrandom::Error> {
+    getrandom::fill(dest)
+}
+
+/// 随机数
+#[inline]
 pub fn random_u64() -> Result<u64, getrandom::Error> {
     let mut buf = [0u8; 8];
-    getrandom::getrandom(&mut buf)?;
+    random_fill(&mut buf)?;
     Ok(u64::from_be_bytes(buf))
 }
 
@@ -32,7 +38,7 @@ pub fn random_u64() -> Result<u64, getrandom::Error> {
 #[inline]
 pub fn random_i64() -> Result<i64, getrandom::Error> {
     let mut buf = [0u8; 8];
-    getrandom::getrandom(&mut buf)?;
+    random_fill(&mut buf)?;
     Ok(i64::from_be_bytes(buf))
 }
 

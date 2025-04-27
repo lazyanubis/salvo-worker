@@ -14,7 +14,7 @@ compatibility_date = "2025-03-03" # A date in the form yyyy-mm-dd, which will be
 # Configures a custom build step to be run by Wrangler when building your Worker.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#custom-builds
 [build]
-command = "cargo install -q worker-build && worker-build --release"
+command = "cargo install -q worker-build && RUSTFLAGS='--cfg getrandom_backend=\"wasm_js\"' worker-build --release"
 
 # Triggers allow you to define the cron expression to invoke your Worker's scheduled function.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#triggers

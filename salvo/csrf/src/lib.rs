@@ -192,7 +192,8 @@ pub trait CsrfCipher: Send + Sync + 'static {
     fn random_bytes(&self, len: usize) -> Vec<u8> {
         // rand::rng().sample_iter(StandardUniform).take(len).collect()
         let mut bytes = vec![0; len];
-        getrandom::getrandom(&mut bytes).unwrap();
+        // getrandom::getrandom(&mut bytes).unwrap();
+        getrandom::fill(&mut bytes).unwrap();
         bytes
     }
 }

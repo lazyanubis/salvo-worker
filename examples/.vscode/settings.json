@@ -14,6 +14,7 @@
         "redoc",
         "reqwest",
         "rustdoc",
+        "rustflags",
         "serde",
         "unshift"
     ]
