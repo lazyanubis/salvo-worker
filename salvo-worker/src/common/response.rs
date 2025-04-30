@@ -43,7 +43,9 @@ impl<T: Serialize + Send + 'static> MessageResponse<T> {
             data: Some(data),
         }
     }
+}
 
+impl MessageResponse<()> {
     /// 出现错误
     #[inline]
     pub fn failed(code: u16, message: impl Into<String>) -> Self {
@@ -53,6 +55,11 @@ impl<T: Serialize + Send + 'static> MessageResponse<T> {
             created: now_format_utc(),
             data: None,
         }
+    }
+
+    /// bad request
+    pub fn bad_request(message: impl Into<String>) -> Self {
+        Self::failed(400, message)
     }
 }
 
