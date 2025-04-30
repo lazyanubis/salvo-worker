@@ -23,6 +23,7 @@ impl Handler for Elapsed {
         let end = worker::js_sys::Date::now();
         let elapsed = Duration::from_millis((end - now) as u64);
         let _ = res.add_header("X-ELAPSED-MS", elapsed.as_millis().to_string(), false);
+        worker::console_debug!("elapsed: {} ms", elapsed.as_millis());
     }
 }
 
