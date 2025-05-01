@@ -38,8 +38,9 @@ pub struct Depot {
     map: HashMap<String, Box<dyn Any + Send + Sync>>,
 }
 
+/// 泛型类型
 #[inline]
-fn type_key<T: 'static>() -> String {
+pub fn type_key<T: 'static>() -> String {
     format!("{:?}", TypeId::of::<T>())
 }
 

@@ -34,6 +34,7 @@ pub mod handlers;
 /// 导出所有 salvo 需要用到的
 pub mod salvo {
     pub use ::serde::{Deserialize, Serialize};
+    pub use salvo_core::prelude::salvo::type_key;
     pub use salvo_core::prelude::*;
     pub use salvo_core::*;
 

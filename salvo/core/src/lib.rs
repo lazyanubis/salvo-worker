@@ -89,6 +89,7 @@ pub mod prelude {
 
     /// salvo
     pub mod salvo {
+        pub use super::super::depot::type_key;
         pub use super::super::*;
         pub use super::Depot;
         pub use super::FlowCtrl;
