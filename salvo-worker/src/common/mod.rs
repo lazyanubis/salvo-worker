@@ -18,3 +18,7 @@ pub mod data;
 
 /// 错误
 pub mod error;
+
+/// 分页
+#[cfg(feature = "oapi")]
+pub mod page;
