@@ -105,11 +105,13 @@ impl<T: Serialize + Send + ToSchema + 'static> ToSchema for MessageResponse<T> {
             .example(serde_json::json!({
                 "code": 0,
                 "message": "success",
+                "created": "2025-05-07T03:35:44.456Z",
                 "data": 123456
             }))
             .example(serde_json::json!({
                 "code": 1,
                 "message": "System error",
+                "created": "2025-05-07T03:35:44.456Z",
             }))
             .into()
     }
@@ -120,7 +122,7 @@ impl<T: Serialize + Send + ToSchema + 'static> EndpointOutRegister for MessageRe
     fn register(components: &mut oapi::Components, operation: &mut oapi::Operation) {
         operation.responses.insert(
             StatusCode::OK.as_str(),
-            oapi::Response::new("http 请求完成")
+            oapi::Response::new("请求成功")
                 .add_content("application/json", MessageResponse::<T>::to_schema(components)),
         );
     }

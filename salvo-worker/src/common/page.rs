@@ -1,16 +1,16 @@
 use salvo_oapi::ToSchema;
 use serde::{Deserialize, Serialize};
 
-/// 分页
+/// 分页请求结果
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct PageData<T> {
-    /// 总数
+    /// 当前过滤条件下的总数
     pub total: u64,
     /// 当前页
     pub page: u64,
     /// 每页数量
     pub size: u32,
-    /// 当前内容
+    /// 当前分页内容列表
     pub data: Vec<T>,
 }
 
