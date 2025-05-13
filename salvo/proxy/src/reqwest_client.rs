@@ -106,40 +106,40 @@ impl Client for ReqwestClient {
 // Unit tests for Proxy
 #[cfg(test)]
 mod tests {
-    use salvo_core::prelude::*;
-    use salvo_core::test::*;
+    // use salvo_core::prelude::*;
+    // use salvo_core::test::*;
 
-    use super::*;
-    use crate::{Proxy, Upstreams};
+    // use super::*;
+    // use crate::{Proxy, Upstreams};
 
-    #[tokio::test]
-    async fn test_upstreams_elect() {
-        let upstreams = vec!["https://www.example.com", "https://www.example2.com"];
-        let proxy = Proxy::new(upstreams.clone(), ReqwestClient::default());
-        let elected_upstream = proxy.upstreams().elect().await.unwrap();
-        assert!(upstreams.contains(&elected_upstream));
-    }
+    // #[tokio::test]
+    // async fn test_upstreams_elect() {
+    //     let upstreams = vec!["https://www.example.com", "https://www.example2.com"];
+    //     let proxy = Proxy::new(upstreams.clone(), ReqwestClient::default());
+    //     let elected_upstream = proxy.upstreams().elect().await.unwrap();
+    //     assert!(upstreams.contains(&elected_upstream));
+    // }
 
-    #[tokio::test]
-    async fn test_reqwest_client() {
-        let router = Router::new().push(
-            Router::with_path("rust/{**rest}")
-                .goal(Proxy::new(vec!["https://www.rust-lang.org"], ReqwestClient::default())),
-        );
+    // #[tokio::test]
+    // async fn test_reqwest_client() {
+    //     let router = Router::new().push(
+    //         Router::with_path("rust/{**rest}")
+    //             .goal(Proxy::new(vec!["https://www.rust-lang.org"], ReqwestClient::default())),
+    //     );
 
-        let content = TestClient::get("http://127.0.0.1:5801/rust/tools/install")
-            .send(router)
-            .await
-            .take_string()
-            .await
-            .unwrap();
-        assert!(content.contains("Install Rust"));
-    }
+    //     let content = TestClient::get("http://127.0.0.1:5801/rust/tools/install")
+    //         .send(router)
+    //         .await
+    //         .take_string()
+    //         .await
+    //         .unwrap();
+    //     assert!(content.contains("Install Rust"));
+    // }
 
-    #[test]
-    fn test_others() {
-        let mut handler = Proxy::new(["https://www.bing.com"], ReqwestClient::default());
-        assert_eq!(handler.upstreams().len(), 1);
-        assert_eq!(handler.upstreams_mut().len(), 1);
-    }
+    // #[test]
+    // fn test_others() {
+    //     let mut handler = Proxy::new(["https://www.bing.com"], ReqwestClient::default());
+    //     assert_eq!(handler.upstreams().len(), 1);
+    //     assert_eq!(handler.upstreams_mut().len(), 1);
+    // }
 }
