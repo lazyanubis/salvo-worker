@@ -26,13 +26,6 @@ cfg_feature! {
     mod hyper_client;
     pub use hyper_client::*;
 }
-#[cfg(target_arch = "wasm32")]
-cfg_feature! {
-    #![feature = "reqwest-client"]
-    mod reqwest_client_wasm;
-    pub use reqwest_client_wasm::*;
-}
-#[cfg(not(target_arch = "wasm32"))]
 cfg_feature! {
     #![feature = "reqwest-client"]
     mod reqwest_client;
