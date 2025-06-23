@@ -128,4 +128,4 @@ reqwest = { version = "0.12", default-features = false, features = [
 ciborium = "0.2"
 
 
-worker = { version = "*" }
+worker = { version = "0.6" }
