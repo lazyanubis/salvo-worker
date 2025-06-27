@@ -15,7 +15,7 @@ pub(crate) async fn handle_response(mut response: salvo_core::Response) -> worke
         None => ResponseBody::Empty,
     };
 
-    let mut headers = worker::Headers::new();
+    let headers = worker::Headers::new();
     for (name, value) in response.headers {
         if let Some(name) = name {
             match value.to_str() {
