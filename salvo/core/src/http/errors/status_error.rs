@@ -194,10 +194,10 @@ impl Display for StatusError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let mut str_error = format!("code: {} name: {} brief: {}", self.code, self.name, self.brief);
         if let Some(detail) = &self.detail {
-            write!(&mut str_error, " detail: {}", detail)?;
+            write!(&mut str_error, " detail: {detail}")?;
         }
         if let Some(cause) = &self.cause {
-            write!(&mut str_error, " cause: {}", cause)?;
+            write!(&mut str_error, " cause: {cause}")?;
         }
         f.write_str(&str_error)
     }

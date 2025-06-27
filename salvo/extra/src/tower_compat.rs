@@ -77,7 +77,7 @@ where
             Ok(hyper_res) => hyper_res,
             Err(e) => {
                 tracing::error!(error = ?e, "call tower service failed: {}", e);
-                res.render(StatusError::internal_server_error().cause(format!("call tower service failed: {}", e)));
+                res.render(StatusError::internal_server_error().cause(format!("call tower service failed: {e}")));
                 return;
             }
         }
@@ -220,7 +220,7 @@ where
             Ok(hyper_res) => hyper_res,
             Err(e) => {
                 tracing::error!(error = ?e, "call tower service failed: {}", e);
-                res.render(StatusError::internal_server_error().cause(format!("call tower service failed: {}", e)));
+                res.render(StatusError::internal_server_error().cause(format!("call tower service failed: {e}")));
                 return;
             }
         }

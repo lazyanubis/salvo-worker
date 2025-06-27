@@ -61,6 +61,30 @@ impl<T: Serialize + Send + 'static> MessageResponse<T> {
     }
 }
 
+impl MessageResponse<()> {
+    /// 成功操作
+    #[inline]
+    pub fn none_success() -> Self {
+        Self::success()
+    }
+
+    /// 出现错误
+    #[inline]
+    pub fn none_failed(code: u16, message: impl Into<String>) -> Self {
+        MessageResponse {
+            code,
+            message: message.into(),
+            created: now_format_utc(),
+            data: None,
+        }
+    }
+
+    /// bad request
+    pub fn none_bad_request(message: impl Into<String>) -> Self {
+        Self::failed(400, message)
+    }
+}
+
 #[cfg(feature = "oapi")]
 #[async_trait]
 impl<T: Serialize + Send> Writer for MessageResponse<T> {

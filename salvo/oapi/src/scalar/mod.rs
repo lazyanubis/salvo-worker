@@ -128,17 +128,17 @@ impl Handler for Scalar {
         let description = self
             .description
             .as_ref()
-            .map(|s| format!("<meta name=\"description\" content=\"{}\">", s))
+            .map(|s| format!("<meta name=\"description\" content=\"{s}\">"))
             .unwrap_or_default();
         let favicon_url = self
             .favicon_url
             .as_ref()
-            .map(|s| format!("<link rel=\"icon\" href=\"{}\" type=\"image/x-icon\">", s))
+            .map(|s| format!("<link rel=\"icon\" href=\"{s}\" type=\"image/x-icon\">"))
             .unwrap_or_default();
         let style = self
             .style
             .as_ref()
-            .map(|s| format!("<style>{}</style>", s))
+            .map(|s| format!("<style>{s}</style>"))
             .unwrap_or_default();
         let html = INDEX_TEMPLATE
             .replacen("{{lib_url}}", &self.lib_url, 1)

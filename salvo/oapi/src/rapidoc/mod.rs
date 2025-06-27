@@ -118,12 +118,12 @@ impl Handler for RapiDoc {
         let description = self
             .description
             .as_ref()
-            .map(|s| format!("<meta name=\"description\" content=\"{}\">", s))
+            .map(|s| format!("<meta name=\"description\" content=\"{s}\">"))
             .unwrap_or_default();
         let favicon_url = self
             .favicon_url
             .as_ref()
-            .map(|s| format!("<link rel=\"icon\" href=\"{}\" type=\"image/x-icon\">", s))
+            .map(|s| format!("<link rel=\"icon\" href=\"{s}\" type=\"image/x-icon\">"))
             .unwrap_or_default();
         let html = INDEX_TEMPLATE
             .replacen("{{spec_url}}", &self.spec_url, 1)
