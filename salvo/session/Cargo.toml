@@ -22,7 +22,8 @@ full = []
 
 [dependencies]
 async-session = { workspace = true }
-getrandom = { version = "0.2.16", features = ["js"] }                  # ! async-session 间接使用了
+# getrandom = { version = "0.2.16", features = ["js"] } # ! async-session 间接使用了
+getrandom_v2 = { package = "getrandom", version = "0.2.16", features = ["js"] }
 cookie = { workspace = true, features = ["percent-encode", "signed"] }
 salvo-core = { workspace = true, features = ["cookie"] }
 tracing = { workspace = true }

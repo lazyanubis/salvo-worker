@@ -95,7 +95,7 @@ tower = { workspace = true, optional = true, default-features = false, features 
 ] }
 tracing = { workspace = true, optional = true }
 ulid = { workspace = true, default-features = false, optional = true }
-getrandom = { version = "0.3.2", features = [
+getrandom = { workspace = true, features = [
     "wasm_js",
 ] } # ! build with -> RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 

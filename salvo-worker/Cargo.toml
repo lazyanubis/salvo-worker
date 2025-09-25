@@ -117,7 +117,7 @@ reqwest = { workspace = true, default-features = false, features = [
 ] }
 # ! reqwest 间接引入了 getrandom 0.2.16
 # getrandom = {}
-getrandom = { version = "0.3.2", features = [
+getrandom = { workspace = true, features = [
     "wasm_js",
 ] } # ! build with -> RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 

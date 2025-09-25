@@ -55,67 +55,67 @@ base64 = "0.22"
 mime = "0.3"
 path-slash = "0.2"
 http = "1"
-serde = "1"
-serde_json = "1"
+serde = "1.0.226"
+serde_json = "1.0.145"
 serde_norway = "0.9"
 futures = "0.3"
 bytes = "1"
 etag = "4"
 futures-util = { version = "0.3", default-features = false }
 http-body-util = "0.1"
-hyper = { version = "1", features = [
+hyper = { version = "1.7.0", features = [
     "client",
     "http1",
     # "http2",
     "server",
 ] }
-hyper-util = { version = "0.1", default-features = false }
-hyper-rustls = { version = "0.27", default-features = false }
+hyper-util = { version = "0.1.17", default-features = false }
+hyper-rustls = { version = "0.27.7", default-features = false }
 pin-project = "1"
-tokio = { version = "1.44.2", default-features = false }
-tokio-tungstenite = { version = "0.26", default-features = false }
-tokio-util = { version = "0.7.14", default-features = false }
+tokio = { version = "1.47.1", default-features = false }
+tokio-tungstenite = { version = "0.27", default-features = false }
+tokio-util = { version = "0.7.16", default-features = false }
 tokio-stream = { version = "0.1", default-features = false }
 tower = { version = "0.5", default-features = false }
 tracing = "0.1"
 tracing-test = "0.2.1"
 ulid = { version = "1", default-features = false }
-moka = "0.12"
-time = "0.3"
-sha2 = "0.10"
-indexmap = "2"
+moka = "0.12.11"
+time = "0.3.44"
+sha2 = "0.10.9"
+indexmap = "2.11.4"
 # Compress
-brotli = { version = "8", default-features = false }
-flate2 = { version = "1", default-features = false }
+brotli = { version = "8.0.2", default-features = false }
+flate2 = { version = "1.1.2", default-features = false }
 zstd = { version = "0.13", default-features = false }
 async-session = "3"
 cookie = "0.18"
 aead = "0.5.2"
 aes-gcm = "0.10"
-bcrypt = "0.17"
+bcrypt = "0.17.1"
 chacha20poly1305 = "0.10"
 hmac = "0.12"
 jsonwebtoken = "9"
-thiserror = "2"
-chrono = "0.4"
+thiserror = "2.0.16"
+chrono = "0.4.42"
 compact_str = { version = "0.9", features = ["serde"] }
-inventory = "0.3"
+inventory = "0.3.21"
 mime-infer = "4"
-parking_lot = "0.12"
-regex = "1"
+parking_lot = "0.12.4"
+regex = "1.11.2"
 rust-embed = { version = ">= 6, <= 9" }
 ring = "0.17"
-rust_decimal = "1"
-smallvec = "1"
-url = "2"
-uuid = "1"
-nix = { version = "0.29", default-features = false }
-rand = "0.9"
-tempfile = "3"
+rust_decimal = "1.38.0"
+smallvec = "1.15.1"
+url = "2.5.7"
+uuid = "1.18.1"
+nix = { version = "0.30.1", default-features = false }
+rand = "0.9.2"
+tempfile = "3.23.0"
 assert-json-diff = "2"
 fastrand = "2"
-percent-encoding = "2"
-reqwest = { version = "0.12", default-features = false, features = [
+percent-encoding = "2.3.2"
+reqwest = { version = "0.12.23", default-features = false, features = [
     "rustls-tls",
     "charset",
     "http2",
@@ -126,6 +126,8 @@ reqwest = { version = "0.12", default-features = false, features = [
     "stream",
 ] }
 ciborium = "0.2"
+getrandom = { version = "^0.3", features = [
+    "wasm_js",
+] } # ! build with -> RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 
-
-worker = { version = "0.6" }
+worker = { version = "*" }
