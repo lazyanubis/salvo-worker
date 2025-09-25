@@ -102,7 +102,7 @@ getrandom = { workspace = true, features = [
 worker = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tracing-test = { workspace = true }
+# tracing-test = { workspace = true }
 tokio = { workspace = true, optional = true, features = ["default"] }
 salvo-core = { workspace = true, features = ["default", "test"] }
 
