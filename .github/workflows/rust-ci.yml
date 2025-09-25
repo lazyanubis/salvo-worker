@@ -31,3 +31,5 @@ jobs:
               run: cargo clippy --all --features "full" --verbose -- -D warnings
             - name: Audit
               run: cargo audit
+            - name: BuildExample
+              run: cd examples/template && cargo install -q worker-build && RUSTFLAGS='--cfg getrandom_backend="wasm_js"' worker-build --release
