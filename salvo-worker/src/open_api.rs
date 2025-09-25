@@ -30,10 +30,10 @@ fn traverse_dir(path: &Path) -> Vec<String> {
             let path = entry.path();
             if path.is_dir() {
                 files.extend_from_slice(&traverse_dir(&path));
-            } else if let Some(path) = path.to_str() {
-                if path.ends_with(".rs") {
-                    files.push(path.to_string());
-                }
+            } else if let Some(path) = path.to_str()
+                && path.ends_with(".rs")
+            {
+                files.push(path.to_string());
             }
         }
     }

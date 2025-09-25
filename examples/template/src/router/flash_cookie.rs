@@ -14,6 +14,7 @@ pub async fn get_flash(depot: &mut Depot, _res: &mut Response) -> String {
     let mut body = String::new();
     if let Some(flash) = depot.incoming_flash() {
         for message in flash.iter() {
+            #[allow(clippy::unwrap_used)] // ? SAFETY
             writeln!(body, "{} - {}", message.value, message.level).unwrap();
         }
     }

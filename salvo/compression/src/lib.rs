@@ -324,10 +324,10 @@ impl Handler for Compression {
             return;
         }
 
-        if let Some(code) = res.status_code {
-            if code == StatusCode::SWITCHING_PROTOCOLS || code == StatusCode::NO_CONTENT {
-                return;
-            }
+        if let Some(code) = res.status_code
+            && (code == StatusCode::SWITCHING_PROTOCOLS || code == StatusCode::NO_CONTENT)
+        {
+            return;
         }
 
         match res.take_body() {

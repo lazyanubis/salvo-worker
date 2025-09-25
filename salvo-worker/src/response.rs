@@ -32,10 +32,10 @@ pub(crate) async fn handle_response(mut response: salvo_core::Response) -> worke
         use http::header::HeaderValue;
         for cookie in response.cookies.delta() {
             let hv = HeaderValue::from_str(&cookie.encoded().to_string());
-            if let Ok(hv) = hv {
-                if let Ok(hv) = hv.to_str() {
-                    headers.append(::http::header::SET_COOKIE.as_str(), hv)?;
-                }
+            if let Ok(hv) = hv
+                && let Ok(hv) = hv.to_str()
+            {
+                headers.append(::http::header::SET_COOKIE.as_str(), hv)?;
             }
         }
     }

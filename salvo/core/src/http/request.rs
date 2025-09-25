@@ -793,10 +793,10 @@ impl Request {
     where
         T: Deserialize<'de>,
     {
-        if let Ok(form_data) = self.form_data().await {
-            if form_data.fields.contains_key(key) {
-                return self.try_form(key).await;
-            }
+        if let Ok(form_data) = self.form_data().await
+            && form_data.fields.contains_key(key)
+        {
+            return self.try_form(key).await;
         }
         self.try_query(key)
     }
@@ -1008,18 +1008,18 @@ impl Request {
         T: Deserialize<'de>,
     {
         let c_type = self.content_type();
-        if let Some(c_type) = c_type {
-            if c_type.subtype() == mime::JSON {
-                return self.payload_with_max_size(max_size).await.and_then(|payload| {
-                    // fix issue https://github.com/salvo-rs/salvo/issues/545
-                    let payload = if payload.is_empty() {
-                        "null".as_bytes()
-                    } else {
-                        payload.as_ref()
-                    };
-                    serde_json::from_slice::<T>(payload).map_err(ParseError::SerdeJson)
-                });
-            }
+        if let Some(c_type) = c_type
+            && c_type.subtype() == mime::JSON
+        {
+            return self.payload_with_max_size(max_size).await.and_then(|payload| {
+                // fix issue https://github.com/salvo-rs/salvo/issues/545
+                let payload = if payload.is_empty() {
+                    "null".as_bytes()
+                } else {
+                    payload.as_ref()
+                };
+                serde_json::from_slice::<T>(payload).map_err(ParseError::SerdeJson)
+            });
         }
         Err(ParseError::InvalidContentType)
     }
@@ -1030,10 +1030,10 @@ impl Request {
     where
         T: Deserialize<'de>,
     {
-        if let Some(c_type) = self.content_type() {
-            if c_type.subtype() == mime::WWW_FORM_URLENCODED || c_type.subtype() == mime::FORM_DATA {
-                return from_str_multi_map(self.form_data().await?.fields.iter_all()).map_err(ParseError::Deserialize);
-            }
+        if let Some(c_type) = self.content_type()
+            && (c_type.subtype() == mime::WWW_FORM_URLENCODED || c_type.subtype() == mime::FORM_DATA)
+        {
+            return from_str_multi_map(self.form_data().await?.fields.iter_all()).map_err(ParseError::Deserialize);
         }
         Err(ParseError::InvalidContentType)
     }

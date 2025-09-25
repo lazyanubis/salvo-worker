@@ -14,16 +14,13 @@ pub async fn bad_request(req: &mut Request, depot: &mut Depot, res: &mut Respons
         cause,
         ..
     }) = &res.body
+        && *code == StatusCode::BAD_REQUEST
+        && let Some(cause) = cause
     {
-        if *code == StatusCode::BAD_REQUEST {
-            if let Some(cause) = cause {
-                let msg = cause.to_string();
-                res.status_code(StatusCode::OK);
-                let response =
-                    MessageResponse::<()>::failed(400, format!("{} {} {}", req.method(), req.uri().path(), msg));
-                response.write(req, depot, res).await;
-            }
-        }
+        let msg = cause.to_string();
+        res.status_code(StatusCode::OK);
+        let response = MessageResponse::<()>::failed(400, format!("{} {} {}", req.method(), req.uri().path(), msg));
+        response.write(req, depot, res).await;
     }
 }
 

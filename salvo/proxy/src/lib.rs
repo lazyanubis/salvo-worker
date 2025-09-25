@@ -319,11 +319,10 @@ fn get_upgrade_type(headers: &HeaderMap) -> Option<&str> {
                 .any(|e| e.trim() == UPGRADE)
         })
         .unwrap_or(false)
+        && let Some(upgrade_value) = headers.get(&UPGRADE)
     {
-        if let Some(upgrade_value) = headers.get(&UPGRADE) {
-            tracing::debug!("Found upgrade header with value: {:?}", upgrade_value.to_str());
-            return upgrade_value.to_str().ok();
-        }
+        tracing::debug!("Found upgrade header with value: {:?}", upgrade_value.to_str());
+        return upgrade_value.to_str().ok();
     }
 
     None

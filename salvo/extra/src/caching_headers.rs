@@ -147,11 +147,10 @@ impl Handler for Modified {
         if let (Some(if_modified_since), Some(last_modified)) = (
             req.headers().typed_get::<headers::IfModifiedSince>(),
             res.headers().typed_get::<headers::LastModified>(),
-        ) {
-            if !if_modified_since.is_modified(last_modified.into()) {
-                res.body(ResBody::None);
-                res.status_code(StatusCode::NOT_MODIFIED);
-            }
+        ) && !if_modified_since.is_modified(last_modified.into())
+        {
+            res.body(ResBody::None);
+            res.status_code(StatusCode::NOT_MODIFIED);
         }
     }
 }
