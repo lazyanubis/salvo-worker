@@ -20,7 +20,7 @@ workspace = true
 
 [dependencies]
 # 本地依赖
-# salvo-worker = { workspace = true }
+salvo-worker = { workspace = true }
 
 # 运行框架相关
 console_error_panic_hook = { workspace = true }

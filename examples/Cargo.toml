@@ -30,7 +30,7 @@ panic = "deny"
 
 [workspace.dependencies]
 # 本地依赖
-# salvo-worker = { path = "../salvo-worker", features = ["full"] }
+salvo-worker = { path = "../salvo-worker", features = ["full"] }
 
 # 运行框架相关
 # 调试 wasm32-unknown-unknown 上的 panic, 提供一个钩子能将 panic 消息转发给 console.error。

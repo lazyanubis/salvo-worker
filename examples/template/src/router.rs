@@ -25,7 +25,7 @@ mod open_api;
 mod proxy;
 mod rate_limiter;
 mod request_id;
-// mod session;
+mod session;
 mod timeout;
 
 fn init_service() -> Arc<WorkerService> {
@@ -67,13 +67,13 @@ fn init_router() -> Router {
         RequestIssuer::default(),
     );
 
-    // #[allow(clippy::unwrap_used)]
-    // let session_handler = salvo::session::SessionHandler::builder(
-    //     salvo::session::CookieStore::new(),
-    //     b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
-    // )
-    // .build()
-    // .unwrap();
+    #[allow(clippy::unwrap_used)]
+    let session_handler = salvo::session::SessionHandler::builder(
+        salvo::session::CookieStore::new(),
+        b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
+    )
+    .build()
+    .unwrap();
 
     // Configure CSRF token finder in form data
     let form_finder = salvo::csrf::FormFinder::new("csrf_token");
@@ -85,13 +85,13 @@ fn init_router() -> Router {
         salvo::csrf::aes_gcm_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
     let ccp_cookie_csrf = salvo::csrf::ccp_cookie_csrf(*b"01234567012345670123456701234567", form_finder.clone());
 
-    // #[allow(clippy::unwrap_used)]
-    // let flash_session_handler = salvo::session::SessionHandler::builder(
-    //     salvo::session::MemoryStore::new(),
-    //     b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
-    // )
-    // .build()
-    // .unwrap();
+    #[allow(clippy::unwrap_used)]
+    let flash_session_handler = salvo::session::SessionHandler::builder(
+        salvo::session::MemoryStore::new(),
+        b"secretabsecretabsecretabsecretabsecretabsecretabsecretabsecretab", // cspell: disable-line
+    )
+    .build()
+    .unwrap();
 
     use salvo::rate_limiter::{BasicQuota, FixedGuard, RateLimiter, RemoteIpIssuer};
     let limiter = RateLimiter::new(
@@ -150,13 +150,13 @@ fn init_router() -> Router {
                 .get(concurrency_limiter::index),
         )
         // session
-        // .push(
-        //     Router::with_path("session")
-        //         .hoop(session_handler)
-        //         .get(session::home)
-        //         .push(Router::with_path("login").get(session::login).post(session::login))
-        //         .push(Router::with_path("logout").get(session::logout)),
-        // )
+        .push(
+            Router::with_path("session")
+                .hoop(session_handler)
+                .get(session::home)
+                .push(Router::with_path("login").get(session::login).post(session::login))
+                .push(Router::with_path("logout").get(session::logout)),
+        )
         // csrf
         .push(
             Router::with_path("csrf")
@@ -193,13 +193,13 @@ fn init_router() -> Router {
                 .push(Router::with_path("set").get(flash_cookie::set_flash)),
         )
         // flash session
-        // .push(
-        //     Router::with_path("flash_session")
-        //         .hoop(flash_session_handler)
-        //         .hoop(flash::SessionStore::new().into_handler())
-        //         .push(Router::with_path("get").get(flash_session::get_flash))
-        //         .push(Router::with_path("set").get(flash_session::set_flash)),
-        // )
+        .push(
+            Router::with_path("flash_session")
+                .hoop(flash_session_handler)
+                .hoop(flash::SessionStore::new().into_handler())
+                .push(Router::with_path("get").get(flash_session::get_flash))
+                .push(Router::with_path("set").get(flash_session::set_flash)),
+        )
         // open api
         .push(
             Router::with_path("open_api").push(
