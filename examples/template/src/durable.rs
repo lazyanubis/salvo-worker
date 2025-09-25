@@ -15,13 +15,12 @@ pub struct TestTemplateDurableObject {
     env: Env,
 }
 
-#[durable_object]
 impl DurableObject for TestTemplateDurableObject {
     fn new(state: State, env: Env) -> Self {
         Self { state, env }
     }
 
-    async fn fetch(&mut self, req: Request) -> Result<Response> {
+    async fn fetch(&self, req: Request) -> Result<Response> {
         let path = req.path();
         match path.as_str() {
             "/durable/start" => {
@@ -39,7 +38,7 @@ impl DurableObject for TestTemplateDurableObject {
         Response::from_bytes("Not Found".into()).map(|v| v.with_status(404))
     }
 
-    async fn alarm(&mut self) -> Result<Response> {
+    async fn alarm(&self) -> Result<Response> {
         console_debug!("Durable Object Alarm");
         self.assure_alarm(10000).await?;
         Response::from_json(&MessageResponse::<()>::success())

@@ -20,7 +20,7 @@ workspace = true
 
 [dependencies]
 # 本地依赖
-salvo-worker = { workspace = true }
+# salvo-worker = { workspace = true }
 
 # 运行框架相关
 console_error_panic_hook = { workspace = true }
@@ -41,7 +41,7 @@ http = { workspace = true }
 once_cell = { workspace = true }
 lazy_static = { workspace = true }
 futures = { workspace = true }
-getrandom = { workspace = true, features = ["wasm_js"] }
+# getrandom = { workspace = true, features = ["wasm_js"] }
 regex = { workspace = true }
 
 # 序列化

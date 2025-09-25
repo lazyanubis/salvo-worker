@@ -18,7 +18,6 @@ pub struct TestTemplateWebSocketDurableObject {
     inner: Arc<RwLock<InnerState>>,
 }
 
-#[durable_object]
 impl DurableObject for TestTemplateWebSocketDurableObject {
     fn new(state: State, env: Env) -> Self {
         Self {
@@ -31,7 +30,7 @@ impl DurableObject for TestTemplateWebSocketDurableObject {
     }
 
     #[allow(clippy::unwrap_used)]
-    async fn fetch(&mut self, _req: Request) -> Result<Response> {
+    async fn fetch(&self, _req: Request) -> Result<Response> {
         let pair = WebSocketPair::new()?;
         let WebSocketPair { client, server } = pair;
 
