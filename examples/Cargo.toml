@@ -40,7 +40,7 @@ console_error_panic_hook = { version = "0.1.1" }
 # 绑定 Rust 到 Cloudflare Workers 环境。用 Rust 编写 Worker!
 worker = { version = "0.6.6", features = ["http", "axum", "d1"] }
 worker-macros = { version = "0.6.6", features = ["http"] }
-tokio = { version = "1.44", default-features = false }
+tokio = { version = "1.48", default-features = false }
 
 # axum = { version = "0.8.3", default-features = false } # web 框架
 # tower-service = { version = "0.3.3" }                  # 提供 Tower 所需的 Service Trait
@@ -60,10 +60,10 @@ lazy_static = { version = "1" }                         # 懒加载
 futures = { version = "0.3.31" }                        # 异步操作
 # getrandom = { version = "0.3.3", features = ["wasm_js"] }                    # 随机数
 # getrandom_v2 = { package = "getrandom", version = "0.2", features = ["js"] }
-regex = { version = "1.11.1" } # 正则
+regex = { version = "1.12.2" } # 正则
 
 # 序列化
-serde = "1.0.214"          # 序列化
+serde = "1.0.228"          # 序列化
 serde_json = "1.0.132"
 serde-wasm-bindgen = "0.6"
 ciborium = "0.2"
