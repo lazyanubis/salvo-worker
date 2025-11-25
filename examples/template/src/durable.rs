@@ -47,7 +47,7 @@ impl DurableObject for TestTemplateDurableObject {
 
 impl TestTemplateDurableObject {
     async fn assure_alarm(&self, delay_ms: i64) -> Result<Option<i64>> {
-        let enabled: bool = self.state.storage().get(ENABLED).await?;
+        let enabled: bool = self.state.storage().get(ENABLED).await?.unwrap_or_default();
         let alarm = self.state.storage().get_alarm().await?;
         match (enabled, alarm) {
             (false, Some(_)) => self.state.storage().delete_alarm().await?,
